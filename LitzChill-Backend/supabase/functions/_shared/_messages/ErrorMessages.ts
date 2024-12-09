@@ -8,6 +8,5 @@ export const COMMON_ERROR_MESSAGES={
     MISSING_JWT_TOKEN: "Missing JWT token in the request.",
     INVALID_JWT_TOKEN: " The provided JWT token is invalid or expired.",
     UNAUTHORIZED_ACCESS: "You do not have the necessary permissions to access this resource.",
-    INVALIDCONTENTTYPE: "The requested content type is not valid.",
+    INVALIDCONTENTTYPE: "The requested content type is not form-data.",
 };
-

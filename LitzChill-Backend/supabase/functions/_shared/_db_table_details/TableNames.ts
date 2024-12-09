@@ -5,3 +5,7 @@ export const TABLE_NAMES={
     NOTIFICATIONS_TABLE:'notifications',
     
 }
+
+export const BUCKET_NAME={
+    MEMES:"memes"
+}
