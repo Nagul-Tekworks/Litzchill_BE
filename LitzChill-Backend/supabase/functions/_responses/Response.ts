@@ -1,7 +1,7 @@
 import { HTTP_STATUS_CODE } from "../_shared/_constants/HttpStatusCodes.ts";
 
 //common error response 
-export default function ErrorResponse(statusCode: number, message: string){
+export default function ErrorsResponse(statusCode: number, message: string){
     const time = new Date();
     return new Response(JSON.stringify({statusCode,message,time}), {
         status: statusCode,
