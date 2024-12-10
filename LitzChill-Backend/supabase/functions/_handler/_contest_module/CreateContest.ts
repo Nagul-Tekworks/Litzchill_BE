@@ -8,14 +8,14 @@ import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts"
 import { validateContestDetails } from "../../_shared/_validation/ContestDetailsValidation.ts";
 
 
-//Checking user privilleges, Validation contest details and finally creating new Contest
+//Validating contest details and creating new Contest
 export async function handleCreateContext(req: Request,user:Record<string,string>): Promise<Response> {
      try {
 
           console.log("User id is: ",user.user_id);
+
           const contestData: ContestModel = await req.json();
-
-
+          
           // Validating the contest details
           const validationErrors = validateContestDetails(contestData);
           if (validationErrors instanceof Response) {

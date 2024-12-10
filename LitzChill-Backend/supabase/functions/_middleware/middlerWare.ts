@@ -5,7 +5,7 @@ import { HTTP_STATUS_CODE } from "../_shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../_shared/_messages/ErrorMessages.ts";
 
 
-// Check if the user has necessary privileges
+// function which is wrapped to handler 
 export const checkUserAuthentication = function checkUserAuthentication(
     handler: (
         request: Request,
@@ -13,6 +13,7 @@ export const checkUserAuthentication = function checkUserAuthentication(
     ) => Promise<Response>,
     roles: string[] = [],
 ) {
+    //function which contain privillege logic 
     return async function (
         req: Request,
         params: Record<string, string>,
@@ -22,6 +23,7 @@ export const checkUserAuthentication = function checkUserAuthentication(
             const token = req.headers.get("Authorization");
             console.log("User Token: ", token);
 
+            //if user not provide token returning error response
             if (!token) {
                 console.log("First check");
                 return ErrorResponse(
@@ -63,7 +65,7 @@ export const checkUserAuthentication = function checkUserAuthentication(
                      "User Not Found"
                 );
             }
-
+            //checking for user account status .
             if (data.account_status === 'S') {
                 return ErrorResponse(
                       HTTP_STATUS_CODE.FORBIDDEN,
@@ -71,7 +73,7 @@ export const checkUserAuthentication = function checkUserAuthentication(
                 );
             }
 
-            // Checking for user role
+            // Checking for user role.
             if (!roles.includes(data.user_type)) {
                 return ErrorResponse(
                      HTTP_STATUS_CODE.FORBIDDEN,
@@ -79,7 +81,7 @@ export const checkUserAuthentication = function checkUserAuthentication(
                 );
             }
 
-            // If the user has access permission, pass user details to the handler
+            // If the user has access permission, passing user details to the handler.
             const user = {
                 ...params,
                 user_id: id,
@@ -89,7 +91,8 @@ export const checkUserAuthentication = function checkUserAuthentication(
             };
             console.log("Valid user");
 
-            return await handler(req, user); // Fixed here: passing the correct parameters
+            //calling handler by passing req and user details.
+            return await handler(req, user); 
 
         } catch (error) {
             console.error(error);

@@ -7,7 +7,7 @@ import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
 import { CONTEST_VALIDATION_MESSAGES } from "../_messages/ContestModuleMessages.ts";
 
 
-//validation Contest Id
+//validating Contest Id
 export function validateContestId(contest_id:string): Response | void {
     if (!contest_id || !V4.isValid(contest_id)) {
         console.log("Error: Invalid or missing contest ID.");
@@ -19,6 +19,7 @@ export function validateContestId(contest_id:string): Response | void {
      }
 }
 
+//Validating all contest fields 
 export function validateContestDetails(contestDetails: Partial<ContestModel>, isUpdate: boolean = false): Response | void {
     
     //checking for empty body if body empty, directlly returning error responses
@@ -32,7 +33,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
     }
 
     
-    // Validating contest title if invalid title pushing the error message in error array
+    // Validating contest title if invalid title returning error message.
     console.log(contestDetails.contest_title); 
     if (contestDetails.contest_title) {
        
@@ -46,7 +47,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
             );
            
         }
-    } 
+    } //if validation for create contest then title is required
     else if (!isUpdate) {
         console.log("Contest title is missing.");
         return ErrorResponse(
@@ -82,7 +83,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
             );
             
         } 
-    }
+    }//if validation for create contest then start date is required
      else if (!isUpdate) {
          console.log("Contest start date is missing.");
         return ErrorResponse(
@@ -103,7 +104,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
                  CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_END_DATE_FORMAT
            );
         }
-        else {
+        else {//ensuring end date can not be less to start date.
             const end_date = new Date(contestDetails.end_date);
             if (contestDetails.start_date && isValidISODate(contestDetails.start_date)) {
               
@@ -117,7 +118,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
                 }
             }
         }
-    } 
+    } //if validation for create contest then end date is required
     else if (!isUpdate) {
         console.log("Contest end date is missing.");
         return ErrorResponse(

@@ -6,7 +6,7 @@ export const CONTEST_MODULE_ERROR_MESSAGES={
 };
 
 
-//contest Module All Success messages
+//contest Module  Success messages
 export const CONTEST_MODULE_SUCCESS_MESSAGES={
 
     CONTEST_CREATED: "The contest has been created successfully!",
@@ -15,7 +15,7 @@ export const CONTEST_MODULE_SUCCESS_MESSAGES={
     CONTEST_UPDATED: "The contest has been updated successfully!"
   }
 
-  //Contest Module Validation Messages
+//Contest Module Validation Messages
 export const CONTEST_VALIDATION_MESSAGES={
 
     INVALID_CONTEST_ID: "Invalid Contest ID. Please provide a valid UUID.",
