@@ -9,16 +9,17 @@ import { validateContestDetails } from "../../_shared/_validation/ContestDetails
 
 
 //Validating contest details and creating new Contest
-export async function handleCreateContext(req: Request,user:Record<string,string>): Promise<Response> {
+export async function handleCreateContext(req: Request,params:Record<string,string>): Promise<Response> {
      try {
 
-          console.log("User id is: ",user.user_id);
+          console.log("User id is: ",params.user_id);
 
           const contestData: ContestModel = await req.json();
           
           // Validating the contest details
           const validationErrors = validateContestDetails(contestData);
           if (validationErrors instanceof Response) {
+                console.log("Error: Contest Validation Failed: ",validationErrors);
                 return validationErrors;
           }
 
@@ -41,15 +42,14 @@ export async function handleCreateContext(req: Request,user:Record<string,string
           // Returning success response with created contest data
           console.log("Returning success response with created contest data", insertedData);
           return SuccessResponse(
-                CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_CREATED,
-                insertedData,
+                CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_CREATED,'',
                 HTTP_STATUS_CODE.CREATED,
           );
 
      }
      catch (error) {
           // handling internal errors
-          console.error("Internal server error in create contest", error);
+          console.log("Error: Internal Server Error",error);
           return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 `${COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR}, ${error}`,

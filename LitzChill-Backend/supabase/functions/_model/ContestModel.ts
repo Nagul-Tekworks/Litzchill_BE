@@ -1,4 +1,4 @@
-//contest module
+//contest module model
 export interface ContestModel {
     contest_id?: string;  
     contest_title: string;

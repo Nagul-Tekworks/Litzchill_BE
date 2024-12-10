@@ -9,7 +9,15 @@ import { CONTEST_VALIDATION_MESSAGES } from "../_messages/ContestModuleMessages.
 
 //validating Contest Id
 export function validateContestId(contest_id:string): Response | void {
-    if (!contest_id || !V4.isValid(contest_id)) {
+    if (!contest_id ) {
+        console.log("Error: Invalid or missing contest ID.");
+        return ErrorResponse(
+             HTTP_STATUS_CODE.BAD_REQUEST,
+             CONTEST_VALIDATION_MESSAGES.MISSING_CONTEST_ID,
+         
+        );
+     }
+     if ( !V4.isValid(contest_id)) {
         console.log("Error: Invalid or missing contest ID.");
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
@@ -17,6 +25,8 @@ export function validateContestId(contest_id:string): Response | void {
          
         );
      }
+
+    
 }
 
 //Validating all contest fields 

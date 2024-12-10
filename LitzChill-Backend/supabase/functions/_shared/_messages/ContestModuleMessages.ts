@@ -17,7 +17,7 @@ export const CONTEST_MODULE_SUCCESS_MESSAGES={
 
 //Contest Module Validation Messages
 export const CONTEST_VALIDATION_MESSAGES={
-
+    MISSING_CONTEST_ID:"Please Provide Contest Id ",
     INVALID_CONTEST_ID: "Invalid Contest ID. Please provide a valid UUID.",
     INVALID_CONTEST_TITLE: "Contest Title must be 3-100 characters.",
     MISSING_CONTEST_TITLE: "Contest Title is required.",
