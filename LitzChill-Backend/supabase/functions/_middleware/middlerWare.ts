@@ -1,43 +1,101 @@
-import { ErrorsResponse } from "../_responses/Response.ts";
+import { ErrorResponse } from "../_responses/Response.ts";
+import supabase from "../_shared/_config/DbConfig.ts";
 import { HTTP_STATUS_CODE } from "../_shared/_constants/HttpStatusCodes.ts";
-import supabase from '../_shared/_config/DbConfig.ts';
-import { TABLE_NAMES } from "../_shared/_db_table_details/TableNames.ts";
+import { COMMON_ERROR_MESSAGES } from "../_shared/_messages/ErrorMessages.ts";
 
-// withAuthorization Middleware
-export const roleBasedAccess = (handler: Function, allowedRoles: string[]) => {
-    return async (req: Request) => {
-        const user = req.headers.get("Authorization");
-        if (!user) {
-            return ErrorsResponse(HTTP_STATUS_CODE.UNAUTHORIZED, "Unauthorized: No token provided.");
-        }
 
-        const jwt = user.replace("Bearer ", "");
-        const { data: userData, error: authError } = await supabase.auth.getUser(jwt);
-        if (authError || !userData) {
-            return ErrorsResponse(HTTP_STATUS_CODE.UNAUTHORIZED, "Unauthorized: Invalid session or JWT.");
-        }
+// Check if the user has necessary privileges
+export const checkUserAuthentication = function checkUserAuthentication(
+  handler: (
+    request: Request,
+    params: Record<string, string>,
+  ) => Promise<Response>,
+  roles: string[] = [],
+) {
+  return async function (
+    req: Request,
+    params: Record<string, string>,
+  ): Promise<Response> {
+    try {
+      // Getting token from header
+      const token = req.headers.get("Authorization");
+      console.log("User Token: ", token);
 
-        const id = userData.user.id;
-        const { data, error } = await supabase
-            .from(TABLE_NAMES.USER_TABLE)
-            .select("account_status, lockout_time, user_type")
-            .eq("user_id", id)
-            .in("account_status", ["A", "S"])  // Only active or suspended accounts
-            .single();
+      if (!token) {
+        console.log("First check");
+        return ErrorResponse(
+          HTTP_STATUS_CODE.UNAUTHORIZED,
+          COMMON_ERROR_MESSAGES.MISSING_JWT_TOKEN
+        );
+      }
 
-        if (error || !data) {
-            return ErrorsResponse(HTTP_STATUS_CODE.NOT_FOUND, "User not found.");
-        }
+      // Getting userData from auth table by token
+      const jwt = token.replace("Bearer ", "");
+      const { data: userData, error: authError } = await supabase.auth.getUser(jwt);
+      if (authError || !userData) {
+        console.log("User session expired");
+        return ErrorResponse(
+          HTTP_STATUS_CODE.UNAUTHORIZED,
+          COMMON_ERROR_MESSAGES.MISSING_JWT_TOKEN
+        );
+      }
 
-        if (data.account_status === "S") {
-            return ErrorsResponse(HTTP_STATUS_CODE.FORBIDDEN, `Account deactivated. Try after ${data.lockout_time}`);
-        }
+      // Getting user details from users table by id
+      const id = userData.user.id;
+      const { data, error } = await supabase
+        .from("users")
+        .select('account_status,lockout_time,user_type')
+        .eq("user_id", id)
+        .in("account_status", ['A', 'S'])
+        .single();
 
-        if (!allowedRoles.includes(data.user_type)) {
-            return ErrorsResponse(HTTP_STATUS_CODE.FORBIDDEN, "User does not have the required role.");
-        }
+      if (error) {
+        return ErrorResponse(
+          HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+          COMMON_ERROR_MESSAGES.DATABASE_ERROR
+        );
+      }
 
-        // Proceed with the original handler if authorized
-        return handler(req);
-    };
+      if (!data) {
+        return ErrorResponse(
+          HTTP_STATUS_CODE.NOT_FOUND,
+          "User Not Found"
+        );
+      }
+
+      if (data.account_status === 'S') {
+        return ErrorResponse(
+          HTTP_STATUS_CODE.FORBIDDEN,
+          `${COMMON_ERROR_MESSAGES.ACCOUNT_DEACTIVATE}, Try after ${data.lockout_time}`
+        );
+      }
+
+      // Checking for user role
+      if (!roles.includes(data.user_type)) {
+        return ErrorResponse(
+          HTTP_STATUS_CODE.FORBIDDEN,
+          COMMON_ERROR_MESSAGES.UNAUTHORIZED_ACCESS
+        );
+      }
+
+      // If the user has access permission, pass user details to the handler
+      const user = {
+        ...params,
+        user_id: id,
+        account_status: data.account_status,
+        user_type: data.user_type,
+        token: jwt
+      };
+      console.log("Valid user");
+
+      return await handler(req, user); // Fixed here: passing the correct parameters
+
+    } catch (error) {
+      console.error(error);
+      return ErrorResponse(
+        HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+        COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR
+      );
+    }
+  };
 };

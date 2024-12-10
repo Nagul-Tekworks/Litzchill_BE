@@ -1,9 +1,9 @@
 export const MEME_ROUTES ={
     MEME_CREATE_PATH : "/MemeModule/creatememe",
     MEME_UPDATE_PATH : "/MemeModule/updatememe",
-    MEME_GETTING_PATH : "/MemeModule/getmemebyidmeme:id",
+    MEME_GETTING_PATH : "/MemeModule/getmemebyidmeme/:memeid/:cid",
     GETTING_ALL_MEMES_PATH : "/MemeModule/getallmemes",
-    MEME_DELETE_PATH : "/MemeModule/deletememe:id",
+    MEME_DELETE_PATH : "/MemeModule/deletememe/:id",
     MEME_UPDATE_STATUS_PATH : "/MemeModule/updatememestatus",
 }
 

@@ -1,6 +1,6 @@
 
 //common error response 
-export  function ErrorsResponse(statusCode: number, message: string){
+export  function ErrorResponse(statusCode: number, message: string){
     const time = new Date();
     return new Response(JSON.stringify({statusCode,message,time}), {
         status: statusCode,

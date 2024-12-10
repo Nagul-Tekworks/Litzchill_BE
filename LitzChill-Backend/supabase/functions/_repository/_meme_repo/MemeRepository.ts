@@ -4,7 +4,6 @@ import { MEMEFIELDS } from '../../_shared/_db_table_details/TableFields.ts';
 import { Meme } from '../../_model/MemeModel.ts';
 
 
-
 /* 
 Function to check whether the meme exists
 1. Uses Supabase to query the Meme table for the meme_id.
@@ -154,22 +153,30 @@ export async function uploadImageToBucket(imageUrl: string, memeTitle: string): 
 * If it doesn't, it creates a new meme.
 * Returns the created meme otherwise returns null.
 */
-export async function createMemeQuery(meme:Partial<Meme>) {
-    const { data, error: insertError } = await supabase
-    .from(TABLE_NAMES.MEME_TABLE)
-    .insert([{
-        user_id: meme.user_id,
-        meme_title: meme.meme_title,
-        image_url: meme.image_url,
-        tags: meme.tags,
-    }])
-    .neq(MEMEFIELDS.MEME_TITLE, meme.meme_title)
-    .select("*")
-    .single();
 
-    if(insertError||!data) return null;
+
+export async function createMemeQuery(meme: Partial<Meme>,user_id:string) {
+    console.log("Attempting to insert meme:", meme);
+
+    const { data, error: insertError } = await supabase
+        .from(TABLE_NAMES.MEME_TABLE)
+        .insert([{
+            user_id: user_id,
+            meme_title: meme.meme_title,
+            image_url: meme.image_url,
+            tags: meme.tags,
+        }])
+        .select("*")
+        .single();
+
+    if (insertError || !data) {
+        console.error("Supabase Insert Error:", insertError);
+        return null;
+    }
+
     return data;
 }
+
 
 /*
  Function to update meme in database
@@ -246,6 +253,7 @@ export async function getMemesByIdQuery(meme_id: string) {
    .select("meme_title, image_url, created_at, updated_at, meme_status, like_count, comment_count, tags")
    .eq(MEMEFIELDS.DELETED, false)
    .eq(MEMEFIELDS.MEME_ID, meme_id)
+   
     if(error || !data) return null;
     return data;
 }

@@ -9,4 +9,8 @@ export const COMMON_ERROR_MESSAGES={
     INVALID_JWT_TOKEN: " The provided JWT token is invalid or expired.",
     UNAUTHORIZED_ACCESS: "You do not have the necessary permissions to access this resource.",
     INVALIDCONTENTTYPE: "The requested content type is not form-data.",
+    ACCOUNT_DEACTIVATE:"The requested access token is invalid.",
 };
+
+
+

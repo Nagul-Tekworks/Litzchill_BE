@@ -1,3 +1,9 @@
+
+import { Meme } from "../../_model/MemeModel.ts";
+import { ErrorResponse } from "../../_responses/Response.ts";
+import { MEME_ERROR_MESSAGES } from "../_messages/ValidationMessages.ts";
+import { HTTP_STATUS_CODE } from '../_constants/HttpStatusCodes.ts';
+
 /*
  * Validates if the request's content type is a valid "multipart/form-data" type.
  * @param contentType The content type of the request.
@@ -29,22 +35,6 @@ export function parseTags(tagsRaw: string | null): string[] {
     return tagsRaw.split(",").map(tag => tag.trim());
 }
 
-
-// // Returns true if the title is valid else false
-// export const validateMemeTitle = (meme_title: string): boolean => 
-//     meme_title.length > 0 && meme_title.length <= 30;
-
-// // Returns true if the tags are valid else false
-// export const validateTags = (tags: string[]): boolean => 
-//     tags.every(tag => tag.length >= 1 && tag.length <= 15);
-
-
-
-import { Meme } from "../../_model/MemeModel.ts";
-import { ErrorsResponse } from "../../_responses/Response.ts";
-import { MEME_ERROR_MESSAGES } from "../_messages/ValidationMessages.ts";
-import { HTTP_STATUS_CODE } from '../_constants/HttpStatusCodes.ts';
-
 /**
  * Main validation function
  * @param memeData - Meme data object to validate
@@ -64,7 +54,7 @@ export function validateMemeData(memeData: Partial<Meme>, isUpdate: boolean = fa
 
     // Returning validation errors if any
     if (validationErrors.length > 0) {
-        return ErrorsResponse(HTTP_STATUS_CODE.BAD_REQUEST, validationErrors.join(", "));
+        return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, validationErrors.join(", "));
     }
 
     // Validation passed
@@ -87,6 +77,9 @@ function validateMemeFields(meme_title: string | undefined, image_url: string | 
         if (!/^[A-Za-z0-9\s.,'!?-]+$/.test(meme_title)) {
             validationErrors.push(MEME_ERROR_MESSAGES.INVALID_MEME_TITLE);
         }
+        else{
+            console.log("meme_title validated")
+        }
     }
 
     // Validate image URL
@@ -96,11 +89,9 @@ function validateMemeFields(meme_title: string | undefined, image_url: string | 
 
     // Validate tags
     if (tags) {
-        if (tags.length === 0) {
-            validationErrors.push(MEME_ERROR_MESSAGES.MISSING_TAGS);
-        }
         for (const tag of tags) {
             if (tag.length < 1 || tag.length > 15 || !/^[A-Za-z0-9\s-]+$/.test(tag)) {
+                console.log("tags failed");
                 validationErrors.push(MEME_ERROR_MESSAGES.INVALID_TAG);
             }
         }
