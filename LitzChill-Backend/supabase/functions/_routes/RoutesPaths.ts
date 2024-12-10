@@ -1,20 +1,20 @@
 export const MEME_ROUTES ={
     MEME_CREATE_PATH : "/MemeModule/creatememe",
-    MEME_UPDATE_PATH : "/MemeModule/updatememe",
-    MEME_GETTING_PATH : "/MemeModule/getmemebyidmeme/:memeid/:cid",
+    MEME_UPDATE_PATH : "/MemeModule/updatememe/:id",
+    MEME_GETTING_PATH : "/MemeModule/getmemebyidmeme/:id",
     GETTING_ALL_MEMES_PATH : "/MemeModule/getallmemes",
     MEME_DELETE_PATH : "/MemeModule/deletememe/:id",
-    MEME_UPDATE_STATUS_PATH : "/MemeModule/updatememestatus",
+    MEME_UPDATE_STATUS_PATH : "/MemeModule/updatememestatus/:id",
 }
 
 export const LIKES_ROUTES = {
-    LIKE_MEME_PATH:"/LIKESMODULE/likememe",
-    UNLIK_MEME_PATH:"/LIKESMODULE/unlikememe"
+    LIKE_MEME_PATH:"/LIKESMODULE/likememe/:id",
+    UNLIK_MEME_PATH:"/LIKESMODULE/unlikememe/:id"
 }
 
 export const NOTIFICATION_ROUTES = {
     GET_NOTIFICATION_PATH:"/NOTIFICATIONSMODULE/getnotifications",
-    MARK_NOTIFICATION_ROUTE:"/NOTIFICATIONSMODULE/marknotification"
+    MARK_NOTIFICATION_ROUTE:"/NOTIFICATIONSMODULE/marknotification/:id"
 }
 
 export const CONTEST_ROUTES = {

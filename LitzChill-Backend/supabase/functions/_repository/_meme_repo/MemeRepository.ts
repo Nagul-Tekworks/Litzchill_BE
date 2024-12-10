@@ -155,7 +155,8 @@ export async function uploadImageToBucket(imageUrl: string, memeTitle: string): 
 */
 
 
-export async function createMemeQuery(meme: Partial<Meme>,user_id:string) {
+export async function createMemeQuery(meme: Partial<Meme>, user_id: string) {
+    
     console.log("Attempting to insert meme:", meme);
 
     const { data, error: insertError } = await supabase
@@ -169,13 +170,9 @@ export async function createMemeQuery(meme: Partial<Meme>,user_id:string) {
         .select("*")
         .single();
 
-    if (insertError || !data) {
-        console.error("Supabase Insert Error:", insertError);
-        return null;
-    }
-
-    return data;
+    return { data, insertError };
 }
+
 
 
 /*
@@ -190,17 +187,13 @@ export async function createMemeQuery(meme: Partial<Meme>,user_id:string) {
 export async function updatememeQuery(meme:Partial<Meme>,meme_id:string) {
     const { data, error } = await supabase
         .from(TABLE_NAMES.MEME_TABLE)
-        .update({
-            meme_title: meme.meme_title,
-            tags: meme.tags,
-            updated_at: new Date().toISOString(),
-        })
+        .update(meme)
         .eq(MEMEFIELDS.MEME_ID,meme_id)
         .neq(MEMEFIELDS.MEME_TITLE, meme.meme_title)
+        .eq(MEMEFIELDS.DELETED,false)
         .select("meme_id, meme_title, tags, updated_at")
         .single();
-        if(error || !data) return null;
-        return data;
+       return{data, error}
 }
 
 /* 

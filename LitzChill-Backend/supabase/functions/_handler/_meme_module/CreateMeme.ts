@@ -5,8 +5,7 @@ import { contentTypeValidations, parseTags, validateMemeData} from '../../_share
 import { MEMEFIELDS } from '../../_shared/_db_table_details/TableFields.ts';
 import { createMemeQuery, meme_exist_with_sametitle, uploadImageToBucket } from "../../_repository/_meme_repo/MemeRepository.ts";
 import { Meme } from "../../_model/MemeModel.ts";
-import { MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/SuccessMessages.ts";
-import { MEME_ERROR_MESSAGES } from "../../_shared/_messages/ValidationMessages.ts";
+import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
 
 
 export default async function createMeme(req: Request,user:Record<string,string>) {
@@ -63,12 +62,13 @@ export default async function createMeme(req: Request,user:Record<string,string>
         }
 
         //Insert the meme into the database
-        const insertmeme = await createMemeQuery(meme,user_id);
-        if (!insertmeme) {
-            return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_CREATE);
+        const { data: insertmeme, insertError } = await createMemeQuery(meme, user_id);
+        if (insertError) {
+           return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_CREATE);
         }
-        // If No Errors insert the meme into the database
-        return await SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_CREATED_SUCCESSFULLY,insertmeme);
+
+        // If no errors, insert the meme into the database
+        return await SuccessResponse(HTTP_STATUS_CODE.OK, MEME_SUCCESS_MESSAGES.MEME_CREATED_SUCCESSFULLY, insertmeme);
 
     } catch (error) {
         console.error("Error creating meme: ", error);

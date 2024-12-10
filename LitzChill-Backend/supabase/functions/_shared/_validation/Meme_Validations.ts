@@ -1,14 +1,12 @@
-
 import { Meme } from "../../_model/MemeModel.ts";
 import { ErrorResponse } from "../../_responses/Response.ts";
-import { MEME_ERROR_MESSAGES } from "../_messages/ValidationMessages.ts";
 import { HTTP_STATUS_CODE } from '../_constants/HttpStatusCodes.ts';
+import { MEME_ERROR_MESSAGES } from "../_messages/Meme_Module_Messages.ts";
+
 
 /*
  * Validates if the request's content type is a valid "multipart/form-data" type.
  * @param contentType The content type of the request.
- * @returns True if the content type is valid, false otherwise.
- * @throws Throws an error if the content type is not a valid "multipart/form-data" type.
 */
 export function contentTypeValidations(contentType: string): boolean {
     if (!contentType || !contentType.includes("multipart/form-data")) {
@@ -77,9 +75,6 @@ function validateMemeFields(meme_title: string | undefined, image_url: string | 
         if (!/^[A-Za-z0-9\s.,'!?-]+$/.test(meme_title)) {
             validationErrors.push(MEME_ERROR_MESSAGES.INVALID_MEME_TITLE);
         }
-        else{
-            console.log("meme_title validated")
-        }
     }
 
     // Validate image URL
@@ -89,9 +84,11 @@ function validateMemeFields(meme_title: string | undefined, image_url: string | 
 
     // Validate tags
     if (tags) {
+        if (tags.length === 0) {
+            validationErrors.push(MEME_ERROR_MESSAGES.MISSING_TAGS);
+        }
         for (const tag of tags) {
             if (tag.length < 1 || tag.length > 15 || !/^[A-Za-z0-9\s-]+$/.test(tag)) {
-                console.log("tags failed");
                 validationErrors.push(MEME_ERROR_MESSAGES.INVALID_TAG);
             }
         }
