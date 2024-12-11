@@ -5,11 +5,9 @@ import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts"
 import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
 
-export default async function DeletememebyID(req: Request,user:Record<string,string>) {
+export default async function DeletememebyID(req: Request,params:Record<string,string>) {
     try {
-           
-        const {id} = user;
-        const meme_id = id;
+        const meme_id = params.id;
         // Validate meme_id
         if (!meme_id || !V4.isValid(meme_id)) { 
             console.log("Validation failed: Missing parameters.");
@@ -20,11 +18,11 @@ export default async function DeletememebyID(req: Request,user:Record<string,str
         const {error} = await deleteMemeQuery(meme_id);
         if(error){
                 console.log("delete failed");
-                return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_DELETE)
+                return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_DELETE)
             }
 
             // Return the updated meme
-            return await SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_DELETED_SUCCESSFULLY);
+            return await SuccessResponse(HTTP_STATUS_CODE.NO_CONTENT,MEME_SUCCESS_MESSAGES.MEME_DELETED_SUCCESSFULLY);
     
     
         } catch (error) {

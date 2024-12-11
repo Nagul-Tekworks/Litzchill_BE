@@ -7,16 +7,21 @@ import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messa
 
 export default async function getAllMemes(req:Request) { 
     try {
-        const url = new URL(req.url);
-        const page = Number(url.searchParams.get("page")||1);
-        const limit = Number(url.searchParams.get("limit")||5);
-        const sort = url.searchParams.get("sort") || "popular";
 
-        const { data: allmemes, error } = await fetchMemes(page, limit, sort);
+        const url = new URL(req.url)
+        const page = Number(url.searchParams.get('page')) || 1;
+        const limit = Number(url.searchParams.get('limit')) || 50;
+        const sort = url.searchParams.get('sort') || "popular";
+        const tag = url.searchParams.get('tag')|| null ;
+
+        console.log(page, limit, sort, tag);
+        // Fetch memes from the repository using the provided parameters
+        const { data: allmemes, error } = await fetchMemes(page, limit, sort,tag);
  
+        // Handle errors and return appropriate responses
         if (error || !allmemes || allmemes.length === 0) {
             console.log("Fetching failed or no memes found");
-            return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
+            return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.NO_MEMES);
         }
         
         // Return the fetched memes

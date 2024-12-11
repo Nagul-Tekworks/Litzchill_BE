@@ -6,8 +6,8 @@ import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
 /*
   Function to add like to notifications list
 */
-export async function addNotifications(user_id: string,meme_title: string,type : string,meme_status: string) {
-    const notificationContent = `Your meme "${meme_title}" is "${meme_status}!`;
+export async function addNotifications(user_id: string,meme_title: string,type : string) {
+    const notificationContent = `Your meme "${meme_title}" got notifications`;;
     console.log(notificationContent+'\n'+user_id+type);
     const { data,error } = await supabase
         .from(TABLE_NAMES.NOTIFICATIONS_TABLE)

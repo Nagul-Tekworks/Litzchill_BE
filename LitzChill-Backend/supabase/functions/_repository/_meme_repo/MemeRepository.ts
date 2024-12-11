@@ -190,8 +190,9 @@ export async function updatememeQuery(meme:Partial<Meme>,meme_id:string) {
         .from(TABLE_NAMES.MEME_TABLE)
         .update(meme)
         .eq(MEMEFIELDS.MEME_ID,meme_id)
-        .neq(MEMEFIELDS.MEME_TITLE, meme.meme_title)
+        // .neq(MEMEFIELDS.MEME_TITLE, meme.meme_title)
         .eq(MEMEFIELDS.DELETED,false)
+        .eq(MEMEFIELDS.MEME_STATUS,MEME_STATUS.REJECTED)
         .select("meme_id, meme_title, tags, updated_at")
         .single();
        return{data, error}
@@ -223,15 +224,24 @@ export async function deleteMemeQuery(meme_id: string) {
  * Returns an array of memes.
 */
 
-export async function fetchMemes(page: number, limit: number, sort: string) {
+export async function fetchMemes(page: number, limit: number, sort: string, tags: string | null) {
     try {
-        const query = supabase
+        let query = supabase
             .from("memes")
-            .select("meme_id, user_id, meme_title, image_url, like_count, flag_count, tags, created_at")
+            .select("meme_id, user_id, meme_title, image_url, like_count, tags, created_at")
             .eq(MEMEFIELDS.MEME_STATUS, MEME_STATUS.APPROVED)
             .eq(MEMEFIELDS.DELETED, false)
             .order(sort === "popular" ? "like_count" : "created_at", { ascending: false })
             .range((page - 1) * limit, page * limit - 1);
+
+        // Add tag filter if tags are provided
+        if (tags) {
+            const tagArray = tags.split(',');  // Split into an array of tags
+            console.log(tagArray);
+
+            // Ensure the tags are in array format and check for matching tags in the array field
+            query = query.contains("tags", tagArray);
+        }
 
         const { data, error } = await query;
 
@@ -256,7 +266,7 @@ export async function fetchMemes(page: number, limit: number, sort: string) {
 export async function getMemesByIdQuery(meme_id: string) {
     const { data, error } = await supabase
    .from(TABLE_NAMES.MEME_TABLE)
-   .select("meme_title, image_url, created_at, updated_at, meme_status, like_count, comment_count, tags")
+   .select("meme_title, image_url,tags, like_count,created_at")
    .eq(MEMEFIELDS.DELETED, false)
    .eq(MEMEFIELDS.MEME_ID, meme_id)
    

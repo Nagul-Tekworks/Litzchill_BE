@@ -8,13 +8,9 @@ import { COMMON_ERROR_MESSAGES } from '../../_shared/_messages/ErrorMessages.ts'
 import { LIKE_SUCCESS } from '../../_shared/_messages/LikeMessage.ts';
 
 
-export default async function likememe(req: Request,user: Record<string, string>) {
+export default async function likememe(req: Request,params: Record<string, string>) {
     try {
-    
-        const {user_id,meme_id}=user;
-        console.log("User_id is: ",user_id)
-        
-
+        const { meme_id, user_id } = params;
         // Check if the user has already liked the meme
         const liked = await checkLikeExists(meme_id, user_id);
         if (liked) {

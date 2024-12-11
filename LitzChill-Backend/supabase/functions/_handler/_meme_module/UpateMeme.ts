@@ -9,10 +9,9 @@ import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
 
 
-export default async function updateMeme(req: Request,user:Record<string,string>) {
+export default async function updateMeme(req: Request,params:Record<string,string>) {
     try {
-        const {id} = user;
-        const meme_id = id;
+        const meme_id = params.id;
         
         // Validate the meme_id parameter
         if (!meme_id || !V4.isValid(meme_id)) { 
@@ -56,7 +55,7 @@ export default async function updateMeme(req: Request,user:Record<string,string>
         if(error || updateMeme.length===0)
         {
             console.log("Update failed");
-            return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_UPDATE);
+            return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_UPDATE);
         }
         // Return the updated meme
         return await SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_UPDATED_SUCCESSFULLY,updatememe);

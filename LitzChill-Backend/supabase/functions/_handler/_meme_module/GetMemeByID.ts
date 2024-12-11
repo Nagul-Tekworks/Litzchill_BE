@@ -7,11 +7,9 @@ import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 
 
 
-export default async function getmemebyID(req:Request,user:Record<string,string>) {
+export default async function getmemebyID(req:Request,params:Record<string,string>) {
     try {  
-        const {id} = user;
-        const meme_id = id;
-
+         const meme_id = params.id;
         // Validate the meme_id
         if (!meme_id || !V4.isValid(meme_id)) { 
             console.log("Validation failed: Missing parameters.");
@@ -22,7 +20,7 @@ export default async function getmemebyID(req:Request,user:Record<string,string>
          if(error || fetchMeme?.length===0)
          {
              console.log("Fetching failed");
-             return  ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
+             return  ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
 
          }
          // Return the updated meme

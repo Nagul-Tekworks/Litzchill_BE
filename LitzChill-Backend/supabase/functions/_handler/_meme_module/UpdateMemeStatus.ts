@@ -51,11 +51,16 @@ export default async function updateMemeStatus(req: Request, params: Record<stri
     }
 
     // Notify user about the status update
-    const type = NOTIFICATION_TYPES.ENGAGEMENT;
-    const notify = await addNotifications(user_id,updatedMemeStatus.meme_title, type,meme_status);
-    if (!notify) {
-      console.error("Failed to notify meme owner.");
+    if (updatedMemeStatus.meme_status === MEME_STATUS.REJECTED) {
+      // Notify user about the status update
+      const type = NOTIFICATION_TYPES.ENGAGEMENT;
+      const notify = await addNotifications(user_id, updatedMemeStatus.meme_title, type);
+      if (!notify) {
+        console.error("Failed to notify meme owner.");
+      }
     }
+    
+
    console.log(updatedMemeStatus+" updated meme status successfully");
     return SuccessResponse(
       HTTP_STATUS_CODE.OK,

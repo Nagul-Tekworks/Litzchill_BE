@@ -49,12 +49,12 @@ export default async function createMeme(req: Request,user:Record<string,string>
         }
 
         //Check if a meme with the same title already exists
-        const existingMeme = await meme_exist_with_sametitle(meme_title);
-        if(existingMeme)
-        {
-            console.log(`cheking: Meme with the same title${existingMeme} already exists`);
-            return await ErrorResponse(HTTP_STATUS_CODE.CONFLICT,MEME_ERROR_MESSAGES.TITLE_CONFLICT)
-        }
+        // const existingMeme = await meme_exist_with_sametitle(meme_title);
+        // if(existingMeme)
+        // {
+        //     console.log(`cheking: Meme with the same title${existingMeme} already exists`);
+        //     return await ErrorResponse(HTTP_STATUS_CODE.CONFLICT,MEME_ERROR_MESSAGES.TITLE_CONFLICT)
+        // }
 
         // Step 2: Upload the image to the bucket
         const uploadedUrl = await uploadImageToBucket(image_url, meme_title);
@@ -72,7 +72,7 @@ export default async function createMeme(req: Request,user:Record<string,string>
         }
 
         // If no errors, insert the meme into the database
-        return await SuccessResponse(HTTP_STATUS_CODE.OK, MEME_SUCCESS_MESSAGES.MEME_CREATED_SUCCESSFULLY, insertmeme);
+        return await SuccessResponse(HTTP_STATUS_CODE.CREATED, MEME_SUCCESS_MESSAGES.MEME_CREATED_SUCCESSFULLY, insertmeme);
 
     } catch (error) {
         console.error("Error creating meme: ", error);

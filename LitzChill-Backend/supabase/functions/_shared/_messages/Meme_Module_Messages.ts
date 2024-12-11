@@ -30,7 +30,7 @@ export const MEME_ERROR_MESSAGES = {
     //failed errors
     IMAGE_UPLOAD_FAILED: "Failed to upload the image. Please try again.",
     FAILED_TO_CREATE: "An error occurred while creating the meme. Please try again later.",
-    FAILED_TO_UPDATE: "Unable to update the meme. Please ensure the meme exists and has not been marked as deleted and make sure that the meme title should not already exist",
+    FAILED_TO_UPDATE: "Unable to update the meme. Please ensure the meme exists and has not been marked as deleted or suspended.",
     FAILED_TO_FETCH: "Unable to fetch the meme. Please ensure the meme exists and has not been marked as deleted",
     FAILED_TO_DELETE: "Unable to delete the meme. Please ensure the meme exists",
 
@@ -38,5 +38,6 @@ export const MEME_ERROR_MESSAGES = {
     TITLE_CONFLICT:"A meme is already existed with same title",
 
     //Meme Not Found
-    MEME_NOT_FOUND:"Meme the given id is not found "
+    MEME_NOT_FOUND:"Meme the given id is not found ",
+    NO_MEMES:"No memes are available"
 };
