@@ -29,7 +29,7 @@ export default async function createMeme(req: Request,user:Record<string,string>
          */
         const formData = await req.formData();
         const meme_title = formData.get(MEMEFIELDS.MEME_TITLE) as string;
-        const image_url = formData.get(MEMEFIELDS.IMAGE_URL) as string;
+        let image_url = formData.get(MEMEFIELDS.IMAGE_URL) as string;
         const tagsRaw = formData.get(MEMEFIELDS.TAGS) as string;
         const tags = parseTags(tagsRaw);
         console.log("Extracted values:", { meme_title, image_url, tags });
@@ -62,8 +62,11 @@ export default async function createMeme(req: Request,user:Record<string,string>
             return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.IMAGE_UPLOAD_FAILED);
         }
 
+         image_url = uploadedUrl
+         const memeData: Partial<Meme> = { meme_title, image_url, tags };
+
         //Insert the meme into the database
-        const { data: insertmeme, insertError } = await createMemeQuery(meme, user_id);
+        const { data: insertmeme, insertError } = await createMemeQuery(memeData, user_id);
         if (insertError) {
            return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_CREATE);
         }
