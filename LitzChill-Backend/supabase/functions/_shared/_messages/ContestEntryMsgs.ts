@@ -9,11 +9,14 @@ export const CONETST_ENTRY_ERROR_MESSAGE={
     INVALID_MEME:"Memer is not found in Memes Table",
     INVALID_USER:"User is not found in User Table",
     ALLREADY_EXIST:"Entry with this is Id's already exist",
+    INVALID_UUID:"Please provide Good UUid",
+    ALLREADY_REG:"This user is already registered for this contest",
     
     //contest-entry patch method msgs
     REQUIRED_FIELDS:"For this method we need to pass fields contest id,entry id and new status in json(May be you entered in valid uuid)",
     INVALID_STATUS:"Status column must be Active or Disqualified",
-    NOT_FOUND:"No matching entries found in Contest_Entry table."
+    NOT_FOUND:"No matching entries found in Contest_Entry table.",
+   
     
 }
 export const CONETST_ENTRY_SUCCESS_MESSAGE={
