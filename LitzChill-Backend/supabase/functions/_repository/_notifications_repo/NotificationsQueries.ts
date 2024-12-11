@@ -1,22 +1,25 @@
 import supabase from "../../_shared/_config/DbConfig.ts";
+import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
 
 
 
 /*
   Function to add like to notifications list
 */
-export async function addNotifications(user_id: string,meme_title: string,type : string) {
-    const notificationContent = `Your meme "${meme_title}" received a new like!`;
+export async function addNotifications(user_id: string,meme_title: string,type : string,meme_status: string) {
+    const notificationContent = `Your meme "${meme_title}" is "${meme_status}!`;
+    console.log(notificationContent+'\n'+user_id+type);
     const { data,error } = await supabase
-        .from("notifications")
+        .from(TABLE_NAMES.NOTIFICATIONS_TABLE)
         .insert({
             user_id: user_id,
             content: notificationContent,
             type: type,
             created_at: new Date().toISOString(),
             read_status: false,
-        });
-
+        })
+        .select("*");
+    console.log(data);
     if(error || !data) return null;
     return data;
 }
@@ -27,7 +30,7 @@ export async function addNotifications(user_id: string,meme_title: string,type :
 
 export async function getNotificationsQuery(user_id: string) {
     const { data, error } = await supabase
-    .from("notifications")
+    .from(TABLE_NAMES.NOTIFICATIONS_TABLE)
     .select("*")
     .eq("user_id", user_id)
     .order("created_at", { ascending: false })

@@ -1,73 +1,49 @@
+import { checkLikeExists, insertLikeQuery, updateLikeCount } from "../../_repository/_like_repo/LikeQueries.ts";
+import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
+import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
+import { LIKE_ERROR } from "../../_shared/_messages/LikeMessage.ts";
+import { NOTIFICATION_TYPES } from '../../_shared/_constants/Types.ts';
+import { addNotifications } from "../../_repository/_notifications_repo/NotificationsQueries.ts";
+import { COMMON_ERROR_MESSAGES } from '../../_shared/_messages/ErrorMessages.ts';
+import { LIKE_SUCCESS } from '../../_shared/_messages/LikeMessage.ts';
 
 
-
-export default async function likememe(req: Request) {
+export default async function likememe(req: Request,user: Record<string, string>) {
     try {
-        // Ensure the content type is multipart/form-data
-        const contentType = req.headers.get("content-type") || "";
-        const validateContentType = contentTypeValidations(contentType);
-        if (!validateContentType) {
-            return await RESPONSE(HTTPSTATUSCODE.BAD_REQUEST,ERRORMESSAGE.INVALIDCONTENTTYPE);
-        }
-
-        /*
-         * Extract the form data and validate the required fields before inserting the meme into the database.
-         * Perform any additional validations or sanitizations as needed.
-         * Return appropriate response on success or failure.
-         */
-        const formData = await req.formData();
-        const meme_id = formData.get(MEMEFIELDS.MEME_ID) as string;
-        const user_id = formData.get(MEMEFIELDS.USER_ID) as string;
-
-        if (!meme_id || !user_id) {
-            console.log("Validation failed: Missing parameters.");
-            return await RESPONSE(HTTPSTATUSCODE.BAD_REQUEST,ERRORMESSAGE.MISSINGPARAMETERS);
-        }
-       
-        const existingMeme = await meme_exists(meme_id);
-        if (!existingMeme) {
-            console.log("meme not found")
-            return RESPONSE(HTTPSTATUSCODE.NOT_FOUND,ERRORMESSAGE.NOT_FOUND)
-        }
-
-        // Check if user is authorized to update the meme
-        const existingUser = await check_user_status(user_id);
-        if (!existingUser) {
-            return RESPONSE(HTTPSTATUSCODE.NOT_FOUND,ERRORMESSAGE.NOT_FOUND)
-        }
-        if (existingUser.user_type !== 'M'  &&  existingUser.user_type !=='A' ) {
-          return RESPONSE(HTTPSTATUSCODE.FORBIDDEN,ERRORMESSAGE.UNAUTHORIZED)
-        }
+    
+        const {user_id,meme_id}=user;
+        console.log("User_id is: ",user_id)
+        
 
         // Check if the user has already liked the meme
         const liked = await checkLikeExists(meme_id, user_id);
         if (liked) {
-            return RESPONSE(HTTPSTATUSCODE.CONFLICT,ERRORMESSAGE.OPERATIONALREADYDONE)
+            return ErrorResponse(HTTP_STATUS_CODE.CONFLICT,LIKE_ERROR.ALREADYLIKED)
         }
 
         // Insert a new like record
-        const likememe = await insertLikeQuery(meme_id, user_id);
-        if (!likememe) {
+        const {data:likememe,error} = await insertLikeQuery(meme_id, user_id);
+        if (error) {
           console.log("failed to like meme")
-          return RESPONSE(HTTPSTATUSCODE.FAILED,ERRORMESSAGE.FAILED)
+          return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,LIKE_ERROR.INSERTION_FAILED)
         }
 
         // Increment the like count in the memes table
-        const likecount = await updateLikeCount(meme_id,existingMeme.like_count + 1);
+        const likecount = await updateLikeCount(meme_id,existingmeme.like_count + 1);
         if (!likecount) {
-            return RESPONSE(HTTPSTATUSCODE.FAILED,ERRORMESSAGE.FAILED)
+            return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,LIKE_ERROR.)
         }
   
         // Notify the meme owner that a new like has been added
         const type = NOTIFICATION_TYPES.LIKE;
-        const notify = await addNotifications(user_id,existingMeme.meme_title,type);
+        const notify = await addNotifications(user_id,existingmeme.meme_title,type);
         if (!notify) {
             console.error("Failed to notify meme owner");
         }
-        return RESPONSE(HTTPSTATUSCODE.OK,SUCCESSMESSAGE.OK)
+        return SuccessResponse(HTTP_STATUS_CODE.OK,LIKE_SUCCESS.LIKED_SUCCESSFULLY)
     } 
     catch (error) {
         console.error("Error updating meme:", error);
-        return RESPONSE(HTTPSTATUSCODE.INTERNAL_SERVER_ERROR,ERRORMESSAGE.INTERNAL_SERVER_ERROR)
+        return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR)
     }
 }

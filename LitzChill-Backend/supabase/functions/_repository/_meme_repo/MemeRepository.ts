@@ -2,6 +2,7 @@ import supabase from "../../_shared/_config/DbConfig.ts";
 import { BUCKET_NAME, TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
 import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
 import { Meme } from '../../_model/MemeModel.ts';
+import { MEME_STATUS } from "../../_shared/_constants/Types.ts";
 
 
 /* 
@@ -227,7 +228,8 @@ export async function fetchMemes(page: number, limit: number, sort: string) {
         const query = supabase
             .from("memes")
             .select("meme_id, user_id, meme_title, image_url, like_count, flag_count, tags, created_at")
-            .eq("meme_status", "Approved")
+            .eq(MEMEFIELDS.MEME_STATUS, MEME_STATUS.APPROVED)
+            .eq(MEMEFIELDS.DELETED, false)
             .order(sort === "popular" ? "like_count" : "created_at", { ascending: false })
             .range((page - 1) * limit, page * limit - 1);
 
@@ -273,9 +275,8 @@ export async function getMemesByIdQuery(meme_id: string) {
     .from(TABLE_NAMES.MEME_TABLE)
     .update({ meme_status: meme_status,updated_at: new Date().toISOString()})
     .eq(MEMEFIELDS.MEME_ID, meme_id)
-    .select("meme_id, meme_status")
+    .select("meme_id, meme_status,meme_title")
     .single();
 
-    if(error || !data) return null;
-    return data;
+    return {data,error}
 }

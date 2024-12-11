@@ -2,10 +2,11 @@ import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
 import{ ErrorResponse,SuccessResponse } from "../../_responses/Response.ts";
 import { contentTypeValidations, parseTags, validateMemeData} from '../../_shared/_validation/Meme_Validations.ts';
-import { MEMEFIELDS } from '../../_shared/_db_table_details/TableFields.ts';
 import { createMemeQuery, meme_exist_with_sametitle, uploadImageToBucket } from "../../_repository/_meme_repo/MemeRepository.ts";
 import { Meme } from "../../_model/MemeModel.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
+import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
+
 
 
 export default async function createMeme(req: Request,user:Record<string,string>) {

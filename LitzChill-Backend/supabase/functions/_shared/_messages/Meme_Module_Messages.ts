@@ -15,7 +15,8 @@ export const MEME_ERROR_MESSAGES = {
     MISSING_MEME_TITLE: "Meme title is required.",
     MISSING_IMAGE_URL: "Image URL is required.",
     MISSING_TAGS: "At least one tag is required for the meme.",
-    MISSING_MEMEID: "Meme-id parameter is Misiing or Invalid",
+    MISSING_MEMEID: "Meme-id parameter is Missing or Invalid",
+    MISSING_STATUS_VALUE:"Meme_status field required to update",
 
     //validating fields
     MEME_TITLE_EXCEEDS_LIMIT: "Meme title exceeds the allowed character limit (3-100 characters).",

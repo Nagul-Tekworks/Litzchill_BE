@@ -35,9 +35,7 @@ export async function insertLikeQuery(meme_id: string, user_id: string) {
     }])
     .select("like_id")
     .single();
-
-    if(error || !data) return null;
-    return data;
+     return {data,error}
 }
 
 /*

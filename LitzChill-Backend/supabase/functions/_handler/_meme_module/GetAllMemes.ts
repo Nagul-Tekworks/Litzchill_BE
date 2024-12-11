@@ -13,7 +13,7 @@ export default async function getAllMemes(req:Request) {
         const sort = url.searchParams.get("sort") || "popular";
 
         const { data: allmemes, error } = await fetchMemes(page, limit, sort);
-
+ 
         if (error || !allmemes || allmemes.length === 0) {
             console.log("Fetching failed or no memes found");
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);

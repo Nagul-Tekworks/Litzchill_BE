@@ -6,6 +6,8 @@ import { checkUserAuthentication } from "../_middleware/middlerWare.ts";
 import updateMeme from "../_handler/_meme_module/UpateMeme.ts";
 import getmemebyID from "../_handler/_meme_module/GetMemeByID.ts";
 import DeletememebyID from "../_handler/_meme_module/DeleteMeme.ts";
+import getAllMemes from "../_handler/_meme_module/GetAllMemes.ts";
+import updateMemeStatus from "../_handler/_meme_module/UpdateMemeStatus.ts";
 
 
 
@@ -23,6 +25,10 @@ export const MemeRoutes = {
             USER_ROLES.ADMIN_ROLE,
             USER_ROLES.MEMER_ROLE
         ]),
+        [MEME_ROUTES.MEME_UPDATE_STATUS_PATH]: checkUserAuthentication(updateMemeStatus, [
+            USER_ROLES.ADMIN_ROLE,
+        ]),
+
     }
     ,
     [HTTP_METHOD.GET]: {
@@ -30,6 +36,12 @@ export const MemeRoutes = {
             USER_ROLES.ADMIN_ROLE,
             USER_ROLES.USER_ROLE ,
             USER_ROLES.MEMER_ROLE
+         ]),
+         [MEME_ROUTES.GETTING_ALL_MEMES_PATH]: checkUserAuthentication(getAllMemes, [
+            USER_ROLES.ADMIN_ROLE,
+            USER_ROLES.USER_ROLE ,
+            USER_ROLES.MEMER_ROLE,
+            USER_ROLES.VIEWER_ROLE,
          ]),
     },
 
