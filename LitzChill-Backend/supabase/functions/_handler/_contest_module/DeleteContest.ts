@@ -9,12 +9,12 @@ import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "
 export async function handleDeleteContest(req: Request, params: Record<string, string>): Promise<Response> {
     try {
         const contest_id=params.id;
-        console.log(`Received request to get contest with ID: ${contest_id}`);
+        console.log(`INFOR: Received request to delete contest with ID: ${contest_id}`);
 
         //validation contest Id.
         const validationErrors=validateContestId(contest_id);
         if(validationErrors instanceof Response){
-            console.log("Error: Contest Id Validation Failed",validationErrors);
+            console.error(`ERROR: Contest Id Validation Failed,`,validationErrors);
              return validationErrors;
         }
 
@@ -22,7 +22,7 @@ export async function handleDeleteContest(req: Request, params: Record<string, s
 
         //returning database erorr.
         if(error){
-            console.log("Error: Database error during deleting contest data",error);
+            console.error(`ERROR: Database error during deleting contest data,${error.message}`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                  `${COMMON_ERROR_MESSAGES.DATABASE_ERROR}, ${error.message}`
@@ -31,7 +31,7 @@ export async function handleDeleteContest(req: Request, params: Record<string, s
 
         //returning not found response
         if(!deletedData||deletedData.length==0){
-            console.log("Error: Contest not found or already deleted.");
+            console.error(`ERROR: Contest not found or already deleted.`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.NOT_FOUND,
                 CONTEST_MODULE_ERROR_MESSAGES.CONTEST_NOT_FOUND_OR_DELETED
@@ -39,14 +39,14 @@ export async function handleDeleteContest(req: Request, params: Record<string, s
         }
 
         //returning success response.
-        console.log("Contest Has Been Deleted Succesfully");
+        console.log("INFO: Contest Has Been Deleted Succesfully");
         return SuccessResponse(
              CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_DELETED
         )
 
     } catch (error) {
         //handling any Internal Server Error
-        console.log("Error: Internal Server Error",error);
+        console.error(`ERROR: Internal Server Error during deleting contedt data,`,error);
         return ErrorResponse(
              HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
              `${COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR}, ${error}`

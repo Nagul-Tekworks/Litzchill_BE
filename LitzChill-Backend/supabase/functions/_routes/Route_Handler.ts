@@ -9,19 +9,21 @@ export async function routeHandler(req:Request,routes:Record<string,any>){
         const method = req.method;
         const url = new URL(req.url);
         const path = url.pathname;
-        console.log(`Request received in route handler - Method: ${method}, Path: ${path}`);
+        console.log(`INFO: Request received in route handler - Method: ${method}, Path: ${path}`);
 
        //gethering all routes path into single array
-        console.log("all routes values",Object.values(routes));
+       
         const allRoutes = Object.values(routes).flatMap((allPresentRoutes) =>
           Object.keys(allPresentRoutes)
         );
+         console.log(`INFO: all presented routes keys(path): ,${allRoutes}`);
 
         const allMatchedMethodRoutes=routes[method];
-        console.log(allMatchedMethodRoutes);
+        console.log(`INFO: ALl matched routes: ${allMatchedMethodRoutes}` );
 
         //if method is not match is undefined then we are returning method not allowed
         if(allMatchedMethodRoutes==undefined){
+             console.error(`ERROR: Provided Method not matched with any presented routes`)
               return ErrorResponse(
                  HTTP_STATUS_CODE.METHOD_NOT_ALLOWED,
                  COMMON_ERROR_MESSAGES.METHOD_NOT_ALLOWED,
@@ -29,10 +31,10 @@ export async function routeHandler(req:Request,routes:Record<string,any>){
         }
 
         //checking our path is present into path key array 
-        console.log("include",allRoutes.includes(path));
+     
         if(allRoutes.includes(path)){
           if (!allMatchedMethodRoutes || !allMatchedMethodRoutes?.[path]) {
-                 console.error(`Method '${method}' not allowed for route '${path}'`);
+                 console.error(`ERROR: Method '${method}' not allowed for route '${path}'`);
                  return ErrorResponse(
                      HTTP_STATUS_CODE.METHOD_NOT_ALLOWED,
                      COMMON_ERROR_MESSAGES.METHOD_NOT_ALLOWED,
@@ -42,14 +44,17 @@ export async function routeHandler(req:Request,routes:Record<string,any>){
 
         //checking for static routes if present then calling handler
         if (allMatchedMethodRoutes[path]) {
+          console.log(`INFO: Static Route Matched calling handler`)
             return await allMatchedMethodRoutes[path](req);
         }
 
         //checking for dyanamic route matching 
+        console.log(`INFO: Checking for dynamic route`)
         for (const routePattern in allMatchedMethodRoutes) {
             const param = extractParameter(routePattern, path);
             if (param) {
                  //calling handler if path is correct 
+                 console.log(`INFO: Dynamic Route matched calling handler`)
                  return await allMatchedMethodRoutes[routePattern](req, param);
             } 
          }
@@ -58,12 +63,14 @@ export async function routeHandler(req:Request,routes:Record<string,any>){
          const trimmedPath = path.split('/').slice(0, -1).join('/')+'/:id';
          console.log("trimmed path",trimmedPath);
           if(allRoutes.includes(trimmedPath)){
+            console.error(`ERROR: Method '${method}' not allowed for route '${path}'`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.METHOD_NOT_ALLOWED,
                  COMMON_ERROR_MESSAGES.METHOD_NOT_ALLOWED,
                )
           }  
         
+          console.error(`ERROR: Route not found for path ${path}`);
           //returning route not found response
         return ErrorResponse(
              HTTP_STATUS_CODE.NOT_FOUND,
@@ -82,6 +89,7 @@ export function extractParameter(routePattern: string, path: string) {
 
       // Return null if path lengths do not match
         if (routePath.length !== actualPath.length) {
+            console.log(`INFO: Paths length not matched returning null`);
              return null;
         }
 
@@ -91,15 +99,14 @@ export function extractParameter(routePattern: string, path: string) {
            if (routePath[i].startsWith(":")) {
               const paramName = routePath[i].slice(1);//removing : from route path
               params[paramName] = actualPath[i];
-              console.log(`Extracted parameter: ${paramName} = ${actualPath[i]}`);
+              console.log(`INFO: Extracted parameter: ${paramName} = ${actualPath[i]}`);
             } 
             else if (routePath[i] !== actualPath[i]) {
-                  console.log(`Mismatch at position ${i}: expected ${routePath[i]} but found ${actualPath[i]}`);
+                  console.log(`INFO: Mismatch at position ${i}: expected ${routePath[i]} but found ${actualPath[i]} returning null`);
                   return null;
             }
         }
 
-        console.log("Extracted Parameters:", params);
         return params;
 
 }

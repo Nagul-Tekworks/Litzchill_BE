@@ -12,14 +12,13 @@ import { validateContestDetails } from "../../_shared/_validation/ContestDetails
 export async function handleCreateContext(req: Request,params:Record<string,string>): Promise<Response> {
      try {
 
-          console.log("User id is: ",params.user_id);
-
+          console.log(`INFO: Request Recieved in create contest `);
           const contestData: ContestModel = await req.json();
           
           // Validating the contest details
           const validationErrors = validateContestDetails(contestData);
           if (validationErrors instanceof Response) {
-                console.log("Error: Contest Validation Failed: ",validationErrors);
+                console.error(`ERROR: Contest Validation Failed: `,validationErrors);
                 return validationErrors;
           }
 
@@ -31,7 +30,7 @@ export async function handleCreateContext(req: Request,params:Record<string,stri
 
           //if data not inserted then returning error response
           if (!insertedData || insertedData.length === 0 || error) {
-               console.log("Error: Contest not created.due to some database errro or query error", error);
+               console.error(`ERROR: Contest not created.due to some database error or query error, ${error?.message}`);
                return ErrorResponse(
                      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                      `${COMMON_ERROR_MESSAGES.DATABASE_ERROR} ${error?.message}`,
@@ -40,16 +39,17 @@ export async function handleCreateContext(req: Request,params:Record<string,stri
           }
 
           // Returning success response with created contest data
-          console.log("Returning success response with created contest data", insertedData);
+          console.log(`INFO: Returning success response with created contest data ` , insertedData);
           return SuccessResponse(
-                CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_CREATED,'',
+                CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_CREATED,
+               '',
                 HTTP_STATUS_CODE.CREATED,
           );
 
      }
      catch (error) {
           // handling internal errors
-          console.log("Error: Internal Server Error",error);
+          console.error(`ERROR: Internal Server Error during creating new contest,${error}`);
           return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 `${COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR}, ${error}`,

@@ -11,12 +11,13 @@ export async function handlegetAllContest(req:Request,params:Record<string,strin
     
     try {
         
+         console.log(`INFO: Request Recieved to get all contest data`);
         //calling repository function
         const {contestData,error}=await getAllContestDetails();
 
         //if any database error returning error message 
         if(error){
-            console.log("Error : Database Error during getting contest data",error);
+            console.error(`ERROR : Database Error during getting all contest data,${error.message}`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                  `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${error.message}`
@@ -24,7 +25,7 @@ export async function handlegetAllContest(req:Request,params:Record<string,strin
         }
         //if data is not there or empty object coming
         if(!contestData||contestData.length==0){
-            console.error(`Error : No contest found`);
+            console.error(`ERROR : No contest found`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                  CONTEST_MODULE_ERROR_MESSAGES.NO_CONTEST_FOUND 
@@ -32,14 +33,14 @@ export async function handlegetAllContest(req:Request,params:Record<string,strin
         }
 
         //returning success response with data
-        console.log(`Returning contest details : ${contestData}`);
+        console.log(`INFO: Returning all contest details :`,contestData);
         return SuccessResponse(
              CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_DETAILS_FETCHED,
              contestData,
         )
 
     } catch (error) {
-        console.log("Error: Internal Server Error",error);
+        console.error(`ERROR: Internal Server Error during getting all contest data,${error}`);
         return ErrorResponse(
              HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
              `${COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR}, ${error}`

@@ -11,12 +11,13 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
 
     try {
         const contest_id=params.id;
-        console.log(`Received request to get contest with ID: ${contest_id}`);
+        
+        console.log(`INFO: Received request to update contest with ID: ${contest_id}`);
 
         //validating contest_id
         const contestIdValidationErrors=validateContestId(contest_id);
         if(contestIdValidationErrors instanceof Response){
-             console.log("Error: Contest Id Validation Failed",contestIdValidationErrors);
+             console.error(`ERROR: Contest Id Validation Failed,${contestIdValidationErrors}`);
              return contestIdValidationErrors;
         }
 
@@ -26,7 +27,7 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
         const validationErrors=validateContestDetails(contestDetails,true);
 
         if(validationErrors instanceof Response){
-            console.log("Error: Contest Validation Failed: ",validationErrors);
+            console.error(`ERROR: Contest Validation Failed: ,${validationErrors}`);
              return validationErrors;
         }
         contestDetails.updated_at=new Date().toISOString();
@@ -36,7 +37,7 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
         const {updatedContest,error}=await updateContestById(contestDetails);
 
         if(error){
-            console.log("Error: Database Error during getting contest data",error);
+            console.error(`ERROR: Database Error during updating contest data,${error}`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                  `${COMMON_ERROR_MESSAGES.DATABASE_ERROR}, ${error.message}`
@@ -44,7 +45,7 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
         }
 
         if(!updatedContest||updatedContest.length==0){
-            console.error(`Error: No contest found for ID: ${contest_id}`);
+            console.error(`ERROR: No contest found for ID: ${contest_id}`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                  CONTEST_MODULE_ERROR_MESSAGES.CONTEST_NOT_FOUND_OR_DELETED 
@@ -52,13 +53,13 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
         }
 
         //returning success response
-        console.log("Contest Has Been Updated Successfully");
+        console.log(`INFO: Contest Has Been Updated Successfully:  ${updatedContest}`);
         return SuccessResponse(
             CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_UPDATED
         )
         
     } catch (error) {
-        console.log("Error: Internal Server Error",error);
+        console.error(`ERROR: Internal Server Error during updating contest,${error}`);
         //handling any Internal Server Error
         return ErrorResponse(
               HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
