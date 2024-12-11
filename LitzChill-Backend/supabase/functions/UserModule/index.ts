@@ -1,8 +1,9 @@
+import { routeHandler } from "../_routes/Route_Handler.ts";
+import { UserModuleRoutes } from "../_routes/UserRoutesAndPaths.ts";
 
-Deno.serve(async (req) => {
-  return new Response(
-    JSON.stringify(""),
-    { headers: { "Content-Type": "application/json" } },
-  )
-})
+  Deno.serve(async (req: Request) => {
+  
+    return await routeHandler(req,UserModuleRoutes)
+    
+    });
 
