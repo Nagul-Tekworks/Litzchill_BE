@@ -1,6 +1,7 @@
+import { HTTP_STATUS_CODE } from "../_shared/_constants/HttpStatusCodes.ts";
 
-//common error response 
-export  function ErrorResponse(statusCode: number, message: string){
+//common error response  To ALl
+export function ErrorResponse(statusCode: number, message: string){
     const time = new Date();
     return new Response(JSON.stringify({statusCode,message,time}), {
         status: statusCode,
@@ -8,8 +9,8 @@ export  function ErrorResponse(statusCode: number, message: string){
     });
 }
 
-//
-export function SuccessResponse(statusCode: number,message: string,data?: any){
+//Comment Success Response To All
+export function SuccessResponse(message: string, data?: any, statusCode: number =HTTP_STATUS_CODE.OK){
 
     const body = data ? {statusCode, message, data } : { statusCode,message };
     return new Response(

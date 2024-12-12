@@ -24,7 +24,7 @@ export default async function getmemebyID(req:Request,params:Record<string,strin
 
          }
          // Return the updated meme
-         return  SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_FETCHED_SUCCESSFULLY,fetchMeme);
+         return  SuccessResponse(MEME_SUCCESS_MESSAGES.MEME_FETCHED_SUCCESSFULLY,fetchMeme);
         
         } catch (error) {
             console.error("Error updating meme:", error);

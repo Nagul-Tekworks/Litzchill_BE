@@ -22,7 +22,7 @@ export default async function DeletememebyID(req: Request,params:Record<string,s
             }
 
             // Return the updated meme
-            return await SuccessResponse(HTTP_STATUS_CODE.NO_CONTENT,MEME_SUCCESS_MESSAGES.MEME_DELETED_SUCCESSFULLY);
+            return await SuccessResponse(MEME_SUCCESS_MESSAGES.MEME_DELETED_SUCCESSFULLY,'',HTTP_STATUS_CODE.NO_CONTENT);
     
     
         } catch (error) {

@@ -10,7 +10,8 @@ export const COMMON_ERROR_MESSAGES={
     UNAUTHORIZED_ACCESS: "You do not have the necessary permissions to access this resource.",
     INVALIDCONTENTTYPE: "The requested content type is not form-data.",
     ACCOUNT_DEACTIVATE:"The requested access token is invalid.",
-    INVALID_DATA:"The data you have provided is invalid consider the data is case senstive"
+    INVALID_DATA:"The data you have provided is invalid consider the data is case senstive",
+    USER_NOT_FOUND:"User Not Found"
 };
 
 

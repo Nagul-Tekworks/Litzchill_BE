@@ -72,7 +72,7 @@ export default async function createMeme(req: Request,user:Record<string,string>
         }
 
         // If no errors, insert the meme into the database
-        return await SuccessResponse(HTTP_STATUS_CODE.CREATED, MEME_SUCCESS_MESSAGES.MEME_CREATED_SUCCESSFULLY, insertmeme);
+        return await SuccessResponse (MEME_SUCCESS_MESSAGES.MEME_CREATED_SUCCESSFULLY, insertmeme,HTTP_STATUS_CODE.CREATED);
 
     } catch (error) {
         console.error("Error creating meme: ", error);
