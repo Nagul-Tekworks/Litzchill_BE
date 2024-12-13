@@ -13,7 +13,8 @@ import { CONTEST_VALIDATION_MESSAGES } from "../_messages/ContestModuleMessages.
  * 
  * @param contest_id - The contest ID to validate.
  * @returns {Response|void} - Returns an error response if the contest ID is missing or invalid, otherwise returns nothing.
- */
+ *
+*/
 
 export function validateContestId(contest_id:string): Response | void {
     console.log("Validating Contest ID");
@@ -51,6 +52,8 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
     console.log("INFO: Validating contest details...");
 
     const current_date=new Date();
+    const CONTEST_STATUS:string[] =["ongoing", "completed", "upcoming"];
+
     //checking for empty body if body empty, directlly returning error responses
     if (Object.keys(contestDetails).length === 0) {
         console.error("ERROR: Empty request body.");
@@ -95,7 +98,6 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
 
     // Validating contest start_date
     if (contestDetails.start_date) {
-        const start_date=new Date(contestDetails.start_date);
         if (!isValidISODate(contestDetails.start_date)) {
            
             console.error("ERROR : Invalid start date format.");
@@ -104,11 +106,19 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
                  CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_START_DATE_FORMAT
             ); 
         } 
-        else if(start_date<current_date){
-            return ErrorResponse(
-                 HTTP_STATUS_CODE.BAD_REQUEST,
-                 CONTEST_VALIDATION_MESSAGES.INVALID_START_DATE_VALUE
-            )
+        if(!isUpdate){
+            const start_date=new Date(contestDetails.start_date);
+            if(start_date<current_date){
+                return ErrorResponse(
+                    HTTP_STATUS_CODE.BAD_REQUEST,
+                    CONTEST_VALIDATION_MESSAGES.INVALID_START_DATE_VALUE
+               )
+            }
+            if(start_date>current_date){
+                contestDetails.status=CONTEST_STATUS[0];
+            }
+            contestDetails.status=CONTEST_STATUS[2];
+
         }
     }//if validation for create contest then start date is required
      else if (!isUpdate) {
@@ -154,10 +164,11 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
        );
     }
 
-    const CONTEST_STATUS:string[] =["Upcoming", "Completed", "Ongoing", "ongoing", "completed", "upcoming"];
+    
     // Validating contest status
     if (contestDetails.status) {
        
+        contestDetails.status=contestDetails.status.toLowerCase();
         if (!CONTEST_STATUS.includes(contestDetails.status)) {
             console.error("ERROR; Invalid contest status: Valid statuses are", CONTEST_STATUS.join(", "));
             return ErrorResponse(
@@ -166,10 +177,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
             );
         }
     }
-    else if (!isUpdate) {
-        console.log("INFO: Contest status is missing. Setting to default status.");
-        contestDetails.status =CONTEST_STATUS[0].toLocaleLowerCase();
-    }
+
 
 }
 

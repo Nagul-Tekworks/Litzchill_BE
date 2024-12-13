@@ -15,8 +15,6 @@ import { validateContestDetails } from "../../_shared/_validation/ContestDetails
  * @param {Record<string, string>} params - Additional URL parameters (User details).
  * @returns {Promise<Response>} - A response indicating success or failure:
  *
- * - SUCCESS: Returns a 201 CREATED response with a success message .
- * - FAILURE: Error due to validation or database issues, returns an appropriate error response.
  */
 export async function handleCreateContext(req: Request,params:Record<string,string>): Promise<Response> {
      try {

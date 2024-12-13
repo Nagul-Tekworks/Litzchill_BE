@@ -60,7 +60,7 @@ export async function createContest(contest:ContestModel) {
          .from(TABLE_NAMES.CONTEST_TABLE)
          .select('contest_title, description, start_date, end_date, status, prize')
          .eq(CONTEST_TABLE.CONTEST_ID,contest_id)
-         .neq(CONTEST_TABLE.CONTEST_STATUS,CONTEST_TABLE.CONTEST_DELETE);
+         .neq(CONTEST_TABLE.CONTEST_STATUS,CONTEST_TABLE.CONTEST_DELETE).maybeSingle();
       
          return {contestData,error};
  }
@@ -105,3 +105,31 @@ export async function createContest(contest:ContestModel) {
 
          return {deletedData,error};
  }
+
+
+//  export async function updateContestStatus() {
+
+//         const now=new Date().toISOString();
+
+//         const { error: upcomingError } = await supabase
+//         .from("contest")
+//         .update({ status: "upcoming" })
+//         .neq("status",'deleted')
+//         .gt("start_date", now);
+    
+//       // Update "Active" contests
+//       const { error: activeError } = await supabase
+//         .from("contest")
+//         .update({ status: "ongoing" })
+//         .neq("status",'deleted')
+//         .lte("start_date", now)
+//         .gte("end_date", now);
+    
+//       // Update "Expired" contests
+//       const { error: expiredError } = await supabase
+//         .from("contest")
+//         .update({ status: "completed" })
+//         .neq("status",'deleted')
+//         .lt("end_date", now);
+        
+//  }

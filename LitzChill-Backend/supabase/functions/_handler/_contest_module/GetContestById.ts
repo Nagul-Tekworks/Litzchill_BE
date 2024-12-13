@@ -29,7 +29,7 @@ export async function handlegetContestById(req:Request,params:Record<string,stri
             console.error(`ERROR: Contest Id Validation Failed: `,validationErrors);
              return validationErrors;
         }
-        
+    
         //calling repository function to get contest details.
         const {contestData,error}=await getContestDetailsById(contest_id);
         
@@ -43,7 +43,7 @@ export async function handlegetContestById(req:Request,params:Record<string,stri
         }
 
         //returning not contest found error.
-        if(!contestData||contestData.length==0){
+        if(!contestData){
             console.error(`ERROR: No contest found for ID: ${contest_id}`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,

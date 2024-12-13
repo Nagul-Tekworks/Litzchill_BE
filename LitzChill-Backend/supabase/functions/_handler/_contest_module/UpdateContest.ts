@@ -2,7 +2,6 @@ import { ContestModel } from "../../_model/ContestModel.ts";
 import { getContestDetailsById, updateContestById } from "../../_repository/_contest_repo/ContestRepository.ts";
 import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { CONTEST_TABLE } from "../../_shared/_db_table_details/ContestTableFields.ts";
 import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/ContestModuleMessages.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
 import { validateContestDetails, validateContestId } from "../../_shared/_validation/ContestDetailsValidation.ts";
@@ -14,8 +13,6 @@ import { validateContestDetails, validateContestId } from "../../_shared/_valida
  * @param {Record<string, string>} params - Additional URL parameters contains(ContestId, User Details).
  * @returns {Promise<Response>} - A response indicating success or failure:.
  *
- * - SUCCESS: returns a 200 OK response with updation success message .
- * - FAILURE: On failure due to validation or Internal or database issues, returns an appropriate error response.
  */
 
 export async function handleupdateContest(req:Request,params:Record<string,string>):Promise<Response> {
@@ -33,8 +30,7 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
              return contestIdValidationErrors;
         }
 
-      
-
+    
         //getting contest data
         const {contestData,error}=await getContestDetailsById(contest_id);
         if(error){
@@ -43,20 +39,17 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
                  `${COMMON_ERROR_MESSAGES.DATABASE_ERROR}, ${error.message}`
            )
         }
-        if(!contestData||contestData.length==0){
+        if(!contestData){
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                  CONTEST_MODULE_ERROR_MESSAGES.CONTEST_NOT_FOUND_OR_DELETED 
            )
         }
-    
-
-        
         const contestDetails:Partial<ContestModel>=await req.json();
         console.log("GEtted Data is: ",contestData);
 
-        const start_date=new Date(contestData[0].start_date).toISOString();
-        const end_date=new Date(contestData[0].end_date).toISOString();
+        const start_date=new Date(contestData.start_date).toISOString();
+        const end_date=new Date(contestData.end_date).toISOString();
         if(!contestDetails.start_date){
             contestDetails.start_date=start_date
         }
@@ -67,8 +60,8 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
             contestDetails.start_date=start_date
             contestDetails.end_date=end_date
         }
-        console.log("Start_date: ",start_date);
-        console.log('ENd_date: ',end_date);
+        console.log('INFO: Start_date: ',start_date);
+        console.log('INFO: ENd_date: ',end_date);
 
         //validating contest details
         const validationErrors=validateContestDetails(contestDetails,true);

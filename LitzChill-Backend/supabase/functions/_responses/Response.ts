@@ -1,9 +1,9 @@
 import { HTTP_STATUS_CODE } from "../_shared/_constants/HttpStatusCodes.ts";
 
 //common error response  To ALl
-export function ErrorResponse(statusCode: number, message: string){
+export function ErrorResponse(statusCode: number, error: string){
     const time = new Date();
-    return new Response(JSON.stringify({statusCode,message,time}), {
+    return new Response(JSON.stringify({statusCode,error,time}), {
         status: statusCode,
         headers: { "Content-Type": "application/json" },
     });

@@ -12,9 +12,7 @@ import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "
  * @param {Request} req - The HTTP request object.
  * @param {Record<string, string>} params - Additional URL parameters contains(ContestId, User Details).
  * @returns {Promise<Response>} - A response indicating success or failure:
- *
- * - SUCCESS: Returns a 200 OK response with deleteion success message .
- * - FAILURE: Any Error due to validation or database issues, returns an appropriate error response.
+ * 
  */
 
 export async function handleDeleteContest(req: Request, params: Record<string, string>): Promise<Response> {
