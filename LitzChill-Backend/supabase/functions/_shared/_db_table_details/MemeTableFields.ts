@@ -2,7 +2,7 @@ export const MEMEFIELDS =
 {
     MEME_ID:"meme_id",
     USER_ID:"user_id",
-    IMAGE_URL:"image_url",
+    MEDIA_FILE:"image_url",
     MEME_TITLE:"meme_title",
     CREATED_AT:"created_at",
     UPDATED_AT:"updated_at",
