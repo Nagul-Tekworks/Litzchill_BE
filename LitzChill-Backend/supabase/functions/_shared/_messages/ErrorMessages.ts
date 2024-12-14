@@ -8,5 +8,11 @@ export const COMMON_ERROR_MESSAGES={
     MISSING_JWT_TOKEN: "Missing JWT token in the request.",
     INVALID_JWT_TOKEN: " The provided JWT token is invalid or expired.",
     UNAUTHORIZED_ACCESS: "You do not have the necessary permissions to access this resource.",
+    INVALIDCONTENTTYPE: "The requested content type is not form-data.",
+    ACCOUNT_DEACTIVATE:"The requested access token is invalid.",
+    INVALID_DATA:"The data you have provided is invalid consider the data is case senstive",
+    USER_NOT_FOUND:"User Not Found"
 };
+
+
 
