@@ -25,7 +25,7 @@ export const Contest_Module_Routes={
                 [
                      USER_ROLES.ADMIN_ROLE
                 ]
-            )
+            ),     
     }
     ,
      //GET Method Related Routes

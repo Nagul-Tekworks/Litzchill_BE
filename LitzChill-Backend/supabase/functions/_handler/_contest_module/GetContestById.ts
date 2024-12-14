@@ -21,7 +21,7 @@ export async function handlegetContestById(req:Request,params:Record<string,stri
     try {
         //getting id from 
         const contest_id=params.id;
-        console.log(`INFO: Received request to get contest with ID: ${contest_id}`);
+        console.info(`INFO: Received request to get contest with ID: ${contest_id}`);
 
         //validating contest id.
         const validationErrors=validateContestId(contest_id);
@@ -31,7 +31,7 @@ export async function handlegetContestById(req:Request,params:Record<string,stri
         }
     
         //calling repository function to get contest details.
-        const {contestData,error}=await getContestDetailsById(contest_id);
+        const {data,error}=await getContestDetailsById(contest_id);
         
         //returnig error message if any database error occured.
         if(error){
@@ -43,7 +43,7 @@ export async function handlegetContestById(req:Request,params:Record<string,stri
         }
 
         //returning not contest found error.
-        if(!contestData){
+        if(!data){
             console.error(`ERROR: No contest found for ID: ${contest_id}`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
@@ -53,10 +53,11 @@ export async function handlegetContestById(req:Request,params:Record<string,stri
 
         
         //returning success Response
-        console.log(`INFO: Returning contest details : `,contestData);
+        console.info(`INFO: Returning contest details : `,data);
         return SuccessResponse(
               CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_DETAILS_FETCHED,
-              contestData
+              HTTP_STATUS_CODE.OK,
+              data
         );
 
 

@@ -1,3 +1,4 @@
+
 import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
@@ -18,7 +19,7 @@ import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "
 export async function handleDeleteContest(req: Request, params: Record<string, string>): Promise<Response> {
     try {
         const contest_id=params.id;
-        console.log(`INFOR: Received request to delete contest with ID: ${contest_id}`);
+        console.info(`INFOR: Received request to delete contest with ID: ${contest_id}`);
 
         //validation contest Id.
         const validationErrors=validateContestId(contest_id);
@@ -27,7 +28,7 @@ export async function handleDeleteContest(req: Request, params: Record<string, s
              return validationErrors;
         }
 
-        const {deletedData,error}=await deleteContestById(contest_id);
+        const {data,error}=await deleteContestById(contest_id);
 
         //returning database erorr.
         if(error){
@@ -39,7 +40,7 @@ export async function handleDeleteContest(req: Request, params: Record<string, s
         }
 
         //returning not found response
-        if(!deletedData||deletedData.length==0){
+        if(!data||data.length==0){
             console.error(`ERROR: Contest not found or already deleted.`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.NOT_FOUND,
@@ -48,9 +49,10 @@ export async function handleDeleteContest(req: Request, params: Record<string, s
         }
 
         //returning success response.
-        console.log("INFO: Contest Has Been Deleted Succesfully");
+        console.info("INFO: Contest Has Been Deleted Succesfully");
         return SuccessResponse(
-             CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_DELETED
+             CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_DELETED,
+             HTTP_STATUS_CODE.OK
         )
 
     } catch (error) {

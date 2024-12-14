@@ -25,7 +25,7 @@ export default async function getAllMemes(req:Request) {
         }
         
         // Return the fetched memes
-        return SuccessResponse(MEME_SUCCESS_MESSAGES.MEME_FETCHED_SUCCESSFULLY, allmemes);
+        return SuccessResponse(MEME_SUCCESS_MESSAGES.MEME_FETCHED_SUCCESSFULLY,HTTP_STATUS_CODE.OK, allmemes);
 }
 catch (error) {
     console.error("Error updating meme:", error);

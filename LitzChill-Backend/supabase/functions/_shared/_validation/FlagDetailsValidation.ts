@@ -10,11 +10,11 @@ import { FLAG_VALIDATION_MESSAGES } from "../_messages/FLagModuleMessags.ts";
  * Validates the flag details provided by the user.
  * 
  * @param flagDetails - The details of the flag to be validated.
- * @returns {Response | void} - Returns an error response if validation fails, or undefined if validation passes.
+ * @returns {Response | null} - Returns an error response if validation fails, or null if validation passes.
  */
 
 
-export function validateFlagDetails(flagDetails: FlagModel):Response|void {
+export function validateFlagDetails(flagDetails: FlagModel):Response|null {
     
     //validating flag details.
     console.log("INFO: Validating comment details...");
@@ -79,4 +79,6 @@ export function validateFlagDetails(flagDetails: FlagModel):Response|void {
             FLAG_VALIDATION_MESSAGES.MISSING_FLAG_REASON
           );
     }
+
+    return null;
 }

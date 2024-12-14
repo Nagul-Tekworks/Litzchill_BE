@@ -6,15 +6,14 @@ import { Comment } from "../../_model/CommentModle.ts";
 import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
 
 /**
- * Validates if the provided comment ID is valid.
+ * Validates the provided comment ID is .
  * 
  * @param comment_id - The ID of the comment to validate.
- * @returns {Response} - Returns an error response if the comment ID is invalid, otherwise returns nothing.
- * - If the comment ID is invalid, the function returns a BAD_REQUEST response with an appropriate error message.
- * - If the comment ID is missing or invalid, an error response will be returned.
+ * @returns {Response|null} - Returns an error response if the comment ID is invalid, otherwise returns null.
+ * 
  */
 
-export function validateCommentId(comment_id:string){
+export function validateCommentId(comment_id:string):Response|null{
     if (comment_id ) {
       if (!V4.isValid(comment_id)) {
         console.log("Error: Missing commentId in the request.");
@@ -29,6 +28,8 @@ export function validateCommentId(comment_id:string){
          COMMENT_VALIDATION_MESSAGES.MISSING_COMMENT_ID
       )
     }
+
+    return null;
 }
 
 
@@ -36,11 +37,12 @@ export function validateCommentId(comment_id:string){
  * Validates the details of a comment.
  * 
  * @param commentData - The Comment object that contains the details to validate.
- * @returns {Response|void} - Returns an error response if validation fails, otherwise nothing.
+ * @returns {Response|null} - Returns an error response if validation fails, otherwise null.
+ * 
  * - If any required field is missing or invalid, an error response will be returned with a corresponding message.
  * - This function ensures that the content type, content ID, and comment message are all valid.
  */
-export function validateCommentDetails(commetData:Comment):Response|void {
+export function validateCommentDetails(commetData:Comment):Response|null {
 
     console.log("INFO: Validating comment details...");
 
@@ -96,4 +98,5 @@ export function validateCommentDetails(commetData:Comment):Response|void {
       )
     }
   console.log("INFO: Comment details validated successfully.");
+  return null;
 }

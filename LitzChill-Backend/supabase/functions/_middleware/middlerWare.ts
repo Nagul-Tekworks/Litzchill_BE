@@ -22,8 +22,6 @@ export const checkUserAuthentication = function checkUserAuthentication(
     ) => Promise<Response>,
     roles: string[] = [],
 ) {
-
-
    /**
      * Performs authentication and authorization checks before calling the handler.
      * 
@@ -32,7 +30,6 @@ export const checkUserAuthentication = function checkUserAuthentication(
      * @returns {Promise<Response>} - Either the handler result or an error response.
      */
     
-   
     return async function (
         req: Request,
         params: Record<string, string>,
@@ -52,6 +49,7 @@ export const checkUserAuthentication = function checkUserAuthentication(
             }
 
            
+            //Bearer 
             const jwt = token.replace("Bearer ", "");
             console.log("INFO: Successfully got jwt token ",jwt);
 

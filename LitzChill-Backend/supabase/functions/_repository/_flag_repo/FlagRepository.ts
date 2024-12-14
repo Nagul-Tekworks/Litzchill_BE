@@ -1,3 +1,4 @@
+
 import { FlagModel } from "../../_model/FlagModel.ts";
 import supabase from "../../_shared/_config/DbConfig.ts";
 import { FLAG_TABLE } from "../../_shared/_db_table_details/FlagTableFields.ts";
@@ -8,46 +9,44 @@ import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
  * 
  * @param user_id - The ID of the user.
  * @param meme_id - The ID of the meme to check.
- * @returns {userflagData, flagerror} - 
- *    - If the user has already flagged the meme, `userflagData` contains the flag data and `flagerror` is null.
- *    - If a database error occurs, `userflagData` will be null and `flagerror` will contain the error details.
+ * @returns {data, error} - 
+ *    - If the user has already flagged the meme, `data` contains the flag data and `error` is null.
+ *    - If a database error occurs, `data` will be null and `error` will contain the error details.
  */
 
-export async function checkUserAlreadyFlag(user_id:string,meme_id:string) {
+export async function checkUserAlreadyFlag(user_id:string,meme_id:string) :Promise<{ data: any; error: any }> {
     
-        const{data:userflagData,error:flagerror}=await supabase
+        const{data,error}=await supabase
           .from(TABLE_NAMES.FLAG_TABLE)
           .select('*')
           .eq(FLAG_TABLE.USER_ID,user_id)
           .eq(FLAG_TABLE.MEME_ID,meme_id);
 
-        return {userflagData,flagerror};
+        return {data,error};
             
 }
 
 /**
  * Adds a flag to a meme to indicate an issue or violation.
  * 
- * @param flag - An object containing the flag data, including 
- * `contentId` (meme ID), `user_id` (ID of the user flagging the meme), 
- * `reason` (reason for flagging), and `created_at` (timestamp of when the flag is created).
- * 
- * @returns {addedFlag, addFlagError} - 
- *    - If the flag is successfully added, `addedFlag` contains the inserted flag data and `addFlagError` is null.
- *    - If a database error occurs, `addedFlag` will be null and `addFlagError` will contain the error details.
+ * @param flagData - flag data contain all flag details
+ * @returns {data, error} - 
+ *    - If the flag is successfully added, `data` contains the inserted flag data and `error` is null.
+ *    - If a database error occurs, `data` will be null and `error` will contain the error details.
  */
-export async function addFlagToMeme(flag:FlagModel) {
-    const { data: addedFlag, error:addFlagError } = await supabase
+
+
+export async function addFlagToMeme(flagData:FlagModel) :Promise<{data:any,error:any}>{
+    const { data, error } = await supabase
          .from(TABLE_NAMES.FLAG_TABLE)
-         .insert({[FLAG_TABLE.MEME_ID]:flag.contentId,
-             [FLAG_TABLE.USER_ID]:flag.user_id,
-             [FLAG_TABLE.FLAG_REASON]:flag.reason,
-             [FLAG_TABLE.FLAG_CREATED_AT]:flag.created_at
+         .insert({[FLAG_TABLE.MEME_ID]:flagData.contentId,
+             [FLAG_TABLE.USER_ID]:flagData.user_id,
+             [FLAG_TABLE.FLAG_REASON]:flagData.reason,
+             [FLAG_TABLE.FLAG_CREATED_AT]:flagData.created_at
           })
          .select();
 
-         return {addedFlag,addFlagError}
-    
+         return {data,error} 
 }
 
 
@@ -56,15 +55,16 @@ export async function addFlagToMeme(flag:FlagModel) {
  * 
  * @param meme_id - The ID of the meme whose flag count needs to be updated.
  * @param newFlagCount - The new flag count to be set for the meme.
- * @returns {countError} - 
- *    - If the flag count is successfully updated, `countError` will be null.
- *    - If a database error occurs, `countError` will contain the error details.
+ * @returns {error};
+ } - 
+ *    - If the flag count is successfully updated, `error` will be null.
+ *    - If a database error occurs, `error` will contain the error details.
  */
-export async function updateFlagCount(meme_id: string, newFlagCount: number) {
-  const { error: countError } = await supabase
+export async function updateFlagCount(meme_id: string, newFlagCount: number): Promise<{error:any}> {
+  const { error } = await supabase
     .from(TABLE_NAMES.MEME_TABLE)
     .update({ flag_count: newFlagCount })
     .eq('meme_id', meme_id);
 
-  return { countError };
+  return { error };
 }

@@ -58,7 +58,7 @@ export default async function updateMeme(req: Request,params:Record<string,strin
             return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_UPDATE);
         }
         // Return the updated meme
-        return await SuccessResponse(MEME_SUCCESS_MESSAGES.MEME_UPDATED_SUCCESSFULLY,updatememe);
+        return await SuccessResponse(MEME_SUCCESS_MESSAGES.MEME_UPDATED_SUCCESSFULLY,HTTP_STATUS_CODE.OK,updatememe);
 
 
     } catch (error) {

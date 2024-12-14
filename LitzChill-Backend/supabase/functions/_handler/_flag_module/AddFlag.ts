@@ -25,7 +25,7 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         // Parsing the request body to get flag details
         const flagData: FlagModel = await req.json();
 
-        console.log("INFO: Request Recieved With Flag details", flagData);
+        console.info("INFO: Request Recieved With Flag details", flagData);
 
 
         // Validating the flag details
@@ -39,17 +39,17 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         flagData.user_id = params.user_id;
 
         // Checking if the meme (content) exists
-        console.log("INFO: Getting Meme Details By Meme Id", flagData.contentId);
-        const { data, error } = await checkMemeId(flagData.contentId);
-        if (error) {
+        console.info("INFO: Getting Meme Details By Meme Id", flagData.contentId);
+        const { data:memeData, error:memeError } = await checkMemeId(flagData.contentId);
+        if (memeError) {
             console.error("ERROR: While Getting Meme Details By Meme Id");
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-                `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${error.message}`
+                `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${memeError.message}`
             )
         }
 
-        if (!data || data.length == 0) {
+        if (!memeData || memeData.length == 0) {
             console.error("ERROR: No Meme Found With Provided Meme Id");
             return ErrorResponse(
                 HTTP_STATUS_CODE.NOT_FOUND,
@@ -59,8 +59,8 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         }
 
         // Checking if the user has already flagged this meme
-        console.log('INFO: Checking If User Already Added Flag to this meme');
-        const { userflagData, flagerror } = await checkUserAlreadyFlag(flagData.user_id, data[0].meme_id);
+        console.info('INFO: Checking If User Already Added Flag to this meme');
+        const { data: userflagData, error:flagerror } = await checkUserAlreadyFlag(flagData.user_id, memeData[0].meme_id);
 
         if (flagerror) {
             console.error("ERROR: While Chekcing  User Already flag to meme");
@@ -81,8 +81,8 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         flagData.created_at = new Date();
 
         // Adding the flag to the meme
-        console.log('INFO: Adding Alag to meme');
-        const { addedFlag, addFlagError } = await addFlagToMeme(flagData);
+        console.info('INFO: Adding Alag to meme');
+        const { data: addedFlag, error: addFlagError } = await addFlagToMeme(flagData);
 
         if (addFlagError) {
             console.error("ERROR: Database Error While Adding Flag To Meme");
@@ -101,8 +101,8 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         }
 
         //updating flag count
-        console.log(`INFO: Flag added Now Updating Flag count in meme table`);
-        const { countError } = await updateFlagCount(flagData.contentId, data[0].flag_count + 1);
+        console.info(`INFO: Flag added Now Updating Flag count in meme table`);
+        const { error: countError } = await updateFlagCount(flagData.contentId, memeData[0].flag_count + 1);
 
         if (countError) {
             console.log('ERROR: During updating Flag count ');
@@ -112,8 +112,8 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
             )
         }
 
-        console.log(`INFO: Returning Success Response with flag added message`);
-        return SuccessResponse(FLAG_MODULE_SUCCESS_MESSAGES.FLAG_ADDED, addedFlag, HTTP_STATUS_CODE.CREATED);
+        console.info(`INFO: Returning Success Response with flag added message`);
+        return SuccessResponse(FLAG_MODULE_SUCCESS_MESSAGES.FLAG_ADDED, HTTP_STATUS_CODE.CREATED, addedFlag);
 
     } catch (error) {
 

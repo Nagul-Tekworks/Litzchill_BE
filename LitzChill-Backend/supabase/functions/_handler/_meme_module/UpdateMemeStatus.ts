@@ -64,6 +64,7 @@ export default async function updateMemeStatus(req: Request, params: Record<stri
    console.log(updatedMemeStatus+" updated meme status successfully");
     return SuccessResponse(
       MEME_SUCCESS_MESSAGES.MEME_STATUS_UPDATED_SUCCESSFULLY
+      ,HTTP_STATUS_CODE.OK
     );
   } catch (error) {
     console.error("Error updating meme status:", error);

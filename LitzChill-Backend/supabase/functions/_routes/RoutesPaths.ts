@@ -36,6 +36,7 @@ export const CONTEST_ROUTES = {
     CONTEST_GET_ALL_PATH: "/ContestModule/getAllContest",
     CONTEST_GET_BY_ID_PATH: "/ContestModule/getContestById/:id",
     CONTEST_UPDATE_BY_ID_PATH: "/ContestModule/updateContestById/:id",
+    CONTEST_UPDATE_ALL_STATUS:"/ContestModule/updateContestStatus",
     CONTEST_DELETE_BY_ID_PATH: "/ContestModule/deleteContestById/:id",
 }
 

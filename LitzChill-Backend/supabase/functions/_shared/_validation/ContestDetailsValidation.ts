@@ -6,17 +6,15 @@ import { ContestModel } from "../../_model/ContestModel.ts";
 import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
 import { CONTEST_VALIDATION_MESSAGES } from "../_messages/ContestModuleMessages.ts";
 
-
-
 /**
  * Validates if the provided contest ID is valid.
  * 
  * @param contest_id - The contest ID to validate.
- * @returns {Response|void} - Returns an error response if the contest ID is missing or invalid, otherwise returns nothing.
+ * @returns {Response|null} - Returns an error response if the contest ID is missing or invalid, otherwise returns null.
  *
 */
 
-export function validateContestId(contest_id:string): Response | void {
+export function validateContestId(contest_id:string): Response | null {
     console.log("Validating Contest ID");
     if (!contest_id ) {
         console.error("ERROR: Invalid or missing contest ID.");
@@ -33,9 +31,8 @@ export function validateContestId(contest_id:string): Response | void {
              CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_ID,
          
         );
-     }
-
-    
+     } 
+     return null;  
 }
 
 /**
@@ -43,11 +40,11 @@ export function validateContestId(contest_id:string): Response | void {
  * 
  * @param contestDetails - The contest details to validate.
  * @param isUpdate - A boolean flag indicating if this is an update operation. Defaults to false.
- * @returns {Response|void} - Returns an error response if any validation fails, otherwise returns nothing.
+ * @returns {Response|null} - Returns an error response if any validation fails, otherwise returns null.
  * - If any required fields are missing or invalid, an appropriate error message is returned.
  */
 
-export function validateContestDetails(contestDetails: Partial<ContestModel>, isUpdate: boolean = false): Response | void {
+export function validateContestDetails(contestDetails: Partial<ContestModel>, isUpdate: boolean = false): Response | null {
     
     console.log("INFO: Validating contest details...");
 
@@ -177,6 +174,44 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
             );
         }
     }
+
+    if(contestDetails.result||Object.keys(contestDetails).includes('result')){
+        if(typeof contestDetails.result !=='object'|| contestDetails.result === null){
+            return ErrorResponse(
+                HTTP_STATUS_CODE.BAD_REQUEST,
+                CONTEST_VALIDATION_MESSAGES.INVALID_TYPE_FOR_RESULT
+            )
+        }
+        if (Object.keys(contestDetails.result).length < 3) {
+            return ErrorResponse(
+                HTTP_STATUS_CODE.BAD_REQUEST,
+                CONTEST_VALIDATION_MESSAGES.EMPTY_PRIZE
+            );
+        }
+    }
+    if (contestDetails.prize||Object.keys(contestDetails).includes('prize') ){
+        // Check if prize is not a string, not an array, and is a valid object
+        console.log("Prize",contestDetails.prize)
+        console.log("Prize Type",typeof contestDetails.prize)
+        if (typeof contestDetails.prize !== 'object' || contestDetails.prize === null) {
+            return ErrorResponse(
+                HTTP_STATUS_CODE.BAD_REQUEST,
+                CONTEST_VALIDATION_MESSAGES.INVALID_TYPE_FOR_PRIZE
+            );
+        }
+    
+        // Check if the object is empty (fewer than 3 properties)
+        if (Object.keys(contestDetails.prize).length < 3) {
+            return ErrorResponse(
+                HTTP_STATUS_CODE.BAD_REQUEST,
+                CONTEST_VALIDATION_MESSAGES.EMPTY_PRIZE
+            );
+        }
+    }
+    
+
+    console.info("INFO: Validation Successfully Passed");
+    return null;
 
 
 }

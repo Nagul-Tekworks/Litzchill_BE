@@ -1,3 +1,4 @@
+
 import { Comment } from "../../_model/CommentModle.ts";
 import supabase from "../../_shared/_config/DbConfig.ts";
 import { COMMENT_TABLE } from "../../_shared/_db_table_details/CommentTableFields.ts";
@@ -8,12 +9,12 @@ import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
  * Adds a comment to a meme and stores the comment data in the comment table.
  * 
  * @param commentData - An object containing the necessary comment data.
- * @returns {addedComment, commentError} - 
- * - If the comment is successfully added, `addedComment` contains the inserted data and `commentError` is null.
- * - If a database error occurs, `addedComment` will be null and `commentError` will contain the error details.
+ * @returns {data, error} - 
+ * - If the comment is successfully added, `data` contains the inserted data and `error` is null.
+ * - If a database error occurs, `data` will be null and `error` will contain the error details.
  */
-export async function addComment(commentData: Comment) {
-      const { data: addedComment, error:commentError } = await supabase
+export async function addComment(commentData: Comment) :Promise<{data:any;error:any}> {
+      const { data, error } = await supabase
         .from(TABLE_NAMES.COMMENT_TABLE)
         .insert({'meme_id':commentData.meme_id,
                  'user_id':commentData.user_id,
@@ -25,7 +26,7 @@ export async function addComment(commentData: Comment) {
         })
         .select();
 
-        return {addedComment,commentError};
+        return {data,error};
 }
   
 
@@ -38,7 +39,7 @@ export async function addComment(commentData: Comment) {
  *   - If a database error occurs, `data` will be null and `error` will contain the error details.
  */
 
-export async function getCommentById(comment_id:string) {
+export async function getCommentById(comment_id:string):Promise<{data:any;error:any}> {
     const{data,error}=await supabase
        .from(TABLE_NAMES.COMMENT_TABLE)
        .select(`*,memes(comment_count)`)
@@ -52,18 +53,18 @@ export async function getCommentById(comment_id:string) {
  * Deletes a comment and all its replies by comment ID.
  * 
  * @param comment_id - The ID of the comment to delete.
- * @returns {deletedData, deleteCommentError} - 
- *  - If the comment and its replies are successfully deleted, `deletedData` contains the deleted data and `deleteCommentError` is null.
- *  - If a database error occurs, `deletedData` will be null and `deleteCommentError` will contain the error details.
+ * @returns {data, error} - 
+ *  - If the comment and its replies are successfully deleted, `data` contains the deleted data and `error` is null.
+ *  - If a database error occurs, `data` will be null and `error` will contain the error details.
  */
 
-export async function deleteComment(comment_id:string) {
-    const {data:deletedData,error:deleteCommentError} = await supabase
+export async function deleteComment(comment_id:string):Promise<{data:any;error:any}>{
+    const {data,error} = await supabase
        .from(TABLE_NAMES.COMMENT_TABLE)
        .delete()
        .or(`comment_id.eq.${comment_id},parent_commentid.eq.${comment_id}`).select();
        
-       return {deletedData,deleteCommentError};    
+       return {data,error};    
 }
 
 
@@ -72,16 +73,16 @@ export async function deleteComment(comment_id:string) {
  * 
  * @param meme_id - The ID of the meme to update the comment count.
  * @param newCommentCount - The new comment count to set for the meme.
- * @returns {counterror} - If a database error occurs, `counterror` will contain the error details; otherwise, it will be null.
+ * @returns {error} - If a database error occurs, `counterror` will contain the error details; otherwise, it will be null.
  */
-export async function updateCommentsCount(meme_id: string, newCommentCount: number) {
+export async function updateCommentsCount(meme_id: string, newCommentCount: number) :Promise<{error:any}>{
 
-  const { error: counterror } = await supabase
+  const { error } = await supabase
     .from(TABLE_NAMES.MEME_TABLE)
     .update({ comment_count: newCommentCount })
     .eq('meme_id', meme_id);
 
-  return { counterror };
+  return { error };
 }
 
 
@@ -93,7 +94,7 @@ export async function updateCommentsCount(meme_id: string, newCommentCount: numb
  *    - If the meme exists, `data` contains the meme data and `error` is null.
  *    - If a database error occurs, `data` will be null and `error` will contain the error details.
  */
-export async function checkMemeId(contentID: string) {
+export async function checkMemeId(contentID: string) :Promise<{data:any;error:any}> {
 
   const { data, error } = await supabase
     .from(TABLE_NAMES.MEME_TABLE)

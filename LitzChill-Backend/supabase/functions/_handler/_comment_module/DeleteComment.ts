@@ -1,3 +1,4 @@
+
 import { deleteComment, getCommentById, updateCommentsCount } from "../../_repository/_comment_repo/CommentRepository.ts";
 import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
@@ -21,7 +22,7 @@ export async function handleDeleteComment(req: Request, params: Record<string, s
 
         const commentId = params.id;
 
-        console.log('INFO: Request Recieved To Delete Comment With Id: ',commentId);
+        console.info('INFO: Request Recieved To Delete Comment With Id: ',commentId);
 
         // Checking if commentId is provided
         const validatedId = validateCommentId(commentId);
@@ -31,22 +32,22 @@ export async function handleDeleteComment(req: Request, params: Record<string, s
              return validatedId;
         }
 
-        console.log('INFO: Getting comment data by comment id');
+        console.info('INFO: Getting comment data by comment id');
         // Checking if the comment exists in the database 
-        const { data, error } = await getCommentById(commentId);
+        const { data:commentData, error:commentError } = await getCommentById(commentId);
 
         
         //returning error response if any database error come
-        if (error) {
+        if (commentError) {
 
-            console.error("ERROR:Database error during getting comment data", error.message);
+            console.error("ERROR:Database error during getting comment data", commentError.message);
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-                 `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${error.message}`
+                 `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${commentError.message}`
             )
         }
 
-        if (!data || data.length === 0) {
+        if (!commentData || commentData.length === 0) {
 
             console.error(`Error: Comment with ID ${commentId} not found.`);
             return ErrorResponse(
@@ -57,7 +58,7 @@ export async function handleDeleteComment(req: Request, params: Record<string, s
         }
         
         // Checking if the user is the owner of the comment
-        if (data[0].user_id !== params.user_id) {
+        if (commentData[0].user_id !== params.user_id) {
 
             console.error(`ERROR: User Don't have permission to delete comment`);
             return ErrorResponse(
@@ -70,8 +71,8 @@ export async function handleDeleteComment(req: Request, params: Record<string, s
       
 
         // Deleting the comment from the database
-        console.log('INFO: Deleting comment from comment table');
-        const { deletedData,deleteCommentError } = await deleteComment(commentId);
+        console.info('INFO: Deleting comment from comment table');
+        const { data:deletedData,error:deleteCommentError } = await deleteComment(commentId);
         
 
         //returning error response if any database error come
@@ -92,12 +93,12 @@ export async function handleDeleteComment(req: Request, params: Record<string, s
                  COMMENT_MODULE_ERROR_MESSAGES.COMMENT_NOT_DELETED
             )
         }
-        const commentCountOnMeme = data[0].memes.comment_count>0?data[0].memes.comment_count-(deletedData.length):0;
+        const commentCountOnMeme = commentData[0].memes.comment_count>0?commentData[0].memes.comment_count-(deletedData.length):0;
 
         // Updating the comment count in the meme table
-        const { counterror } = await updateCommentsCount(data[0].meme_id, commentCountOnMeme);
+        const { error:counterror } = await updateCommentsCount(commentData[0].meme_id, commentCountOnMeme);
         if (counterror) {
-            console.log('ERROR: During updating comment count ');
+            console.error('ERROR: During updating comment count ');
             return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                  `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${counterror.message}`
@@ -105,8 +106,11 @@ export async function handleDeleteComment(req: Request, params: Record<string, s
         }
          
         // Sending a successful response after deletion
-        console.log('INFO: Returning Success Response with delete message');
-        return SuccessResponse(COMMENT_MODULE_SUCCESS_MESSAGES.COMMENT_DELETED);
+        console.info('INFO: Returning Success Response with delete message');
+        return SuccessResponse(
+             COMMENT_MODULE_SUCCESS_MESSAGES.COMMENT_DELETED,
+             HTTP_STATUS_CODE.OK
+        );
     } 
     catch (error) {
 

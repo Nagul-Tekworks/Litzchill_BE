@@ -24,7 +24,7 @@ export async function handleAddComment(req: Request, params: Record<string, stri
    try {
 
       const commentDetails: Comment = await req.json();
-      console.log("INFO: Request Recieved With Comment details",commentDetails);
+      console.info("INFO: Request Recieved With Comment details",commentDetails);
 
 
       //validating comment details.
@@ -40,43 +40,43 @@ export async function handleAddComment(req: Request, params: Record<string, stri
        //If user adding a comment to meme checking meme is presnt or not
       if(commentDetails.contentType==='Meme'){
          commentDetails.meme_id=commentDetails.contentId
-         console.log("INFO: Getting Meme Details By Meme Id",commentDetails.meme_id);
+         console.info("INFO: Getting Meme Details By Meme Id",commentDetails.meme_id);
 
-         const{data,error}=await checkMemeId(commentDetails.meme_id);
+         const{data:memeData,error:memeError}=await checkMemeId(commentDetails.meme_id);
 
-         if(error){
-            console.error("ERROR: While Getting Meme Details By Meme Id");
+         if(memeError){
+            console.error("ERROR: While Getting Meme Details By Meme Id",memeError.message);
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-                error.message
+                memeError.message
             )
          }
 
-         if(!data||data.length==0){
+         if(!memeData||memeData.length==0){
             console.error("ERROR: No Meme Found With Provided Meme Id");
             return ErrorResponse(
                 HTTP_STATUS_CODE.NOT_FOUND,
                 COMMENT_MODULE_ERROR_MESSAGES.CONTENT_NOT_FOUND 
             )
          }
-         console.log("INFO: Initialzig Comment count from meme data");
-         commentDetails.commentCount=data[0].comment_count;
+         console.info("INFO: Initialzig Comment count from meme data");
+         commentDetails.commentCount=memeData[0].comment_count;
       }
       
       //If user giving reply to a comment checking comment is presnt or not
       else if(commentDetails.contentType==='Comment'){
          commentDetails.parent_commentId=commentDetails.contentId
-         console.log("INFO: Getting Meme Details By comment Id: ",commentDetails.parent_commentId);
+         console.info("INFO: Getting Meme Details By comment Id: ",commentDetails.parent_commentId);
 
-         const{data,error}=await getCommentById(commentDetails.contentId);
-         if(error){
-            console.error("ERROR: While Getting comment Details By Comment Id");
+         const{data:commentData,error:commentError}=await getCommentById(commentDetails.contentId);
+         if(commentError){
+            console.error("ERROR: While Getting comment Details By Comment Id",commentError.message);
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-                error.message
+                commentError.message
             )
          }
-         if(!data||data.length==0){
+         if(!commentData||commentData.length==0){
             console.error("ERROR: NO Comment found with provided id");
             return ErrorResponse(
                 HTTP_STATUS_CODE.NOT_FOUND,
@@ -84,9 +84,9 @@ export async function handleAddComment(req: Request, params: Record<string, stri
             )
          }
 
-         console.log("INFO: Initialzig Comment count and meme id form comment data");
-         commentDetails.commentCount=data[0].memes.comment_count;
-         commentDetails.meme_id=data[0].meme_id;
+         console.info("INFO: Initialzig Comment count and meme id form comment data");
+         commentDetails.commentCount=commentData[0].memes.comment_count;
+         commentDetails.meme_id=commentData[0].meme_id;
       }
 
         
@@ -94,15 +94,15 @@ export async function handleAddComment(req: Request, params: Record<string, stri
          commentDetails.status='A';
 
          //adding comment to a meme
-         console.log('INFO: Calling addComment method to add comment');
-         const{addedComment,commentError}=await addComment(commentDetails);
+         console.info('INFO: Calling addComment method to add comment');
+         const{data: addedComment,error: addCommentError}=await addComment(commentDetails);
 
 
-         if(commentError){
-            console.error("ERROR: While Adding comment");
+         if(addCommentError){
+            console.error("ERROR: While Adding comment",addCommentError.message);
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
-                commentError.message
+                addCommentError.message
             )
          }
 
@@ -115,21 +115,22 @@ export async function handleAddComment(req: Request, params: Record<string, stri
          }
 
          //Updating comment count in meme table
-         console.log(`INFO: Comment added Now Updating comment count in meme table`);
+         console.info(`INFO: Comment added Now Updating comment count in meme table`);
 
-         const {counterror}=await updateCommentsCount(commentDetails.meme_id,commentDetails.commentCount+1);
+         const {error: counterror}=await updateCommentsCount(commentDetails.meme_id,commentDetails.commentCount+1);
 
          if(counterror){
-            console.log('ERROR: During updating comment count ');
+            console.error('ERROR: During updating comment count ');
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${counterror.message}`
             )
          }
 
-         console.log(`INFO: Returning Success Response with comment added message`);
+         console.info(`INFO: Returning Success Response with comment added message`);
          return SuccessResponse(
-            COMMENT_MODULE_SUCCESS_MESSAGES.COMMENT_ADDED
+            COMMENT_MODULE_SUCCESS_MESSAGES.COMMENT_ADDED,
+            HTTP_STATUS_CODE.OK
          )
    } 
    catch (error) {

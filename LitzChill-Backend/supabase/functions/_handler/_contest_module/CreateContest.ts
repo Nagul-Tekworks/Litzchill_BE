@@ -19,7 +19,7 @@ import { validateContestDetails } from "../../_shared/_validation/ContestDetails
 export async function handleCreateContext(req: Request,params:Record<string,string>): Promise<Response> {
      try {
 
-          console.log(`INFO: Request Recieved in create contest `);
+          console.info(`INFO: Request Recieved in create contest `);
           const contestData: ContestModel = await req.json();
           
           // Validating contest all details
@@ -33,10 +33,10 @@ export async function handleCreateContext(req: Request,params:Record<string,stri
           contestData.status = contestData.status?.toLocaleLowerCase();
 
           //calling supabase query for creating contest
-          const { insertedData, error } = await createContest(contestData);
+          const { data, error } = await createContest(contestData);
 
           //if data not inserted then returning error response
-          if (!insertedData || insertedData.length === 0 || error) {
+          if (!data || data.length === 0 || error) {
                console.error(`ERROR: Contest not created.due to some database error or query error, ${error?.message}`);
                return ErrorResponse(
                      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
@@ -46,11 +46,11 @@ export async function handleCreateContext(req: Request,params:Record<string,stri
           }
 
           // Returning success response with created contest data
-          console.log(`INFO: Returning success response with created contest data ` , insertedData);
+          console.info(`INFO: Returning success response with created contest data ` , data);
           return SuccessResponse(
-                CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_CREATED,
-               '',
+               CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_CREATED, 
                 HTTP_STATUS_CODE.CREATED,
+               
           );
 
      }

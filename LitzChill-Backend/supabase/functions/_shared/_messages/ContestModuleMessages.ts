@@ -12,7 +12,8 @@ export const CONTEST_MODULE_SUCCESS_MESSAGES={
     CONTEST_CREATED: "The contest has been created successfully!",
     CONTEST_DELETED: "The contest has been deleted successfully!",
     CONTEST_DETAILS_FETCHED: "Fetched the contest details successfully!",
-    CONTEST_UPDATED: "The contest has been updated successfully!"
+    CONTEST_UPDATED: "The contest has been updated successfully!",
+    CONTEST_STATUS_UPDATED:"All Contests Status Has Been Updated Successfully"
   }
 
 //Contest Module Validation Messages
@@ -29,5 +30,9 @@ export const CONTEST_VALIDATION_MESSAGES={
     INVALID_END_DATE_VALUE:"END Date Must be After Current Date",
     INVALID_CONTEST_END_DATE: "End Date must be after Start Date.",
     MISSING_CONTEST_END_DATE: "End Date is required.",
-    INVALID_CONTEST_STATUS: "Status must be 'Ongoing', 'Completed', or 'Upcoming'."
+    INVALID_CONTEST_STATUS: "Status must be 'Ongoing', 'Completed', or 'Upcoming' .",
+    INVALID_TYPE_FOR_RESULT:"Please Provide Valid Result",
+    INVALID_TYPE_FOR_PRIZE:"Please provide a valid prize.",
+    EMPTY_RESULT:"The result Should contain all 3 Winners",
+    EMPTY_PRIZE:"The Prize Should contain all 3 prizes",
 };

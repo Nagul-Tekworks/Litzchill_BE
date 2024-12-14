@@ -11,10 +11,10 @@ import { COMMON_ERROR_MESSAGES } from "../_shared/_messages/ErrorMessages.ts";
  * @param req - The incoming request object.
  * @param routes - The object containing route definitions, mapping methods and paths to handlers.
  * 
- * @returns A response from the matched handler or an error response if no match is found.
+ * @returns {Promise<Response>}A response from the matched handler or an error response if no match is found.
  */
 
-export async function routeHandler(req:Request,routes:Record<string,any>){
+export async function routeHandler(req:Request,routes:Record<string,any>):Promise<Response>{
 
         const method = req.method;
         const url = new URL(req.url);
@@ -22,14 +22,16 @@ export async function routeHandler(req:Request,routes:Record<string,any>){
         console.log(`INFO: Request received in route handler - Method: ${method}, Path: ${path}`);
 
        //gethering all routes path into single array
-       
         const allRoutes = Object.values(routes).flatMap((allPresentRoutes) =>
           Object.keys(allPresentRoutes)
         );
+
+
          console.log(`INFO: all presented routes keys(path): ,${allRoutes}`);
 
         const allMatchedMethodRoutes=routes[method];
-        console.log(`INFO: ALl matched routes: ${allMatchedMethodRoutes}` );
+
+        console.log(`INFO: ALl matched routes: `,allMatchedMethodRoutes );
 
         //if method is not match is undefined then we are returning method not allowed
         if(allMatchedMethodRoutes==undefined){
@@ -41,7 +43,6 @@ export async function routeHandler(req:Request,routes:Record<string,any>){
         }
 
         //checking our path is present into path key array 
-     
         if(allRoutes.includes(path)){
           if (!allMatchedMethodRoutes || !allMatchedMethodRoutes?.[path]) {
                  console.error(`ERROR: Method '${method}' not allowed for route '${path}'`);
@@ -61,10 +62,13 @@ export async function routeHandler(req:Request,routes:Record<string,any>){
         //checking for dyanamic route matching 
         console.log(`INFO: Checking for dynamic route`)
         for (const routePattern in allMatchedMethodRoutes) {
+          //"/ContestModule/getContestById/:id"
+          //"/ContestModule/getContestById/:4556555"
             const param = extractParameter(routePattern, path);
             if (param) {
                  //calling handler if path is correct 
                  console.log(`INFO: Dynamic Route matched calling handler`)
+                // const handler=allMatchedMethodRoutes[routePattern]
                  return await allMatchedMethodRoutes[routePattern](req, param);
             } 
          }
@@ -91,9 +95,18 @@ export async function routeHandler(req:Request,routes:Record<string,any>){
 
 
 
-// Extracts parameters from a path based on a route pattern
-export function extractParameter(routePattern: string, path: string) {
 
+/**
+ * Extracts dynamic parameters from a URL path based on a route pattern.
+ *
+ * @param routePattern - The route pattern (e.g., `/user/:id`).
+ * @param path - The actual path (e.g., `/user/123`)
+ * @returns{:Record<string, string>|null} 
+ * - An object containing extracted parameters (e.g., `{ id: "123" }`), or `null` if the path does not match.
+ */
+
+export function extractParameter(routePattern: string, path: string):Record<string, string>|null {
+  
        const routePath = routePattern.split("/");
        const actualPath = path.split("/");
 
@@ -102,7 +115,7 @@ export function extractParameter(routePattern: string, path: string) {
             console.log(`INFO: Paths length not matched returning null`);
              return null;
         }
-
+                          //id         //12345
         const params: Record<string, string> = {};
 
         for (let i = 0; i < routePath.length; i++) {
@@ -116,7 +129,7 @@ export function extractParameter(routePattern: string, path: string) {
                   return null;
             }
         }
-
+        //example :{id:12220}
         return params;
 
 }
