@@ -31,7 +31,7 @@ export default async function get_Contest_Data(_req: Request, param: Record<stri
           }
       // If user is disqualified, show their record and active records
       if (statusData.status === 'Disqualified') {
-        const { data: paginatedData, error } = await getUserContestWithDisqualified(contestId, userId);
+        const { paginatedData, error } = await getUserContestWithDisqualified(contestId, userId);
         if (error) {
           return ErrorResponse(
             HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.DATABASE_ERROR);
@@ -45,7 +45,7 @@ export default async function get_Contest_Data(_req: Request, param: Record<stri
     }
     // If user is active, show only active records
       if (statusData.status === 'Active') {
-        const { data: paginatedData, error } = await getOnlyActiveRecords(contestId);
+        const { paginatedData, error } = await getOnlyActiveRecords(contestId);
         if (error) {
           return ErrorResponse(
             HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.DATABASE_ERROR);
@@ -60,7 +60,7 @@ export default async function get_Contest_Data(_req: Request, param: Record<stri
     }
     // If user is an admin, return all records
     if (userType === 'A') {
-      const { data: paginatedData, error } = await getAllRecords(contestId);
+      const {  paginatedData, error } = await getAllRecords(contestId);
       if (error) {
         return ErrorResponse(
           HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,COMMON_ERROR_MESSAGES.DATABASE_ERROR);

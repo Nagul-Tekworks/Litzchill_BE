@@ -12,9 +12,9 @@ export async function validateContestEntry(contestId: string):Promise<{contestDa
   console.log("Validating contest entry for contestId:", contestId); // Log contestId being validated
   const { data: contestData, error: errorInContest } = await supabase
     .from(TABLE_NAMES.CONTEST_TABLE)
-    .select("*")
-    .eq(CONTEST_TABLE.CONTEST_ID, contestId)
-    .maybeSingle();
+    .select('*')
+    .eq(CONTEST_TABLE.CONTEST_ID, contestId);
+    
   return { contestData, errorInContest };
 }
 

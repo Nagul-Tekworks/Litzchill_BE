@@ -12,27 +12,21 @@
 */
 export const USERSTATUS= {
     ACTIVE: 'A',
-    SUSPENDED: 'S', 
+    SUSPENDED: 'S',
 }
-
+ 
 /*
  * Define constants for meme statuses.
  * These are used throughout the application for data validation and access control.
- *
  * For example, you can use them to validate meme statuses when creating or updating a meme:
- *
- * if (meme.status === MEME_STATUS.APPROVED) {
- *     // Display meme to users
- * } else {
- *     // Hide meme or display a message to users
- * }
  */
 export const MEME_STATUS= {
-    PENDING: 'Pending',
-    APPROVED: 'Approved',
-    REJECTED: 'Rejected',
+    PENDING: '0',
+    APPROVED: '1',
+    REJECTED: '2',
+    DELETED: '3'
 }
-
+ 
 export const NOTIFICATION_TYPES= {
     LIKE: 'like',
     ENGAGEMENT: 'engagement',

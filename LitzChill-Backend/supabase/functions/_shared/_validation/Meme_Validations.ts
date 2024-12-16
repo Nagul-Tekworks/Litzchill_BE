@@ -1,109 +1,107 @@
-import { Meme } from "../../_model/MemeModel.ts";
 import { ErrorResponse } from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from '../_constants/HttpStatusCodes.ts';
+import { HTTP_STATUS_CODE } from "../_constants/HttpStatusCodes.ts";
 import { MEME_ERROR_MESSAGES } from "../_messages/Meme_Module_Messages.ts";
 
-/*
+/**
  * Validates if the request's content type is a valid "multipart/form-data" type.
- * @param contentType The content type of the request.
-*/
+ *
+ * @param {string} contentType - The content type of the request.
+ * @returns {boolean} - Returns `true` if the content type is "multipart/form-data", otherwise `false`.
+ */
 export function contentTypeValidations(contentType: string): boolean {
-    console.log("Validating content type:", contentType); // Log the content type being validated
     if (!contentType || !contentType.includes("multipart/form-data")) {
         console.warn("Invalid content type: " + contentType); // Be specific about the invalid type.
         return false;
     }
-    console.log("Content type is valid: multipart/form-data");
     return true;
 }
 
+/**
+ * Parses a raw string of tags into an array of tags.
+ *
+ * @param {string | null} tagsRaw - The raw tags as a string.
+ * @returns {string[]} - An array of tag strings.
+ */
 export function parseTags(tagsRaw: string | null): string[] {
-    console.log("Parsing tags:", tagsRaw); // Log raw tags input
     if (!tagsRaw || tagsRaw.trim().length === 0) {
-        console.log("No tags provided, returning empty array.");
         return [];
     }
 
     if (tagsRaw.trim().startsWith("[") && tagsRaw.trim().endsWith("]")) {
-        console.log("Tags are in JSON format, parsing as array.");
-        const parsedTags = JSON.parse(tagsRaw);
-        if (!Array.isArray(parsedTags)) {
-            throw new Error("Tags is not an array");
+        try {
+            const parsedTags = JSON.parse(tagsRaw);
+            if (!Array.isArray(parsedTags)) {
+                throw new Error("Tags is not an array");
+            }
+            return parsedTags;
+        } catch (error) {
+            console.error("Error parsing tags: ", error);
+            throw error;
         }
-        return parsedTags;
     }
 
-    console.log("Tags are in comma-separated format, splitting.");
     return tagsRaw.split(",").map(tag => tag.trim());
 }
 
 /**
- * Main validation function
- * @param memeData - Meme data object to validate
- * @param isUpdate - Boolean flag to indicate whether the request is for an update
- * @returns Validation result object or error response
+ * Main function to validate meme data.
+ *
+ * @param {boolean} isUpdate - Indicates whether the request is for an update.
+ * @param {string | undefined} meme_title - The meme title.
+ * @param {string[] | undefined} tags - Array of tags.
+ * @param {File | undefined} media_file - The media file.
+ * @returns {Response | null} - Returns an error response if validation fails, otherwise `null`.
  */
-export function validateMemeData(memeData: Partial<Meme>, isUpdate: boolean = false) {
-    const {meme_title, media_file, tags } = memeData;  
+export function validateMemeData(
+    isUpdate: boolean = false,
+    meme_title?: string,
+    tags?: string[],
+    media_file?: File
+) {
     const validationErrors: string[] = [];
-    console.log("Validating meme data:", memeData);
+    console.log("Starting meme data validation");
 
-    // If creating a meme, check for required fields
+    // Validate required fields for creation
     if (!isUpdate) {
-        checkRequiredFields(meme_title, media_file , tags, validationErrors);
+        validateRequiredFields(meme_title, tags, media_file, validationErrors);
     }
-    // Common validation for both create and update
-    validateMemeFields(meme_title, media_file, tags, validationErrors);
 
-    // Returning validation errors if any
+    // Validate common fields
+    validateMemeFields(meme_title, tags, validationErrors);
+
+    // Return errors if any
     if (validationErrors.length > 0) {
-        console.log("Validation errors:", validationErrors); // Log validation errors
-        return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, validationErrors.join(", "));
+        return validationErrors;
     }
 
-    console.log("Meme data validated successfully.");
-    // Validation passed
-    return {};
+    console.log("Meme data validation successful");
+    return null;
 }
 
 /**
- * Validates meme title, image URL, and tags
- * @param meme_title - Meme title to validate
- * @param image_url - Image URL to validate
- * @param tags - Tags array to validate
- * @param validationErrors - Array to accumulate validation error messages
+ * Validates meme fields like title and tags.
+ *
+ * @param {string | undefined} meme_title - The meme title.
+ * @param {string[] | undefined} tags - The tags array.
+ * @param {string[]} validationErrors - Array to accumulate validation errors.
  */
-function validateMemeFields(meme_title: string | undefined, image_url: string | undefined, tags: string[] | undefined, validationErrors: string[]) {
-    console.log("Validating meme fields:", { meme_title, image_url, tags });
+function validateMemeFields(
+    meme_title: string | undefined,
+    tags: string[] | undefined,
+    validationErrors: string[]
+) {
+    console.log("Validating meme fields");
 
     // Validate meme title
     if (meme_title) {
-        console.log("meme_title is: ", meme_title);
         if (meme_title.trim().length < 3 || meme_title.trim().length > 100) {
             validationErrors.push(MEME_ERROR_MESSAGES.MEME_TITLE_EXCEEDS_LIMIT);
         }
-        if (!/^[A-Za-z0-9\s.,'!?-]+$/.test(meme_title)) {
-            validationErrors.push(MEME_ERROR_MESSAGES.INVALID_MEME_TITLE);
-        }
-    }
-
-    // Validate image URL
-    try {
-        if (image_url && !image_url.trim()) {
-            console.log("image_url is: ", image_url);
-            validationErrors.push(MEME_ERROR_MESSAGES.MISSING_IMAGE_URL);
-        }
-    } catch (error) {
-        console.log("Error validating image URL:", error);
     }
 
     // Validate tags
-    if (tags) {
-        if (tags.length === 0) {
-            validationErrors.push(MEME_ERROR_MESSAGES.MISSING_TAGS);
-        }
+    if (tags && tags.length > 0) {
         for (const tag of tags) {
-            console.log("Validating tag:", tag); // Log each tag being validated
             if (tag.length < 1 || tag.length > 15 || !/^[A-Za-z0-9\s-]+$/.test(tag)) {
                 validationErrors.push(MEME_ERROR_MESSAGES.INVALID_TAG);
             }
@@ -112,22 +110,30 @@ function validateMemeFields(meme_title: string | undefined, image_url: string | 
 }
 
 /**
- * Helper function to check required fields for meme creation
- * @param user_id - User ID to validate
- * @param meme_title - Meme title to validate
- * @param image_url - Image URL to validate
- * @param tags - Tags array to validate
- * @param errors - Array to accumulate error messages
+ * Validates required fields for meme creation.
+ *
+ * @param {string | undefined} meme_title - The meme title.
+ * @param {string[] | undefined} tags - The tags array.
+ * @param {File | undefined} media_file - The media file.
+ * @param {string[]} errors - Array to accumulate validation errors.
  */
-function checkRequiredFields(
-    meme_title: string | undefined, 
-    image_url: string | undefined, 
-    tags: string[] | undefined, 
+function validateRequiredFields(
+    meme_title: string | undefined,
+    tags: string[] | undefined,
+    media_file: File | undefined,
     errors: string[]
 ) {
-    console.log("Checking required fields for meme creation.");
+    console.log("Checking required fields");
 
-    if (!meme_title) errors.push(MEME_ERROR_MESSAGES.MISSING_MEME_TITLE);
-    if (!image_url) errors.push(MEME_ERROR_MESSAGES.MISSING_IMAGE_URL);
-    if (!tags || tags.length === 0) errors.push(MEME_ERROR_MESSAGES.MISSING_TAGS);
+    if (!meme_title || meme_title.trim().length === 0) {
+        errors.push(MEME_ERROR_MESSAGES.MISSING_MEME_TITLE);
+    }
+
+    if (!tags || tags.length === 0) {
+        errors.push(MEME_ERROR_MESSAGES.MISSING_TAGS);
+    }
+
+    if (!media_file) {
+        errors.push(MEME_ERROR_MESSAGES.MISSING_MEDIA_FILE);
+    }
 }

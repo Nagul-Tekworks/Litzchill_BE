@@ -17,7 +17,14 @@ export function validateContestId(contestId:string):Response|null{
         return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST,CONETST_ENTRY_ERROR_MESSAGE.INVALID_INPUT);
       }
      return null;
- }
+    }
+     export function validateUserId(userId:string):Response|null{
+        if (!userId || !V4.isValid(userId)) {
+            return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST,CONETST_ENTRY_ERROR_MESSAGE.INVALID_INPUT);
+          }
+         return null;
+     }
+ 
 /**
  * Updates the status of a contest entry based on provided input.
  * 
