@@ -1,3 +1,4 @@
+
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
 import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
@@ -6,7 +7,7 @@ import { createMemeQuery, uploadFileToBucket } from "../../_repository/_meme_rep
 import { Meme } from "../../_model/MemeModel.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
 import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
-
+import Logger from "../../_shared/Logger/logger.ts";
 
 /**
  * Handler function to create a new meme.
@@ -28,16 +29,18 @@ import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
  * @throws {Error} Throws an error if any part of the process fails unexpectedly.
  */
 export default async function createMeme(req: Request, user: Record<string, string>): Promise<Response> {
-    console.log("Processing createMeme handler");
+    const logger = Logger.getInstance();  // Get the logger instance
+    logger.log("Processing createMeme handler");
 
     try {
         const { user_id } = user;
-        console.log("User_id is: ", user_id);
+        logger.info(`User_id is: ${user_id}`);
 
         // Ensure the content type is multipart/form-data
         const contentType = req.headers.get("content-type") || "";
         const validateContentType = contentTypeValidations(contentType);
         if (!validateContentType) {
+            logger.error("Invalid content type.");
             return await ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, COMMON_ERROR_MESSAGES.INVALIDCONTENTTYPE);
         }
 
@@ -46,13 +49,13 @@ export default async function createMeme(req: Request, user: Record<string, stri
         const meme_title = formData.get(MEMEFIELDS.MEME_TITLE) as string;
         const tagsRaw = formData.get(MEMEFIELDS.TAGS) as string;
         const tags = parseTags(tagsRaw);
-        const media_file = formData.get(MEMEFIELDS.MEDIA_FILE) as File; 
+        const media_file = formData.get(MEMEFIELDS.MEDIA_FILE) as File;
 
-        console.log("Extracted values:", { meme_title, tags,media_file});
+        logger.info(`Extracted values: meme_title=${meme_title}, tags=${tags}, media_file=${media_file}`);
 
         // Validate the meme data before inserting it into the database
-        const validationResponse = await validateMemeData(false,meme_title,tags,media_file);
-        console.log("Validation response:", validationResponse);
+        const validationResponse = await validateMemeData(false, meme_title, tags, media_file);
+        logger.info(`Validation response: ${validationResponse}`);
         if (validationResponse instanceof Response) {
             return validationResponse; // If there are validation errors, return the response
         }
@@ -60,25 +63,26 @@ export default async function createMeme(req: Request, user: Record<string, stri
         // Step 2: Upload the image to the bucket and get the public URL
         const uploadedUrl = await uploadFileToBucket(media_file, meme_title);
         if (!uploadedUrl) {
+            logger.error("Failed to upload media file to bucket.");
             return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.MEDIA_UPLOAD_FAILED);
         }
 
-        
         // Prepare meme data for insertion
-        const meme: Partial<Meme> = { meme_title, tags, media_file: uploadedUrl,user_id};
-        
+        const meme: Partial<Meme> = { meme_title, tags, media_file: uploadedUrl, user_id };
 
         // Insert the meme into the database
-        const { data: insertmeme, error:insertError } = await createMemeQuery(meme);
+        const { data: insertmeme, error: insertError } = await createMemeQuery(meme);
         if (insertError) {
+            logger.error("Failed to insert meme into the database.");
             return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_CREATE);
         }
 
         // Return success response
+        logger.info("Meme created successfully.");
         return await SuccessResponse(HTTP_STATUS_CODE.CREATED, MEME_SUCCESS_MESSAGES.MEME_CREATED_SUCCESSFULLY, insertmeme);
 
     } catch (error) {
-        console.error("Error creating meme:", error);
+        logger.error(`Error creating meme: ${error}`);
         return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 }

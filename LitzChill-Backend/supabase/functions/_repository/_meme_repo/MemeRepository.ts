@@ -21,7 +21,7 @@ export async function meme_exists(meme_id: string) {
         .maybeSingle();  // Ensure only one row is returned
 
     if (fetchError || !existingMeme) {
-        console.error(`Error fetching meme with ID ${meme_id}: ${fetchError}`);
+        
         return null;
     }
 
