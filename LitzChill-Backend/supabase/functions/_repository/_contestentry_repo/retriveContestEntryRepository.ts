@@ -15,7 +15,7 @@ import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
  * - `statusData`: The status of the user's contest entry, or `null` if no entry is found for the given user and contest.
  * - `statusError`: Any error encountered during the database query, or `null` if no errors occurred.
  */
-export async function getStatus(userId: string,contestId:string) {
+export async function getStatus(userId: string,contestId:string) :Promise<{statusData:any,statusError:any}>{
  const { data: statusData, error: statusError } = await supabase
     .from(TABLE_NAMES.CONTESTENTRY_TABLE)
     .select("status")
@@ -35,13 +35,13 @@ export async function getStatus(userId: string,contestId:string) {
  * - `data`: An array of contest entries, or `null` if no entries are found for the given contest.
  * - `error`: Any error encountered during the database query, or `null` if no errors occurred.
  */
-export async function getAllRecords(contestId: string) {
+export async function getAllRecords(contestId: string):Promise<{paginatedData:any,error:any}> {
   const { data: paginatedData, error } = await supabase
     .from(TABLE_NAMES.CONTESTENTRY_TABLE)
     .select(CONTEST_ENTRY_QUERY.GET_CONTEST_ENTRY)
     .eq(CONTEST_ENTRY_TABLE.CONTEST_ID, contestId)
     .limit(LIMIT_CONSTANT.RECORD_LIMIT); 
-  return { data: paginatedData, error };
+  return { paginatedData, error };
 }
 /**
  * Retrieves only the active contest entries for a specific contest.
@@ -55,14 +55,14 @@ export async function getAllRecords(contestId: string) {
  * - `data`: An array of active contest entries, or `null` if no active entries are found for the given contest.
  * - `error`: Any error encountered during the database query, or `null` if no errors occurred.
  */
-export async function getOnlyActiveRecords(contestId: string) {
+export async function getOnlyActiveRecords(contestId: string):Promise<{paginatedData:any,error:any}> {
  const { data: paginatedData, error } = await supabase
     .from(TABLE_NAMES.CONTESTENTRY_TABLE)
     .select(CONTEST_ENTRY_QUERY.GET_CONTEST_ENTRY)
     .eq(CONTEST_ENTRY_TABLE.CONTEST_ID, contestId)
     .eq(CONTEST_ENTRY_TABLE.STATUS, 'Active')
     .limit(LIMIT_CONSTANT.RECORD_LIMIT);
- return { data: paginatedData, error };
+ return { paginatedData, error };
 }
 /**
  * Retrieves contest entries for a specific user, including their own entry and all active entries for the contest.
@@ -78,11 +78,11 @@ export async function getOnlyActiveRecords(contestId: string) {
  * - `data`: An array of contest entries for the user and all active entries, or `null` if no entries are found.
  * - `error`: Any error encountered during the database query, or `null` if no errors occurred.
  */
-export async function getUserContestWithDisqualified(contestId: string, userId: string) {
+export async function getUserContestWithDisqualified(contestId: string, userId: string):Promise<{paginatedData:any,error:any}> {
   const { data: paginatedData, error } = await supabase
     .from(TABLE_NAMES.CONTESTENTRY_TABLE)
     .select(CONTEST_ENTRY_QUERY.GET_CONTEST_ENTRY)
     .eq(CONTEST_ENTRY_TABLE.CONTEST_ID, contestId)
     .or(`user_id.eq.${userId},status.eq.Active`)
-  return { data: paginatedData, error };
+  return {paginatedData, error };
 }

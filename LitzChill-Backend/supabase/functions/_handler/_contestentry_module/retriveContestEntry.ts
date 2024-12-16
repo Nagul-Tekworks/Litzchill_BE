@@ -13,7 +13,7 @@ import { validateContestId } from "../../_shared/_validation/ContestEntryValidat
  * @param param -- The parameters containing contest ID, user ID, and user type.
  * @returns -- The response object indicating success or failure.
  */
-export default async function get_Contest_Data(_req: Request, param: Record<string, string>) {
+export default async function get_Contest_Data(_req: Request, param: Record<string, string>): Promise<Response> {
   try {
     const { id: contestId, user_id: userId, user_type: userType } = param;
      // Validate contestId

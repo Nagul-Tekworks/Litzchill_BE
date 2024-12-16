@@ -8,23 +8,18 @@ import { CONTEST_TABLE } from "../../_shared/_db_table_details/contestentrytable
 import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
 
 //checks the contest id present in the contest table or not
-export async function validateContestEntry(contestId: string) {
+export async function validateContestEntry(contestId: string):Promise<{contestData:any,errorInContest:any}>{
   console.log("Validating contest entry for contestId:", contestId); // Log contestId being validated
-  const { data: contestData, error: errorincontest } = await supabase
+  const { data: contestData, error: errorInContest } = await supabase
     .from(TABLE_NAMES.CONTEST_TABLE)
     .select("*")
     .eq(CONTEST_TABLE.CONTEST_ID, contestId)
-    .eq(CONTEST_TABLE.CONTEST_STATUS, "ongoing");
-
-  console.log("Contest validation result:", contestData); // Log contestData
-  if (errorincontest) {
-    console.error("Error during contest validation:", errorincontest); // Log error if present
-  }
-  return { contestData, errorincontest };
+    .maybeSingle();
+  return { contestData, errorInContest };
 }
 
 // To insert new record into contest-entry table
-export async function insertContestEntry(entry: ContestEntryModel) {
+export async function insertContestEntry(entry: ContestEntryModel):Promise<{insertedData:any,errorInInsert:any}>{
   const { contest_id, meme_id, user_id } = entry;
 
   console.log("Meme id is: " ,entry.meme_id);
@@ -37,7 +32,7 @@ export async function insertContestEntry(entry: ContestEntryModel) {
   const comment_count = 0; // Default comment count
   const flag_count = 0; // Default flag count
 
-  const { data: insertedData, error: errorininsert } = await supabase
+  const { data: insertedData, error: errorInInsert } = await supabase
     .from(TABLE_NAMES.CONTESTENTRY_TABLE)
     .insert({
       contest_id,
@@ -50,11 +45,5 @@ export async function insertContestEntry(entry: ContestEntryModel) {
     })
     .select()
     .single();
-
-  if (errorininsert) {
-    console.error("Error inserting contest entry:", errorininsert); // Log error during insertion
-  }
-
-  console.log("Insert result:", insertedData); // Log the inserted data
-  return { insertedData, errorininsert };
+  return { insertedData, errorInInsert };
 }

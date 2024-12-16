@@ -13,17 +13,15 @@ import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
  *            - `errorinfetching`: Any error that occurred during the database query.
  */
 
-export async function getContest(contest_id: string, entry_id: string) {
-  const { data: fetchedData, error:errorinfetching } = await supabase
+export async function getContestEntry(contest_id: string, entry_id: string) :Promise<{fetchedData:any,errorInFetching:any}>{
+  const { data: fetchedData, error:errorInFetching } = await supabase
     .from(TABLE_NAMES.CONTESTENTRY_TABLE)
     .select("*")
     .eq(CONTEST_ENTRY_TABLE.CONTEST_ID, contest_id)
     .eq(CONTEST_ENTRY_TABLE.ENTRY_ID, entry_id);
 
-  return {fetchedData,errorinfetching}; // Return the data array directly or error
+  return {fetchedData,errorInFetching}; // Return the data array directly or error
 }
-
-
 /**
  * Updates the status of a specific contest entry based on the provided contest ID and entry ID.
  * 
@@ -35,13 +33,12 @@ export async function getContest(contest_id: string, entry_id: string) {
  *            - `errorinupdate`: Any error that occurred during the update operation.
  */
 
-export default async function update_contest_entry_status(contest_id: string, entry_id: string, new_status: string) {
+export default async function update_contest_entry_status(contest_id: string, entry_id: string, new_status: string):Promise<{updatedData:any,errorinupdate:any}> {
   const { data: updatedData, error:errorinupdate} = await supabase
     .from(TABLE_NAMES.CONTESTENTRY_TABLE)
     .update({ status: new_status }) // Only update the `status` field
     .eq(CONTEST_ENTRY_TABLE.CONTEST_ID, contest_id)
     .eq(CONTEST_ENTRY_TABLE.ENTRY_ID, entry_id)
     .select(); // Ensure updated rows are returned
-
   return {updatedData,errorinupdate}; // Return the updated data or error
 }

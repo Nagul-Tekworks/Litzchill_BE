@@ -1,10 +1,7 @@
 import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
-
 import { HTTP_STATUS_CODE } from "../_constants/HttpStatusCodes.ts";
 import { CONETST_ENTRY_ERROR_MESSAGE } from "../_messages/ContestEntryMsgs.ts";
 import { ErrorResponse } from "../../_responses/Response.ts";
-
-
 /**
  * Validates the given contest ID.
  * 
@@ -15,17 +12,12 @@ import { ErrorResponse } from "../../_responses/Response.ts";
  * @param contestId - The contest ID to validate, expected to be a string in UUID format.
  * @returns - Returns an error response if the contest ID is invalid, or an empty object if valid.
  */
-export function validateContestId(contestId:string){
+export function validateContestId(contestId:string):Response|null{
     if (!contestId || !V4.isValid(contestId)) {
-        return ErrorResponse(
-          
-          HTTP_STATUS_CODE.BAD_REQUEST,
-          CONETST_ENTRY_ERROR_MESSAGE.INVALID_INPUT,
-        );
+        return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST,CONETST_ENTRY_ERROR_MESSAGE.INVALID_INPUT);
       }
-     return {};
+     return null;
  }
-  
 /**
  * Updates the status of a contest entry based on provided input.
  * 
@@ -41,13 +33,10 @@ export function validateContestId(contestId:string){
  * @returns - A response object with the result of the operation.
  */
 
-export function validateRequiredFieldsForPatch(contest_id:string, entry_id:string, new_status:string){
+export function validateRequiredFieldsForPatch(contest_id:string, entry_id:string, new_status:string):Response|null{
   if (!contest_id || !entry_id || !new_status || !V4.isValid(contest_id) || !V4.isValid(entry_id)) {
-    return ErrorResponse(
-      HTTP_STATUS_CODE.BAD_REQUEST,
-      CONETST_ENTRY_ERROR_MESSAGE.REQUIRED_FIELDS
-    );
+    return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST,CONETST_ENTRY_ERROR_MESSAGE.REQUIRED_FIELDS);
   }
-  return {};
+  return null;
 }
 
