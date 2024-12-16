@@ -17,6 +17,7 @@ export async function meme_exists(meme_id: string) {
         .from(TABLE_NAMES.MEME_TABLE)
         .select("*")
         .eq(MEMEFIELDS.MEME_ID, meme_id)
+        .neq(MEMEFIELDS.MEME_STATUS,MEME_STATUS.DELETED)
         .maybeSingle();  // Ensure only one row is returned
 
     if (fetchError || !existingMeme) {

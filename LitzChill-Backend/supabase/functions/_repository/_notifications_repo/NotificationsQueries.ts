@@ -96,5 +96,11 @@ export async function markNotificationsAsReadQuery(notification_id: string): Pro
         .update({ read_status: true })
         .eq(NOTIFICATIONS_TABLE_FEILDS.NOTIFICATION_ID, notification_id);
 
-    return !error;
+    if (error) {
+        console.error("Error marking notification as read:", error);
+        return false;
+    }
+
+    return true;
 }
+

@@ -81,3 +81,4 @@ export async function updateLikeCount(meme_id: string, like_count: number): Prom
     if (error) return { data: null, error };
     return { data, error: null };
 }
+

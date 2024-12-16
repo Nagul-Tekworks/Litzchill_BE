@@ -10,7 +10,7 @@ import { NOTIFICATION_ERRORS, NOTIFICATION_SUCCESS } from "../../_shared/_messag
  * @param {Record<string, string>} params - The route parameters, including the user_id of the requesting user.
  * @returns {Promise<Response>} - A promise that resolves with the appropriate response object: success or error.
  */
-export default async function getNotifications(req: Request, params: Record<string, string>): Promise<Response> {
+export default async function getNotifications(_req: Request, params: Record<string, string>): Promise<Response> {
     try {
         const user_id = params.user_id;
         // Fetch notifications for the user

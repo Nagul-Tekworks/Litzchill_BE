@@ -20,7 +20,7 @@ import { LIKE_SUCCESS } from '../../_shared/_messages/LikeMessage.ts';
  * 
  * @throws {Error} - If the meme is not found, the user has not liked the meme, or there is an issue removing the like or updating the like count.
  */
-export default async function unlikememes(req: Request, params: Record<string, string>):Promise<Response> {
+export default async function unlikememes(_req: Request, params: Record<string, string>):Promise<Response> {
     try {
         const user_id = params.user_id;
         const meme_id = params.id;
@@ -38,11 +38,18 @@ export default async function unlikememes(req: Request, params: Record<string, s
         }
 
         // Check if the user has already liked the meme
-        const liked = await checkLikeExists(meme_id, user_id);
-        if (!liked) {
-           return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, LIKE_ERROR.NOTLIKED);
-        }
+        // const liked = await checkLikeExists(meme_id, user_id);
+        // if (!liked) {
+        //    return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, LIKE_ERROR.NOTLIKED);
+        // }
 
+        const { data: liked, error } = await checkLikeExists(meme_id, user_id);
+        if (error || !liked) {
+            console.log(`User ${user_id} has not liked meme ${meme_id}`);
+            return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, LIKE_ERROR.NOTLIKED);
+        } else if(liked){
+            console.log(`User ${user_id}  liked meme ${meme_id}`);
+        }
         // Remove the like entry
         const unlikedmeme = await unlikememe(meme_id, user_id);
         if (!unlikedmeme) {

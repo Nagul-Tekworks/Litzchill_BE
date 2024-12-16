@@ -24,7 +24,7 @@ import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
  *   - Failure to insert like or update like count.
  *   - Failure to notify the meme owner.
  */
-export default async function likememe(req: Request, params: Record<string, string>) {
+export default async function likememe(_req: Request, params: Record<string, string>) {
     try {
         const user_id = params.user_id;
         const meme_id = params.id;
@@ -44,11 +44,14 @@ export default async function likememe(req: Request, params: Record<string, stri
         console.log(`Meme with ID ${meme_id} exists.`);
 
         // Step 2: Check if the user has already liked the meme
-        const liked = await checkLikeExists(meme_id, user_id);
-        if (!liked) {
+        const { data: liked, error } = await checkLikeExists(meme_id, user_id);
+        if (error || !liked) {
+            console.log(`User ${user_id} has not liked meme ${meme_id}`);
+        } else if(liked){
             console.log(`User ${user_id} already liked meme ${meme_id}`);
-            return SuccessResponse(HTTP_STATUS_CODE.OK, LIKE_SUCCESS.LIKED_SUCCESSFULLY);
+            return SuccessResponse(HTTP_STATUS_CODE.OK, LIKE_SUCCESS.LIKED_SUCCESSFULLY);  // New message for already liked
         }
+        
 
         // Step 3: Insert a new like record
         const likeable_type = "meme";

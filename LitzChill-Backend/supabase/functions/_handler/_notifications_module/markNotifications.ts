@@ -12,7 +12,7 @@ import { NOTIFICATION_ERRORS, NOTIFICATION_SUCCESS } from "../../_shared/_messag
  * @param {Record<string, string>} params - The parameters from the URL, including the notification ID.
  * @returns {Promise<Response>} A promise that resolves to a success or error response based on the operation.
  */
-export default async function markNotification(req: Request, params: Record<string, string>): Promise<Response> {
+export default async function markNotification(_req: Request, params: Record<string, string>): Promise<Response> {
     try {
         const notification_id = params.id;
 
@@ -23,8 +23,9 @@ export default async function markNotification(req: Request, params: Record<stri
         }
 
         // Mark the notification as read
-        const error = await markNotificationsAsReadQuery(notification_id);
-        if (error) {
+        // Mark the notification as read
+        const isSuccessful = await markNotificationsAsReadQuery(notification_id);
+        if (!isSuccessful) {
             console.log("Marking failed");
             return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, NOTIFICATION_ERRORS.FAILED_TO_UPDATE);
         }
