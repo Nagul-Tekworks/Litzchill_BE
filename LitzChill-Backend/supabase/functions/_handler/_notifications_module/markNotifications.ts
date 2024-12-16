@@ -15,6 +15,7 @@ import { NOTIFICATION_ERRORS, NOTIFICATION_SUCCESS } from "../../_shared/_messag
 export default async function markNotification(_req: Request, params: Record<string, string>): Promise<Response> {
     try {
         const notification_id = params.id;
+        const user_id = params.user_id;
 
         // Validate the notification ID
         if (!notification_id || !V4.isValid(notification_id)) {
@@ -24,7 +25,7 @@ export default async function markNotification(_req: Request, params: Record<str
 
         // Mark the notification as read
         // Mark the notification as read
-        const isSuccessful = await markNotificationsAsReadQuery(notification_id);
+        const isSuccessful = await markNotificationsAsReadQuery(notification_id,user_id);
         if (!isSuccessful) {
             console.log("Marking failed");
             return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, NOTIFICATION_ERRORS.FAILED_TO_UPDATE);

@@ -17,11 +17,8 @@ export async function addNotifications( user_id: string,meme_title: string, type
     const statusTextMap: Record<string, string> = {
         [MEME_STATUS.REJECTED]: "rejected",
         [MEME_STATUS.APPROVED]: "approved",
-        [MEME_STATUS.PENDING]: "pending",
-        [MEME_STATUS.DELETED]:"deleted"
     };
-
-    const readableStatus = statusTextMap[status] || "unknown";
+    const readableStatus = statusTextMap[status] || status;
 
     const notificationContent = `Your meme "${meme_title}" has been "${readableStatus}".`;
     console.log("Notification content:", notificationContent);
@@ -90,11 +87,12 @@ export async function existingNotificationsQuery(notification_id: string): Promi
  * @param notification_id - The unique identifier of the notification.
  * @returns {Promise<boolean>} - Returns true if the notification was successfully marked as read, or false if there was an error.
  */
-export async function markNotificationsAsReadQuery(notification_id: string): Promise<boolean> {
+export async function markNotificationsAsReadQuery(notification_id: string,user_id:string): Promise<boolean> {
     const { error } = await supabase
         .from(TABLE_NAMES.NOTIFICATIONS_TABLE)
         .update({ read_status: true })
-        .eq(NOTIFICATIONS_TABLE_FEILDS.NOTIFICATION_ID, notification_id);
+        .eq(NOTIFICATIONS_TABLE_FEILDS.NOTIFICATION_ID, notification_id)
+        .eq(NOTIFICATIONS_TABLE_FEILDS.USER_ID,user_id);
 
     if (error) {
         console.error("Error marking notification as read:", error);

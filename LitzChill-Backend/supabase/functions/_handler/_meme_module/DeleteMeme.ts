@@ -5,7 +5,7 @@ import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts"
 import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
 
-export default async function DeletememebyID(req: Request,params:Record<string,string>) {
+export default async function DeletememebyID(_req: Request,params:Record<string,string>) {
     try {
         const meme_id = params.id;
         const user_id = params.user_id;

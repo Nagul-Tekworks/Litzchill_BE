@@ -274,9 +274,8 @@ export async function fetchMemes(page: number, limit: number, sort: string, tags
             .from("memes")
             .select("meme_id, user_id, meme_title, image_url, like_count, tags, created_at")
             .eq(MEMEFIELDS.MEME_STATUS, MEME_STATUS.APPROVED)
-            .neq(MEMEFIELDS.MEME_STATUS,MEME_STATUS.DELETED)
             .order(sort === "popular" ? "like_count" : "created_at", { ascending: false })
-            .range((page - 1) * limit, page * limit - 1);
+            .range((page - 1) * limit, page * limit - 1); //range(start,end)
 
         if (tags) {
             const tagArray = tags.split(",").map(tag => tag.trim()); // Split and trim tags

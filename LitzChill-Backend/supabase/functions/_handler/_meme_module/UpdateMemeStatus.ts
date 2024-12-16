@@ -30,7 +30,7 @@ export default async function updateMemeStatus(req: Request, params: Record<stri
       }
 
       // Validate `meme_status`
-      const validStatuses = [MEME_STATUS.APPROVED, MEME_STATUS.PENDING, MEME_STATUS.REJECTED, MEME_STATUS.DELETED];
+      const validStatuses = [MEME_STATUS.APPROVED,MEME_STATUS.REJECTED];
       if (!validStatuses.includes(meme_status)) {
           console.error("Validation failed: Invalid meme_status value.");
           return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, COMMON_ERROR_MESSAGES.INVALID_DATA);

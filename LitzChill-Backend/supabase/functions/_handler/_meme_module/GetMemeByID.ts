@@ -24,7 +24,7 @@ import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
  * 
  * @throws {Error} Throws an error if there is an unexpected failure while fetching the meme.
  */
-export default async function getmemebyID(req: Request, params: Record<string, string>): Promise<Response> {
+export default async function getmemebyID(_req: Request, params: Record<string, string>): Promise<Response> {
     try {  
         const meme_id = params.id;
         console.log(`Received request to fetch meme with ID: ${meme_id}`);

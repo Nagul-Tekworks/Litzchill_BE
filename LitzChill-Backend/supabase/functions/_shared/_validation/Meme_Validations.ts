@@ -61,7 +61,6 @@ export function parseTags(tagsRaw: string | null): string[] {
  * @returns Validation result object or error response
  */
 export function validateMemeData(isUpdate: boolean = false,meme_title?:string ,tags?:string[],media_file?: File) {
-    //const {meme_title, tags } = memeData;  
     const validationErrors: string[] = [];
 
     // If creating a meme, check for required fields
