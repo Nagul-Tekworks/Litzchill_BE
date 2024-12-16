@@ -9,6 +9,8 @@ import { FlagModuleRoutes } from "../_routes/Flag_Module_Routes.ts"
  * -Calling route handler to handler appropriate route and base on route route will call handler
  */
 Deno.serve(async (req) => {
+
+  //calling handler to match provided path with our routes
   console.log('INFO: Request Recieved In Index Calling Route Handler')
   return await routeHandler(req,FlagModuleRoutes);
 })

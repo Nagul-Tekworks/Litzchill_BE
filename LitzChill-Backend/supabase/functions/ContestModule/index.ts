@@ -8,7 +8,11 @@ import { routeHandler } from "../_routes/Route_Handler.ts"
  * 
  * -Calling route handler to handler appropriate route and base on route route will call handler
  */
+
+
 Deno.serve(async (req) => {
+     //calling route handler to match provided path
      console.log('INFO: Request Recieved In Index Calling Route Handler')
      return await routeHandler(req,Contest_Module_Routes);
 })
+

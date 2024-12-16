@@ -106,3 +106,26 @@ export async function createContest(contest:ContestModel) :Promise<{ data: any; 
 
          return {data,error};
  }
+
+
+ export async function updateContestStatusUsingCron() {
+
+        const currentTime = Date.now();
+        const{error:upcomingError}=await supabase
+            .from('contest')
+            .update({'status':'upcoming'})
+            .gt('start_date',currentTime);
+
+            const{error:ongoingError}=await supabase
+            .from('contest')
+            .update({'status':'ongoing'})
+            .lte('start_date',currentTime)
+            .gt('end_date',currentTime);
+
+
+            const{error:completeError}=await supabase
+            .from('contest')
+            .update({'status':'completed'})
+            .lt('end_date',currentTime);
+
+ }
