@@ -8,14 +8,14 @@ export const MEME_ROUTES ={
 }
 
 export const LIKES_ROUTES = {
-    LIKE_MEME_PATH:"/LIKESMODULE/likememe/:id",
-    UNLIK_MEME_PATH:"/LIKESMODULE/unlikememe/:id"
+    LIKE_MEME_PATH:"/LikeAndNotificationModule/likememe/:id",
+    UNLIK_MEME_PATH:"/LikeAndNotificationModule/unlikememe/:id"
 }
 
 
 export const NOTIFICATION_ROUTES = {
-    GET_NOTIFICATION_PATH:"/NOTIFICATIONSMODULE/getnotifications",
-    MARK_NOTIFICATION_ROUTE:"/NOTIFICATIONSMODULE/marknotification/:id"
+    GET_NOTIFICATION_PATH:"/LikeAndNotificationModule/getnotifications",
+    MARK_NOTIFICATION_ROUTE:"/LikeAndNotificationModule/marknotification/:id"
 }
 
 export const CONTEST_ROUTES = {

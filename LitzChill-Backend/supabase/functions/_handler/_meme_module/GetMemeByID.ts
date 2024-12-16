@@ -6,28 +6,58 @@ import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messa
 import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 
 
-
-export default async function getmemebyID(req:Request,params:Record<string,string>) {
+/**
+ * Handler function to fetch a meme by its ID.
+ * 
+ * This function:
+ * - Validates the provided meme ID.
+ * - Fetches the meme from the repository using the meme ID.
+ * - Returns a success response with the fetched meme or an error response if the meme is not found or there's an issue.
+ * 
+ * @param {Request} req - The HTTP request object.
+ * @param {Record<string, string>} params - The URL parameters containing:
+ *   - `id`: The unique ID of the meme to fetch.
+ * 
+ * @returns {Promise<Response>} - The response containing:
+ *   - If successful, a success response with the meme details.
+ *   - If the meme is not found or an error occurs, an error response with the appropriate status code and message.
+ * 
+ * @throws {Error} Throws an error if there is an unexpected failure while fetching the meme.
+ */
+export default async function getmemebyID(req: Request, params: Record<string, string>): Promise<Response> {
     try {  
-         const meme_id = params.id;
+        const meme_id = params.id;
+        console.log(`Received request to fetch meme with ID: ${meme_id}`);
+        
         // Validate the meme_id
         if (!meme_id || !V4.isValid(meme_id)) { 
-            console.log("Validation failed: Missing parameters.");
-            return  ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST,MEME_ERROR_MESSAGES.MISSING_MEMEID);
+            console.log("Validation failed: Missing or invalid meme ID.");
+            return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, MEME_ERROR_MESSAGES.MISSING_MEMEID);
         }
-         // Perform the update
-         const {data:fetchMeme,error} = await getMemesByIdQuery(meme_id);
-         if(error || fetchMeme?.length===0)
-         {
-             console.log("Fetching failed");
-             return  ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
 
-         }
-         // Return the updated meme
-         return  SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_FETCHED_SUCCESSFULLY,fetchMeme);
+        // Fetch the meme by ID from the repository
+        console.log("Fetching meme from repository...");
+        const { data: fetchMeme, error } = await getMemesByIdQuery(meme_id);
         
-        } catch (error) {
-            console.error("Error updating meme:", error);
-            return  ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
+        // Handle errors or empty results
+        if (error) {
+            console.error(`Error in getMemesByIdQuery: ${error.message}`);
+            return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
         }
+        
+        if (!fetchMeme || fetchMeme.length === 0) {
+            console.log("Meme not found.");
+            return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
+        }
+
+        // Successfully fetched meme
+        console.log("Meme fetched successfully:", JSON.stringify(fetchMeme));
+
+        // Return the fetched meme
+        return SuccessResponse(HTTP_STATUS_CODE.OK, MEME_SUCCESS_MESSAGES.MEME_FETCHED_SUCCESSFULLY, fetchMeme);
+        
+    } catch (error) {
+        console.error("Error fetching meme:", error);
+        return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
     }
+}

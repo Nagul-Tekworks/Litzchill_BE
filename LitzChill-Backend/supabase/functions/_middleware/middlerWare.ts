@@ -5,9 +5,8 @@ import { COMMON_ERROR_MESSAGES } from "../_shared/_messages/ErrorMessages.ts";
 
 
 // Check if the user has necessary privileges
-export const checkUserAuthentication = function checkUserAuthentication(
-  handler: (
-    request: Request,
+export const checkUserAuthentication = function checkUserAuthentication(handler: 
+  (request: Request,
     params: Record<string, string>,
   ) => Promise<Response>,
   roles: string[] = [],

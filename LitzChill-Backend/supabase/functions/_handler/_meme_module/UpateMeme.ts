@@ -1,6 +1,6 @@
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { contentTypeValidations, parseTags, validateMemeData } from "../../_shared/_validation/Meme_Validations.ts";
+import { parseTags, validateMemeData } from "../../_shared/_validation/Meme_Validations.ts";
 import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
 import { updatememeQuery } from "../../_repository/_meme_repo/MemeRepository.ts";
 import { Meme } from '../../_model/MemeModel.ts';
@@ -8,10 +8,26 @@ import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
 import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
 
-
-export default async function updateMeme(req: Request,params:Record<string,string>) {
+/**
+ * Handles the update of a meme's details, including validation, data extraction, and database update.
+ * 
+ * @param {Request} req - The HTTP request object containing the form data for the meme update.
+ * @param {Record<string, string>} params - The URL parameters containing the meme ID.
+ * @returns {Promise<Response>} - The response object indicating the success or failure of the meme update operation.
+ * 
+ * @throws {Error} - If an error occurs during any of the following:
+ *   - Invalid or missing meme ID.
+ *   - Invalid content type.
+ *   - Validation failures for the meme data.
+ *   - Failure to update the meme in the database.
+ */
+export default async function updateMeme(req: Request,params:Record<string,string>): Promise<Response> {
     try {
         const meme_id = params.id;
+        const user_id = params.user_id;
+        const user_type = params.user_type;
+
+        console.log (user_id,meme_id,user_type)
         
         // Validate the meme_id parameter
         if (!meme_id || !V4.isValid(meme_id)) { 
@@ -20,44 +36,29 @@ export default async function updateMeme(req: Request,params:Record<string,strin
         }
 
   
-        //Extract the form data and validate the required fields before inserting the meme into the database.
-        const formData = await req.formData();
-        const meme_title = formData.get(MEMEFIELDS.MEME_TITLE) as string |null;
-        const tagsRaw = formData.get(MEMEFIELDS.TAGS) as string;
-        const tags = tagsRaw ? parseTags(tagsRaw) : undefined; 
-        console.log("Extracted values:", { meme_title,tags });
+        //Extract the JSON body and validate the required fields before inserting the meme into the database.
+          const body = await req.json();
+          const meme_title = body[MEMEFIELDS.MEME_TITLE] || undefined;
+          const tagsRaw = body[MEMEFIELDS.TAGS] || undefined;
+          const tags = tagsRaw ? parseTags(tagsRaw) : undefined;
+  
+          console.log("Extracted values:", { meme_title, tags });
+
         
-
-        // Ensure the content type is multipart/form-data
-        const contentType = req.headers.get("content-type") || "";
-        const validateContentType = contentTypeValidations(contentType);
-        if (!validateContentType) {
-            return await ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST,COMMON_ERROR_MESSAGES.INVALIDCONTENTTYPE);
-        }
-
-
-        const meme: Partial<Meme> = {};
-        if (meme_title !== null && meme_title.trim() !== "") {
-            meme.meme_title = meme_title; // Add title only if provided
-        }
-        if (tags !== undefined) {
-            meme.tags = tags; // Add tags only if provided
-        }
-        
-        const validationResponse = await validateMemeData(meme,true);
+        const validationResponse = await validateMemeData(true,meme_title,tags);
         if (validationResponse instanceof Response) {
             return validationResponse; // If there are validation errors, return the response
         }
 
-
+        const meme: Partial<Meme> = {meme_title,tags,meme_id,user_id};
         // Perform the update
-        const {data:updatememe,error} = await updatememeQuery(meme,meme_id);
-        if(error || updateMeme.length===0)
+        const {data:updatememe,error} = await updatememeQuery(meme,user_type);
+        console.log(updatememe,error)
+        if(error || !updatememe)
         {
             console.log("Update failed");
             return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_UPDATE);
         }
-        // Return the updated meme
         return await SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_UPDATED_SUCCESSFULLY,updatememe);
 
 

@@ -14,11 +14,11 @@ import updateMemeStatus from "../_handler/_meme_module/UpdateMemeStatus.ts";
 // Define your routes with role-based authorization
 export const MemeRoutes = {
     [HTTP_METHOD.POST]: {
-        [MEME_ROUTES.MEME_CREATE_PATH]: checkUserAuthentication(createMeme, [
+        [MEME_ROUTES.MEME_CREATE_PATH]: checkUserAuthentication(createMeme,[
             USER_ROLES.ADMIN_ROLE,
             USER_ROLES.USER_ROLE,
-            USER_ROLES.MEMER_ROLE
-        ]),
+            USER_ROLES.MEMER_ROLE]
+        ),
     },
     [HTTP_METHOD.PATCH]: {
         [MEME_ROUTES.MEME_UPDATE_PATH]: checkUserAuthentication(updateMeme, [

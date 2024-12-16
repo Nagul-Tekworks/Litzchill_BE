@@ -1,70 +1,83 @@
 import supabase from "../../_shared/_config/DbConfig.ts";
+import { LIKE_TABLE_FIELDS } from "../../_shared/_db_table_details/LikeTableFields.ts";
+import { MEMEFIELDS } from "../../_shared/_db_table_details/MemeTableFields.ts";
+import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
 
-
-/*
- function to check if like exists for a given meme_id and user_id
- returns like_id if found, otherwise null  - null if not found or error occurred  - data if found
- Note: this function assumes that the likes table has a unique constraint on meme_id and user_id
- (this is usually the case in a real-world application)
- -1 is returned if no like exists, as the query will return null when no matching rows are found
- -1 is also returned if an error occurs during the query execution.
-*/
-export async function checkLikeExists(meme_id: string, user_id: string) {
+/**
+ * Function to check if a like exists for a given meme_id and user_id.
+ * 
+ * @param meme_id - The unique identifier of the meme.
+ * @param user_id - The unique identifier of the user.
+ * @returns {Promise<{ data: object | null, error: object | null }>} - The like data if found, or null if not found or an error occurs.
+ */
+export async function checkLikeExists(meme_id: string, user_id: string): Promise<{ data: object | null, error: object | null }> {
     const { data, error } = await supabase
-   .from("likes")
-   .select("like_id")
-   .eq("meme_id", meme_id)
-   .eq("user_id", user_id)
-   .single();
+        .from(TABLE_NAMES.LIKES_TABLE)
+        .select(LIKE_TABLE_FIELDS.LIKE_ID)
+        .eq(LIKE_TABLE_FIELDS.USER_ID, user_id)
+        .eq(LIKE_TABLE_FIELDS.MEME_ID, meme_id)
+        .single();
+        console.log(data,error)
 
-    if(error || !data) return null;
-    return data;
+    if (error || !data) return { data: null, error };
+    return { data, error: null };
 }
 
-/*
- function to insert like
- returns like_id if inserted, otherwise null  - null if not inserted or error occurred  - data if inserted
-*/
-
-export async function insertLikeQuery(meme_id: string, user_id: string) {
+/**
+ * Function to insert a like for a meme.
+ * 
+ * @param meme_id - The unique identifier of the meme.
+ * @param user_id - The unique identifier of the user.
+ * @param likeable_type - The type of likeable entity (e.g., meme).
+ * @returns {Promise<{ data: object | null, error: object | null }>} - The inserted like data if successful, or null if not inserted or an error occurs.
+ */
+export async function insertLikeQuery(meme_id: string, user_id: string, likeable_type: string): Promise<{ data: object | null, error: object | null }> {
     const { data, error } = await supabase
-    .from("likes")
-    .insert([{
-        meme_id: meme_id,
-        user_id: user_id,
-    }])
-    .select("like_id")
-    .single();
-     return {data,error}
+        .from(TABLE_NAMES.LIKES_TABLE)
+        .insert([{
+            meme_id: meme_id,
+            user_id: user_id,
+            likeable_type: likeable_type,
+        }])
+        .select(LIKE_TABLE_FIELDS.LIKE_ID)
+        .single();
+
+    if (error) return { data: null, error };
+    return { data, error: null };
 }
 
-/*
- Function to unlike meme
+/**
+ * Function to unlike a meme.
+ * 
+ * @param meme_id - The unique identifier of the meme.
+ * @param user_id - The unique identifier of the user.
+ * @returns {Promise<boolean>} - Returns true if successful, or false if there’s an error.
  */
- export async function unlikememe(meme_id:string,user_id:string)
- {
-     const { error } = await supabase
-     .from('likes')
-     .delete()
-     .eq('user_id', user_id)
-     .eq('meme_id', meme_id);
- 
-     if(error) return null;
-     return true;
- }
+export async function unlikememe(meme_id: string, user_id: string): Promise<boolean> {
+    const { error } = await supabase
+        .from(TABLE_NAMES.LIKES_TABLE)
+        .delete()
+        .eq(LIKE_TABLE_FIELDS.USER_ID, user_id)
+        .eq(LIKE_TABLE_FIELDS.MEME_ID, meme_id);
 
-/*
- Function to update like status into meme table
- returns updated meme_id and like_count if updated, otherwise null  - null if not updated or error occurred  - data if updated
+    return !error;
+}
+
+/**
+ * Function to update like count in the meme table.
+ * 
+ * @param meme_id - The unique identifier of the meme.
+ * @param like_count - The updated like count.
+ * @returns {Promise<{ data: object | null, error: object | null }>} - The updated like count if successful, or null if not updated or an error occurs.
  */
-export async function updateLikeCount(meme_id: string, like_count: number) {
+export async function updateLikeCount(meme_id: string, like_count: number): Promise<{ data: object | null, error: object | null }> {
     const { data, error } = await supabase
-    .from("memes")
-    .update({ like_count: like_count})
-    .eq("meme_id", meme_id)
-    .select("meme_id, like_count")
-    .single();
+        .from(TABLE_NAMES.MEME_TABLE)
+        .update({ like_count: like_count })
+        .eq(MEMEFIELDS.MEME_ID, meme_id)
+        .select("meme_id, like_count")
+        .single();
 
-    if(error || !data) return null;
-    return data;
+    if (error) return { data: null, error };
+    return { data, error: null };
 }

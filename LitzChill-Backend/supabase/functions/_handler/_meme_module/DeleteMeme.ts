@@ -8,6 +8,10 @@ import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messa
 export default async function DeletememebyID(req: Request,params:Record<string,string>) {
     try {
         const meme_id = params.id;
+        const user_id = params.user_id;
+        const user_type = params.user_type;
+
+        console.log(meme_id,user_id,user_type);
         // Validate meme_id
         if (!meme_id || !V4.isValid(meme_id)) { 
             console.log("Validation failed: Missing parameters.");
@@ -15,14 +19,15 @@ export default async function DeletememebyID(req: Request,params:Record<string,s
         }
 
         // Delete the meme 
-        const {error} = await deleteMemeQuery(meme_id);
+        const {data,error} = await deleteMemeQuery(meme_id,user_id,user_type);
+        console.log(data," ",error);
         if(error){
                 console.log("delete failed");
+                // return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_DELETE)
                 return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_DELETE)
             }
 
-            // Return the updated meme
-            return await SuccessResponse(HTTP_STATUS_CODE.NO_CONTENT,MEME_SUCCESS_MESSAGES.MEME_DELETED_SUCCESSFULLY);
+            return await SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_DELETED_SUCCESSFULLY)
     
     
         } catch (error) {
