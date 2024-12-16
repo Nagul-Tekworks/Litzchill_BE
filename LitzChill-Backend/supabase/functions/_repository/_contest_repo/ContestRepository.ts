@@ -1,4 +1,3 @@
-
 import { ContestModel } from "../../_model/ContestModel.ts";
 import supabase from "../../_shared/_config/DbConfig.ts";
 import { CONTEST_TABLE } from "../../_shared/_db_table_details/ContestTableFields.ts";
@@ -108,24 +107,43 @@ export async function createContest(contest:ContestModel) :Promise<{ data: any; 
  }
 
 
- export async function updateContestStatusUsingCron() {
+/**
+ * Updates the status of contests based on the current date.
+ * - Sets contests with a future start date to 'upcoming'.
+ * - Sets contests with an active date range to 'ongoing'.
+ * - Sets contests with a past end date to 'completed'.
+ * 
+ * @async
+ * @function updateContestStatusUsingCron
+ * @returns {Promise<void>} Resolves when the updates are done.
+ */
 
-        const currentTime = Date.now();
-        const{error:upcomingError}=await supabase
-            .from('contest')
-            .update({'status':'upcoming'})
-            .gt('start_date',currentTime);
+ export async function updateContestStatusUsingCron():Promise<void> {
+        console.info("Updating Contest Status Using Deno Cron");
+        const currentDate = new Date();
 
-            const{error:ongoingError}=await supabase
-            .from('contest')
-            .update({'status':'ongoing'})
-            .lte('start_date',currentTime)
-            .gt('end_date',currentTime);
+       
+        const { error: upcomingError } = await supabase
+          .from('contest')
+          .update({ status: 'upcoming' })
+          .gt('start_date', currentDate.toISOString())
+          .neq('status','deleted'); 
+        
+      
+        const { error: ongoingError } = await supabase
+          .from('contest')
+          .update({ status: 'ongoing' })
+          .lte('start_date', currentDate.toISOString()) 
+          .gt('end_date', currentDate.toISOString())
+          .neq('status','deleted'); ; 
+        
+      
+        const { error: completeError } = await supabase
+          .from('contest')
+          .update({ status: 'completed' })
+          .lt('end_date', currentDate.toISOString())
+          .neq('status','deleted'); ; 
 
-
-            const{error:completeError}=await supabase
-            .from('contest')
-            .update({'status':'completed'})
-            .lt('end_date',currentTime);
-
+         const obj= {completeError,ongoingError,upcomingError};
+        
  }

@@ -4,7 +4,7 @@ import { createContest } from "../../_repository/_contest_repo/ContestRepository
 import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
 import { CONTEST_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/ContestModuleMessages.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
+import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";  
 import { validateContestDetails } from "../../_shared/_validation/ContestDetailsValidation.ts";
 
 /**

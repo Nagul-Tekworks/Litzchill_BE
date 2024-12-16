@@ -1,7 +1,14 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",  // Base URL set to the root directory (LitzChill)
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "moduleResolution": "node",  // Use Node.js module resolution strategy
+    "paths": {
+      "@shared/*": ["supabase/functions/_shared/*"],
+      "@error/*": ["supabase/functions/_errorHandler/*"],
+      "@model/*": ["supabase/functions/_model/*"], // Adjusted path to match the actual folder structure
+    }
   }
 }

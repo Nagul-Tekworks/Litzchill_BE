@@ -15,3 +15,11 @@ export const CONTEST_TABLE={
      //Contest Status For Deleting Contest. 
      CONTEST_DELETE:"deleted",
 }
+
+
+export const  CONTEST_STATUS={
+
+    ONGOING_STATUS:'upcoming',
+    UPCOMING_STATUS:'ongoing',
+    COMPLETED_STATUS:'completed'
+}

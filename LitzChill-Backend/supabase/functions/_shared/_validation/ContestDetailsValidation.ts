@@ -64,7 +64,8 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
     
     // Validating contest title if invalid title returning error message.
     if (contestDetails.contest_title) {
-        if (contestDetails.contest_title.trim().length < 3 || contestDetails.contest_title.trim().length > 100) {
+        contestDetails.contest_title=contestDetails.contest_title.replace(/\s+/g, '').trim();
+        if (contestDetails.contest_title.length < 3 || contestDetails.contest_title.length > 100) {
              console.error("ERROR: Invalid contest title length: Title must be between 3 and 100 characters.");4
              return ErrorResponse(
                  HTTP_STATUS_CODE.BAD_REQUEST,
@@ -83,7 +84,8 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
 
     // Validating contest description
     if (contestDetails.description) {
-        if (contestDetails.description.trim().length < 8 || contestDetails.description.trim().length > 500) {
+        contestDetails.description=contestDetails.description.replace(/\s+/g, '').trim();
+        if (contestDetails.description.length < 8 || contestDetails.description.length > 500) {
            
             console.error("ERROR: Invalid contest description length: Description must be between 8 and 500 characters.");
             return ErrorResponse(
@@ -111,10 +113,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
                     CONTEST_VALIDATION_MESSAGES.INVALID_START_DATE_VALUE
                )
             }
-            if(start_date>current_date){
-                contestDetails.status=CONTEST_STATUS[0];
-            }
-            contestDetails.status=CONTEST_STATUS[2];
+          
 
         }
     }//if validation for create contest then start date is required
@@ -142,6 +141,14 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
             if (contestDetails.start_date && isValidISODate(contestDetails.start_date)) {
               
                 const start_date = new Date(contestDetails.start_date);
+                if (current_date > end_date) {
+                    
+                    console.error("ERROR: End date must be after the current date.");
+                    return ErrorResponse(
+                         HTTP_STATUS_CODE.BAD_REQUEST,
+                         CONTEST_VALIDATION_MESSAGES.INVALID_END_DATE_VALUE
+                   );
+                }
                 if (start_date >= end_date) {
                     
                     console.error("ERROR: End date must be after the start date.");
@@ -173,6 +180,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
                  CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_STATUS
             );
         }
+       
     }
 
     if(contestDetails.result||Object.keys(contestDetails).includes('result')){
@@ -208,9 +216,20 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
             );
         }
     }
+
+
     
+    if(contestDetails.status&&contestDetails.start_date){
+        const start_date = new Date(contestDetails.start_date);
+        if(start_date>current_date){
+            contestDetails.status=CONTEST_STATUS[0];
+        }
+        contestDetails.status=CONTEST_STATUS[2];
+    }
 
     console.info("INFO: Validation Successfully Passed");
+
+    
     return null;
 
 
