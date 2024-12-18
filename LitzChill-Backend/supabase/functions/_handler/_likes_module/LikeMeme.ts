@@ -45,15 +45,6 @@ export default async function likememe(_req: Request, params: Record<string, str
             return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.MEME_NOT_FOUND);
         }
         logger.info(`Meme with ID ${meme_id} exists.`);
-
-        // Step 2: Check if the user has already liked the meme
-        const { data: liked, error } = await checkLikeExists(meme_id, user_id);
-        if (error || !liked) {
-          logger.error(`User ${user_id} has not liked meme ${meme_id}`);
-        } else if(liked){
-            logger.info(`User ${user_id} already liked meme ${meme_id}`);
-            return SuccessResponse(HTTP_STATUS_CODE.OK, LIKE_SUCCESS.LIKED_SUCCESSFULLY);  // New message for already liked
-        }
         
 
         // Step 3: Insert a new like record
@@ -62,14 +53,6 @@ export default async function likememe(_req: Request, params: Record<string, str
         if (likeError) {
             logger.error(`Failed to like meme ${meme_id} by user ${user_id}`+ likeError);
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.INSERTION_FAILED);
-        }
-
-        // Step 4: Update the like count in the memes table
-        const updatedLikeCount = existingMeme.like_count + 1;
-        const { error: updateError } = await updateLikeCount(meme_id, updatedLikeCount);
-        if (updateError) {
-            logger.error(`Failed to update like count for meme ${meme_id}`+ updateError);
-            return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.UPDATE_FAILED);
         }
 
         // Step 5: Notify the meme owner about the like

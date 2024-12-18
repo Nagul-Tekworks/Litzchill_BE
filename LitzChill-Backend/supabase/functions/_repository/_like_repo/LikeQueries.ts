@@ -36,23 +36,26 @@ export async function checkLikeExists(meme_id: string, user_id: string): Promise
  * @param likeable_type - The type of likeable entity (e.g., meme).
  * @returns {Promise<{ data: object | null, error: object | null }>} - The inserted like data if successful, or null if not inserted or an error occurs.
  */
-export async function insertLikeQuery(meme_id: string, user_id: string, likeable_type: string): Promise<{ data: object | null, error: object | null }> {
+
+export async function insertLikeQuery(
+    meme_id: string, 
+    user_id: string, 
+    likeable_type: string
+  ): Promise<{ data: object | null, error: object | null }> {
     const { data, error } = await supabase
-        .from(TABLE_NAMES.LIKES_TABLE)
-        .insert([{
-            meme_id: meme_id,
-            user_id: user_id,
-            likeable_type: likeable_type,
-        }])
-        .select(LIKE_TABLE_FIELDS.LIKE_ID)
-        .single();
-
-        logger.info(data+" "+error);
-
-    if (error) return { data: null, error };
+      .from('likes')
+      .upsert(
+        [{ meme_id, user_id, likeable_type, created_at: new Date().toISOString() }],
+        { onConflict: 'meme_id, user_id' } // Conflict resolution based on meme_id and user_id
+      );
+    if (error) {
+      return { data: null, error };
+    }
+  
     return { data, error: null };
-}
-
+  }
+  
+  
 /**
  * Function to unlike a meme.
  * 

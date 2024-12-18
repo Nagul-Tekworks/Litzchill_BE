@@ -56,11 +56,11 @@ export default async function unlikememes(_req: Request, params: Record<string, 
         }
 
         // Update the meme's like count - decrement the like count in the memes table
-        const likecount = await updateLikeCount(meme_id, existingMeme.like_count - 1);
-        if (!likecount) {
-            logger.error("Failed to update like status");
-            return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.UPDATE_FAILED);
-        }
+        // const likecount = await updateLikeCount(meme_id, existingMeme.like_count - 1);
+        // if (!likecount) {
+        //     logger.error("Failed to update like status");
+        //     return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.UPDATE_FAILED);
+        // }
 
         logger.info(`Unliked meme ${meme_id} for user ${user_id}`);
         return SuccessResponse(HTTP_STATUS_CODE.OK, LIKE_SUCCESS.UNLIKED_SUCCESSFULLY);
