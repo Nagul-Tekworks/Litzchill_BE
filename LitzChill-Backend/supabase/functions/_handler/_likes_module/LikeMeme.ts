@@ -9,6 +9,7 @@ import { LIKE_SUCCESS } from '../../_shared/_messages/LikeMessage.ts';
 import { meme_exists } from "../../_repository/_meme_repo/MemeRepository.ts";
 import { MEME_ERROR_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
 import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
+import Logger from "../../_shared/Logger/logger.ts";
 
 /**
  * Handles the process of liking a meme by a user, including validation, insertion, and updating the like count.
@@ -25,30 +26,32 @@ import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
  *   - Failure to notify the meme owner.
  */
 export default async function likememe(_req: Request, params: Record<string, string>) {
+    const logger = Logger.getInstance();
     try {
         const user_id = params.user_id;
         const meme_id = params.id;
 
+        logger.info('User: ' + user_id + 'meme_id: ' + meme_id);
         // Validate the meme_id parameter
         if (!meme_id || !V4.isValid(meme_id)) { 
-            console.log("Validation failed: Missing or invalid meme_id.");
+            logger.info("Validation failed: Missing or invalid meme_id.");
             return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, MEME_ERROR_MESSAGES.MISSING_MEMEID);
         }
 
         // Step 1: Check if meme exists
         const existingMeme = await meme_exists(meme_id);
         if (!existingMeme) {
-            console.log(`Meme with ID ${meme_id} not found.`);
+            logger.error(`Meme with ID ${meme_id} not found.`);
             return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.MEME_NOT_FOUND);
         }
-        console.log(`Meme with ID ${meme_id} exists.`);
+        logger.info(`Meme with ID ${meme_id} exists.`);
 
         // Step 2: Check if the user has already liked the meme
         const { data: liked, error } = await checkLikeExists(meme_id, user_id);
         if (error || !liked) {
-            console.log(`User ${user_id} has not liked meme ${meme_id}`);
+          logger.error(`User ${user_id} has not liked meme ${meme_id}`);
         } else if(liked){
-            console.log(`User ${user_id} already liked meme ${meme_id}`);
+            logger.info(`User ${user_id} already liked meme ${meme_id}`);
             return SuccessResponse(HTTP_STATUS_CODE.OK, LIKE_SUCCESS.LIKED_SUCCESSFULLY);  // New message for already liked
         }
         
@@ -57,7 +60,7 @@ export default async function likememe(_req: Request, params: Record<string, str
         const likeable_type = "meme";
         const { data: _likeMeme, error: likeError } = await insertLikeQuery(meme_id, user_id, likeable_type);
         if (likeError) {
-            console.error(`Failed to like meme ${meme_id} by user ${user_id}`, likeError);
+            logger.error(`Failed to like meme ${meme_id} by user ${user_id}`+ likeError);
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.INSERTION_FAILED);
         }
 
@@ -65,7 +68,7 @@ export default async function likememe(_req: Request, params: Record<string, str
         const updatedLikeCount = existingMeme.like_count + 1;
         const { error: updateError } = await updateLikeCount(meme_id, updatedLikeCount);
         if (updateError) {
-            console.error(`Failed to update like count for meme ${meme_id}`, updateError);
+            logger.error(`Failed to update like count for meme ${meme_id}`+ updateError);
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.UPDATE_FAILED);
         }
 
@@ -74,14 +77,15 @@ export default async function likememe(_req: Request, params: Record<string, str
         const status = LIKE_SUCCESS.LIKE_RECEIVED;
         const notify = await addNotifications(user_id, existingMeme.meme_title, type, status);
         if (!notify) {
-            console.error(`Failed to notify meme owner for meme ${meme_id}`);
+            logger.error(`Failed to notify meme owner for meme ${meme_id}`);
             throw new Error("Notification failed");
         }
 
-        console.log(`User ${user_id} liked meme ${meme_id} successfully.`);
+        logger.info(`User ${user_id} liked meme ${meme_id} successfully.`);
+        // Return a success response after successful like operation
         return SuccessResponse(HTTP_STATUS_CODE.OK, LIKE_SUCCESS.LIKED_SUCCESSFULLY);
     } catch (error) {
-        console.error("Error processing like:", error);
+        logger.error("Error processing like:"+ error);
         return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 }

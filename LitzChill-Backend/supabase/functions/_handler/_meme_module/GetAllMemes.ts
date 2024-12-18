@@ -3,6 +3,7 @@ import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
+import Logger from "../../_shared/Logger/logger.ts";
 
 
 /**
@@ -26,6 +27,7 @@ import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messa
  * @throws {Error} Throws an error if there is an unexpected failure while fetching memes.
  */
 export default async function getAllMemes(req: Request): Promise<Response> { 
+     const logger = Logger.getInstance();  // Get the logger instance
     try {
         const url = new URL(req.url);
         const page = Number(url.searchParams.get('page')) || 1;
@@ -33,21 +35,21 @@ export default async function getAllMemes(req: Request): Promise<Response> {
         const sort = url.searchParams.get('sort') || "popular";
         const tag = url.searchParams.get('tags') || null;
 
-        console.log(page, limit, sort, tag);
+        logger.info(`Fetching memes with params: page=${page}, limit=${limit}, sort=${sort}, tag=${tag}`);
 
         // Fetch memes from the repository using the provided parameters
         const { data: allmemes, error } = await fetchMemes(page, limit, sort, tag);
  
         // Handle errors and return appropriate responses
         if (error || !allmemes || allmemes.length === 0) {
-            console.log("Fetching failed or no memes found");
+            logger.warn("No memes found or fetching failed");
             return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.NO_MEMES);
         }
 
-        // Return the fetched memes
+        logger.info(`Successfully fetched ${allmemes.length} memes.`);
         return SuccessResponse(HTTP_STATUS_CODE.OK, MEME_SUCCESS_MESSAGES.MEME_FETCHED_SUCCESSFULLY, allmemes);
     } catch (error) {
-        console.error("Error fetching memes:", error);
+        logger.error(`Error occurred while fetching memes: ${error}`);
         return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 }

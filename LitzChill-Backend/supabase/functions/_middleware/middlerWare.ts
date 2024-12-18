@@ -2,8 +2,9 @@ import { ErrorResponse } from "../_responses/Response.ts";
 import supabase from "../_shared/_config/DbConfig.ts";
 import { HTTP_STATUS_CODE } from "../_shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../_shared/_messages/ErrorMessages.ts";
+import Logger from "../_shared/Logger/logger.ts";
 
-
+const logger = Logger.getInstance();
 // Check if the user has necessary privileges
 export const checkUserAuthentication = function checkUserAuthentication(handler: 
   (request: Request,
@@ -18,10 +19,10 @@ export const checkUserAuthentication = function checkUserAuthentication(handler:
     try {
       // Getting token from header
       const token = req.headers.get("Authorization");
-      console.log("User Token: ", token);
+      logger.info("User Token: "+ token);
 
       if (!token) {
-        console.log("First check");
+        logger.log("First check");
         return ErrorResponse(
           HTTP_STATUS_CODE.UNAUTHORIZED,
           COMMON_ERROR_MESSAGES.MISSING_JWT_TOKEN
@@ -32,7 +33,7 @@ export const checkUserAuthentication = function checkUserAuthentication(handler:
       const jwt = token.replace("Bearer ", "");
       const { data: userData, error: authError } = await supabase.auth.getUser(jwt);
       if (authError || !userData) {
-        console.log("User session expired");
+        logger.log("User session expired");
         return ErrorResponse(
           HTTP_STATUS_CODE.UNAUTHORIZED,
           COMMON_ERROR_MESSAGES.MISSING_JWT_TOKEN
@@ -85,13 +86,13 @@ export const checkUserAuthentication = function checkUserAuthentication(handler:
         user_type: data.user_type,
         token: jwt
       };
-      console.log("Valid user");
+      logger.log("Valid user");
 
       return await handler(req, user); // Fixed here: passing the correct parameters
 
     } catch (error) {
-      console.error(error);
-      return ErrorResponse(
+      logger.error("Error updating meme:"+ error);     
+       return ErrorResponse(
         HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
         COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR
       );

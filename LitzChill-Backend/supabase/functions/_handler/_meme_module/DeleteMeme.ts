@@ -4,35 +4,50 @@ import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
 import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
+import Logger from "../../_shared/Logger/logger.ts";
 
-export default async function DeletememebyID(_req: Request,params:Record<string,string>) {
+export default async function DeletememebyID(_req: Request, params: Record<string, string>) {
+    const logger = Logger.getInstance();  // Get the logger instance
     try {
+        logger.log("Processing deleteMeme handler");
         const meme_id = params.id;
         const user_id = params.user_id;
         const user_type = params.user_type;
 
-        console.log(meme_id,user_id,user_type);
+        logger.info(`Received delete request for meme_id: ${meme_id}, user_id: ${user_id}, user_type: ${user_type}`);
+
         // Validate meme_id
         if (!meme_id || !V4.isValid(meme_id)) { 
-            console.log("Validation failed: Missing parameters.");
-            return await ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST,MEME_ERROR_MESSAGES.MISSING_MEMEID);
+            logger.warn("Validation failed: Missing or invalid meme_id.");
+            return await ErrorResponse(
+                HTTP_STATUS_CODE.BAD_REQUEST,
+                MEME_ERROR_MESSAGES.MISSING_MEMEID
+            );
         }
 
         // Delete the meme 
-        const {data,error} = await deleteMemeQuery(meme_id,user_id,user_type);
-        console.log(data," ",error);
-        if(error){
-                console.log("delete failed");
-                // return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_DELETE)
-                return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_DELETE)
-            }
+        const { data, error } = await deleteMemeQuery(meme_id, user_id, user_type);
+        logger.info(`Delete query response: data=${JSON.stringify(data)}, error=${error}`);
 
-            return await SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_DELETED_SUCCESSFULLY)
-    
-    
-        } catch (error) {
-            console.error("Error updating meme:", error);
-            return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
+        if (error) {
+            logger.error(`Delete failed for meme_id: ${meme_id}. Error: ${error}`);
+            return await ErrorResponse(
+                HTTP_STATUS_CODE.NOT_FOUND,
+                MEME_ERROR_MESSAGES.FAILED_TO_DELETE
+            );
         }
-    }
 
+        logger.info(`Meme deleted successfully: meme_id=${meme_id}`);
+        return await SuccessResponse(
+            HTTP_STATUS_CODE.OK,
+            MEME_SUCCESS_MESSAGES.MEME_DELETED_SUCCESSFULLY
+        );
+
+    } catch (error) {
+        logger.error(`Internal Server Error while deleting meme. Details: ${error}`);
+        return await ErrorResponse(
+            HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+            COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR
+        );
+    }
+}

@@ -4,7 +4,9 @@ import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
 import { Meme } from '../../_model/MemeModel.ts';
 import { USER_ROLES } from "../../_shared/_constants/UserRoles.ts";
 import { MEME_STATUS } from '../../_shared/_constants/Types.ts';
+import Logger from "../../_shared/Logger/logger.ts";
 
+const logger = Logger.getInstance();
 /**
  * Checks if a meme exists in the database with the given criteria.
  * 
@@ -20,11 +22,9 @@ export async function meme_exists(meme_id: string) {
         .neq(MEMEFIELDS.MEME_STATUS,MEME_STATUS.DELETED)
         .maybeSingle();  // Ensure only one row is returned
 
-    if (fetchError || !existingMeme) {
-        
-        return null;
-    }
+        logger.info(existingMeme+" "+fetchError);
 
+    if (fetchError || !existingMeme)  return null;
     return existingMeme;
 }
 
@@ -42,6 +42,7 @@ export async function check_user_status(user_id: string): Promise<object | null>
         .eq(MEMEFIELDS.USER_ID, user_id)
         .single();
 
+    logger.info(existingUser+" "+fetchError);
     if (fetchError || !existingUser) {
         return null;
     }
@@ -59,19 +60,19 @@ export async function check_user_status(user_id: string): Promise<object | null>
  */
 
 export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Promise<string | null> {
-    console.log("Uploading media file");
+    logger.log("Uploading media file");
 
     try {
         // Supported MIME types for images and videos
         const allowedTypes = ["image/jpeg", "image/png", "image/gif", "video/mp4", "video/avi", "video/mpeg"];
         // Validate the file type
         if (!allowedTypes.includes(mediaFile.type)) {
-            console.error("Unsupported file type:", mediaFile.type);
+            logger.error("Unsupported file type:"+ mediaFile.type);
             return null;
         }
         // Generate a hash of the file content
         const fileHash = await generateFileHash(mediaFile);
-        console.log("Generated file hash:", fileHash);
+        logger.log("Generated file hash:"+fileHash);
 
         // Check if the file with the same hash already exists
         const { data: existingFiles, error: listError } = await supabase
@@ -80,7 +81,7 @@ export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Pr
         .list("memes");
 
         if (listError) {
-            console.error("Error fetching files from bucket:", listError);
+            logger.error("Error fetching files from bucket:"+listError);
             return null;
         }
 
@@ -91,12 +92,12 @@ export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Pr
                 .from(BUCKET_NAME.MEMES)
                 .getPublicUrl(existingFile.name);
 
-            console.log("Found an existing file with the same content.");
+                logger.log("Found an existing file with the same content.");
             return publicUrlData?.publicUrl || null; // Return the existing file's URL
         }
 
         // Upload the new file
-        console.log("File not found in the bucket. Proceeding with upload...");
+        logger.log("File not found in the bucket. Proceeding with upload...");
         const extension = mediaFile.name.split('.').pop()?.toLowerCase() || "";
         const sanitizedFileName = `${memeTitle.replace(/\s+/g, "_")}-${fileHash}.${extension}`;
         const filePath = `memes/${sanitizedFileName}`;
@@ -110,11 +111,11 @@ export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Pr
             });
 
         if (uploadError || !uploadData) {
-            console.error("Error uploading file:", uploadError);
+            logger.error("Error uploading file:"+ uploadError);
             return null;
         }
 
-        console.log("File uploaded successfully.");
+        logger.log("File uploaded successfully.");
 
         // Get the public URL of the uploaded file
         const { data: publicUrlData } = supabase
@@ -122,11 +123,11 @@ export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Pr
             .from(BUCKET_NAME.MEMES)
             .getPublicUrl(filePath);
 
-        console.log("Public URL data:", publicUrlData);
+            logger.log("Public URL data:"+ publicUrlData);
         return publicUrlData?.publicUrl || null;
 
     } catch (error) {
-        console.error("Error in uploadFileToBucket:", error);
+        logger.error("Error in uploadFileToBucket:"+ error);
         return null;
     }
 }
@@ -150,7 +151,7 @@ async function generateFileHash(file: File): Promise<string> {
  */
 export async function createMemeQuery(meme: Partial<Meme>): Promise<{ data: object | null, error: object | null }> {
     
-    console.log("Attempting to insert meme:", meme);
+    logger.log("Attempting to insert meme:"+ meme);
 
     const { data, error } = await supabase
         .from(TABLE_NAMES.MEME_TABLE)
@@ -181,7 +182,7 @@ export async function createMemeQuery(meme: Partial<Meme>): Promise<{ data: obje
 export async function updatememeQuery(meme: Partial<Meme>, user_type: string): Promise<{ data: object | null, error: object | null }> {
     // Check if the user is an admin or the owner of the meme
     if (user_type === USER_ROLES.ADMIN_ROLE) {
-        console.log("Admin role: Admin can update any meme");
+        logger.info("Admin role: Admin can update any meme");
 
         // Admin can update any meme
         const { data, error } = await supabase
@@ -195,7 +196,7 @@ export async function updatememeQuery(meme: Partial<Meme>, user_type: string): P
         return { data, error };
     } 
     else if (user_type === USER_ROLES.MEMER_ROLE) {
-        console.log("Memer role: Memer can only update their own meme");
+        logger.info("Memer role: Memer can only update their own meme");
 
         // Memer can only update their own meme
         const { data, error } = await supabase
@@ -227,7 +228,7 @@ export async function updatememeQuery(meme: Partial<Meme>, user_type: string): P
  */
 export async function deleteMemeQuery(meme_id: string, user_id: string, user_type: string) {
     if (user_type === USER_ROLES.ADMIN_ROLE) {
-        console.log("Admin role")
+        logger.log("Admin role")
 
         // Admin can delete any meme
         const { data, error } = await supabase
@@ -241,7 +242,7 @@ export async function deleteMemeQuery(meme_id: string, user_id: string, user_typ
         return { data, error };
     } 
     else if (user_type === USER_ROLES.MEMER_ROLE) {
-        console.log("memer")
+        logger.log("memer")
 
         // Memer can only delete their own meme
         const { data, error } = await supabase
@@ -285,7 +286,7 @@ export async function fetchMemes(page: number, limit: number, sort: string, tags
         const { data, error } = await query;
 
         if (error) {
-            console.error("Error fetching memes:", error);
+            logger.error("Error fetching memes:"+ error);
             return { data: null, error };
         }
 

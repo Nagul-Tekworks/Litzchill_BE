@@ -2,6 +2,9 @@ import supabase from "../../_shared/_config/DbConfig.ts";
 import { LIKE_TABLE_FIELDS } from "../../_shared/_db_table_details/LikeTableFields.ts";
 import { MEMEFIELDS } from "../../_shared/_db_table_details/MemeTableFields.ts";
 import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
+import Logger from "../../_shared/Logger/logger.ts";
+
+ const logger = Logger.getInstance();
 
 /**
  * Function to check if a like exists for a given meme_id and user_id.
@@ -17,9 +20,11 @@ export async function checkLikeExists(meme_id: string, user_id: string): Promise
         .eq(LIKE_TABLE_FIELDS.USER_ID, user_id)
         .eq(LIKE_TABLE_FIELDS.MEME_ID, meme_id)
         .single();
-        console.log(data,error)
+    
+        logger.info(data+" "+error);
 
-    if (error || !data) return { data: null, error };
+    if (error || !data) 
+        return { data: null, error };
     return { data, error: null };
 }
 
@@ -42,6 +47,8 @@ export async function insertLikeQuery(meme_id: string, user_id: string, likeable
         .select(LIKE_TABLE_FIELDS.LIKE_ID)
         .single();
 
+        logger.info(data+" "+error);
+
     if (error) return { data: null, error };
     return { data, error: null };
 }
@@ -59,6 +66,8 @@ export async function unlikememe(meme_id: string, user_id: string): Promise<bool
         .delete()
         .eq(LIKE_TABLE_FIELDS.USER_ID, user_id)
         .eq(LIKE_TABLE_FIELDS.MEME_ID, meme_id);
+
+        logger.info("unlike error"+error);
 
     return !error;
 }
@@ -78,6 +87,7 @@ export async function updateLikeCount(meme_id: string, like_count: number): Prom
         .select("meme_id, like_count")
         .single();
 
+        logger.info(data+" "+error);
     if (error) return { data: null, error };
     return { data, error: null };
 }

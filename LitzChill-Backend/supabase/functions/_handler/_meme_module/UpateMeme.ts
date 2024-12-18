@@ -7,6 +7,7 @@ import { Meme } from '../../_model/MemeModel.ts';
 import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
 import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
+import Logger from "../../_shared/Logger/logger.ts";
 
 /**
  * Handles the update of a meme's details, including validation, data extraction, and database update.
@@ -22,16 +23,18 @@ import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messa
  *   - Failure to update the meme in the database.
  */
 export default async function updateMeme(req: Request,params:Record<string,string>): Promise<Response> {
+    const logger = Logger.getInstance();
     try {
         const meme_id = params.id;
         const user_id = params.user_id;
         const user_type = params.user_type;
 
-        console.log (user_id,meme_id,user_type)
+       // console.log (user_id,meme_id,user_type)
+       logger.info ("meme_id: "+meme_id+"user_id: "+user_id+"user_type: "+user_type);
         
         // Validate the meme_id parameter
         if (!meme_id || !V4.isValid(meme_id)) { 
-            console.log("Validation failed: Missing parameters.");
+            logger.info("Validation failed: Missing parameters."+meme_id);
             return  ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST,MEME_ERROR_MESSAGES.MISSING_MEMEID);
         }
 
@@ -42,7 +45,7 @@ export default async function updateMeme(req: Request,params:Record<string,strin
           const tagsRaw = body[MEMEFIELDS.TAGS] || undefined;
           const tags = tagsRaw ? parseTags(tagsRaw) : undefined;
   
-          console.log("Extracted values:", { meme_title, tags });
+          logger.info("Extracted values:"+ meme_title + tags );
 
         
         const validationResponse = await validateMemeData(true,meme_title,tags);
@@ -53,17 +56,17 @@ export default async function updateMeme(req: Request,params:Record<string,strin
         const meme: Partial<Meme> = {meme_title,tags,meme_id,user_id};
         // Perform the update
         const {data:updatememe,error} = await updatememeQuery(meme,user_type);
-        console.log(updatememe,error)
+        logger.info("updatememe: "+updatememe+" error: " +error)
         if(error || !updatememe)
         {
-            console.log("Update failed");
+            logger.info("Update failed");
             return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_UPDATE);
         }
         return await SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_UPDATED_SUCCESSFULLY,updatememe);
 
 
     } catch (error) {
-        console.error("Error updating meme:", error);
+        logger.error("Error updating meme:"+ error);
         return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 }

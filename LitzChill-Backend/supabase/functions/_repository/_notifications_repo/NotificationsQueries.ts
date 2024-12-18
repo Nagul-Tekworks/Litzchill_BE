@@ -2,7 +2,10 @@ import supabase from "../../_shared/_config/DbConfig.ts";
 import { MEME_STATUS } from "../../_shared/_constants/Types.ts";
 import { NOTIFICATIONS_TABLE_FEILDS } from "../../_shared/_db_table_details/NotificationTableConstants.ts";
 import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
+import Logger from "../../_shared/Logger/logger.ts";
 
+const logger = Logger.getInstance();
+ 
 /**
  * Function to add a like notification to the notifications list.
  * 
@@ -21,7 +24,7 @@ export async function addNotifications( user_id: string,meme_title: string, type
     const readableStatus = statusTextMap[status] || status;
 
     const notificationContent = `Your meme "${meme_title}" has been "${readableStatus}".`;
-    console.log("Notification content:", notificationContent);
+    logger.log("Notification content:"+ notificationContent);
 
     const { data, error } = await supabase
         .from(TABLE_NAMES.NOTIFICATIONS_TABLE)
@@ -35,7 +38,7 @@ export async function addNotifications( user_id: string,meme_title: string, type
         .select("*");
 
     if (error || !data) {
-        console.error("Error adding notification:", error);
+        logger.error("Error adding notification:"+ error);
         return null;
     }
     return data;
@@ -56,8 +59,7 @@ export async function getNotificationsQuery(user_id: string){
         .order(NOTIFICATIONS_TABLE_FEILDS.CREATED_AT, { ascending: false })
         .limit(5);
 
-    console.log(data);
-    console.log(error);
+    logger.log(data+" "+error);
     return { data, error };
 }
 
@@ -75,7 +77,7 @@ export async function existingNotificationsQuery(notification_id: string): Promi
         .single();
 
     if (error || !data) {
-        console.error("Error fetching notification:", error);
+        logger.error("Error fetching notification:"+ error);
         return null;
     }
     return data;
@@ -95,7 +97,7 @@ export async function markNotificationsAsReadQuery(notification_id: string,user_
         .eq(NOTIFICATIONS_TABLE_FEILDS.USER_ID,user_id);
 
     if (error) {
-        console.error("Error marking notification as read:", error);
+        logger.error("Error marking notification as read:"+ error);
         return false;
     }
 
