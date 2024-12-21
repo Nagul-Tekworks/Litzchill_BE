@@ -5,6 +5,7 @@ import { HTTP_STATUS_CODE } from "../_constants/HttpStatusCodes.ts";
 import { ContestModel } from "../../_model/ContestModel.ts";
 import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
 import { CONTEST_VALIDATION_MESSAGES } from "../_messages/ContestModuleMessages.ts";
+import { Logger } from "../_logger/Logger.ts";
 
 /**
  * Validates if the provided contest ID is valid.
@@ -15,9 +16,10 @@ import { CONTEST_VALIDATION_MESSAGES } from "../_messages/ContestModuleMessages.
 */
 
 export function validateContestId(contest_id:string): Response | null {
-    console.log("Validating Contest ID");
+    const logger=Logger.getloggerInstance();
+    logger.info("Validating Contest ID");
     if (!contest_id ) {
-        console.error("ERROR: Invalid or missing contest ID.");
+        logger.error("missing contest ID.");
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
              CONTEST_VALIDATION_MESSAGES.MISSING_CONTEST_ID,
@@ -25,13 +27,14 @@ export function validateContestId(contest_id:string): Response | null {
         );
      }
      if ( !V4.isValid(contest_id)) {
-        console.error("ERROR: Invalid or missing contest ID.");
+        logger.error("Invalid contest ID.");
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
              CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_ID,
          
         );
      } 
+     logger.info(`contest id validated successfully`);
      return null;  
 }
 
@@ -45,15 +48,15 @@ export function validateContestId(contest_id:string): Response | null {
  */
 
 export function validateContestDetails(contestDetails: Partial<ContestModel>, isUpdate: boolean = false): Response | null {
-    
-    console.log("INFO: Validating contest details...");
+    const logger=Logger.getloggerInstance();
+    logger.info("Validating contest details...");
 
     const current_date=new Date();
     const CONTEST_STATUS:string[] =["ongoing", "completed", "upcoming"];
 
     //checking for empty body if body empty, directlly returning error responses
     if (Object.keys(contestDetails).length === 0) {
-        console.error("ERROR: Empty request body.");
+        logger.error("Empty request body.");
         return ErrorResponse(
               HTTP_STATUS_CODE.BAD_REQUEST,
               COMMON_ERROR_MESSAGES.EMPTY_REQUEST_BODY,
@@ -66,7 +69,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
     if (contestDetails.contest_title) {
         contestDetails.contest_title=contestDetails.contest_title.replace(/\s+/g, '').trim();
         if (contestDetails.contest_title.length < 3 || contestDetails.contest_title.length > 100) {
-             console.error("ERROR: Invalid contest title length: Title must be between 3 and 100 characters.");4
+            logger.error("Invalid contest title length: Title must be between 3 and 100 characters.");4
              return ErrorResponse(
                  HTTP_STATUS_CODE.BAD_REQUEST,
                  CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_TITLE
@@ -75,7 +78,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
         }
     } //if validation for create contest then title is required
     else if (!isUpdate) {
-        console.error("ERROR: Contest title is missing.");
+        logger.error("Contest title is missing.");
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
              CONTEST_VALIDATION_MESSAGES.MISSING_CONTEST_TITLE
@@ -87,7 +90,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
         contestDetails.description=contestDetails.description.replace(/\s+/g, '').trim();
         if (contestDetails.description.length < 8 || contestDetails.description.length > 500) {
            
-            console.error("ERROR: Invalid contest description length: Description must be between 8 and 500 characters.");
+            logger.error("Invalid contest description length: Description must be between 8 and 500 characters.");
             return ErrorResponse(
                  HTTP_STATUS_CODE.BAD_REQUEST,
                  CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_DESCRIPTION
@@ -99,7 +102,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
     if (contestDetails.start_date) {
         if (!isValidISODate(contestDetails.start_date)) {
            
-            console.error("ERROR : Invalid start date format.");
+            logger.error("Invalid start date format.");
             return ErrorResponse(
                  HTTP_STATUS_CODE.BAD_REQUEST,
                  CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_START_DATE_FORMAT
@@ -108,6 +111,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
         if(!isUpdate){
             const start_date=new Date(contestDetails.start_date);
             if(start_date<current_date){
+                logger.error("Invalid start date  cannot les than current date.");
                 return ErrorResponse(
                     HTTP_STATUS_CODE.BAD_REQUEST,
                     CONTEST_VALIDATION_MESSAGES.INVALID_START_DATE_VALUE
@@ -118,7 +122,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
         }
     }//if validation for create contest then start date is required
      else if (!isUpdate) {
-         console.error("ERROR: Contest start date is missing.");
+        logger.error("Contest start date is missing.");
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
              CONTEST_VALIDATION_MESSAGES.MISSING_CONTEST_START_DATE
@@ -130,28 +134,28 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
 
         if (!isValidISODate(contestDetails.end_date)) {
            
-            console.error("ERROR: Invalid end date format.");
+            logger.error("Invalid end date format.");
             return ErrorResponse(
                  HTTP_STATUS_CODE.BAD_REQUEST,
                  CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_END_DATE_FORMAT
            );
         }
-        else {//ensuring end date can not be less to start date.
+        else {//ensuring end date can not be less to start date and current date.
             const end_date = new Date(contestDetails.end_date);
             if (contestDetails.start_date && isValidISODate(contestDetails.start_date)) {
               
-                const start_date = new Date(contestDetails.start_date);
+               
                 if (current_date > end_date) {
-                    
-                    console.error("ERROR: End date must be after the current date.");
+                    logger.error("End date must be after the current date.");
                     return ErrorResponse(
                          HTTP_STATUS_CODE.BAD_REQUEST,
                          CONTEST_VALIDATION_MESSAGES.INVALID_END_DATE_VALUE
                    );
                 }
+                const start_date = new Date(contestDetails.start_date);
                 if (start_date >= end_date) {
                     
-                    console.error("ERROR: End date must be after the start date.");
+                    logger.error("End date must be after the start date.");
                     return ErrorResponse(
                          HTTP_STATUS_CODE.BAD_REQUEST,
                          CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_END_DATE
@@ -161,7 +165,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
         }
     } //if validation for create contest then end date is required
     else if (!isUpdate) {
-        console.error("ERROR: Contest end date is missing.");
+        logger.error("Contest end date is missing.");
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
              CONTEST_VALIDATION_MESSAGES.MISSING_CONTEST_END_DATE
@@ -174,7 +178,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
        
         contestDetails.status=contestDetails.status.toLowerCase();
         if (!CONTEST_STATUS.includes(contestDetails.status)) {
-            console.error("ERROR; Invalid contest status: Valid statuses are", CONTEST_STATUS.join(", "));
+            logger.error(`Invalid contest status: Valid statuses are, ${CONTEST_STATUS.join(", ")}`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.BAD_REQUEST,
                  CONTEST_VALIDATION_MESSAGES.INVALID_CONTEST_STATUS
@@ -185,12 +189,14 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
 
     if(contestDetails.result||Object.keys(contestDetails).includes('result')){
         if(typeof contestDetails.result !=='object'|| contestDetails.result === null){
+            logger.error(`Invalid contest result type`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.BAD_REQUEST,
                 CONTEST_VALIDATION_MESSAGES.INVALID_TYPE_FOR_RESULT
             )
         }
         if (Object.keys(contestDetails.result).length < 3) {
+             logger.error(`Invalid contest result`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.BAD_REQUEST,
                 CONTEST_VALIDATION_MESSAGES.EMPTY_PRIZE
@@ -198,10 +204,8 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
         }
     }
     if (contestDetails.prize||Object.keys(contestDetails).includes('prize') ){
-        // Check if prize is not a string, not an array, and is a valid object
-        console.log("Prize",contestDetails.prize)
-        console.log("Prize Type",typeof contestDetails.prize)
         if (typeof contestDetails.prize !== 'object' || contestDetails.prize === null) {
+            logger.error(`Invalid contest prize type`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.BAD_REQUEST,
                 CONTEST_VALIDATION_MESSAGES.INVALID_TYPE_FOR_PRIZE
@@ -210,6 +214,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
     
         // Check if the object is empty (fewer than 3 properties)
         if (Object.keys(contestDetails.prize).length < 3) {
+            logger.error(`Invalid contest prize`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.BAD_REQUEST,
                 CONTEST_VALIDATION_MESSAGES.EMPTY_PRIZE
@@ -218,20 +223,17 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
     }
 
 
-    
+    logger.info(`initializing contest status base on contest start date.`);
     if(contestDetails.status&&contestDetails.start_date){
         const start_date = new Date(contestDetails.start_date);
         if(start_date>current_date){
-            contestDetails.status=CONTEST_STATUS[0];
+            contestDetails.status=CONTEST_STATUS[0].toLowerCase();
         }
-        contestDetails.status=CONTEST_STATUS[2];
+        contestDetails.status=CONTEST_STATUS[2].toLowerCase();
     }
 
-    console.info("INFO: Validation Successfully Passed");
-
-    
+    logger.info("contest details Validated Successfully");
     return null;
-
 
 }
 
@@ -242,7 +244,8 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
  * @returns {boolean} - Returns true if the date is valid ISO format, otherwise false.
  */
 export function isValidISODate(date: string): boolean {
-    console.log('INFO: Validating Dates Formate Using regex');
+    const logger=Logger.getloggerInstance();
+    logger.info('Validating Dates Formate Using regex');
     const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
     return isoDateRegex.test(date);
 }

@@ -11,6 +11,7 @@ import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
  *    - If the contest is successfully created, `data` contains the inserted contest data and `error` is null.
  *    - If a database error occurs, `data` will be null and `error` will contain the error details.
  */
+
 export async function createContest(contest:ContestModel) :Promise<{ data: any; error: any }> {
 
         console.log(`INFO: Creating new Contest with data in repo: `,contest);
@@ -144,6 +145,6 @@ export async function createContest(contest:ContestModel) :Promise<{ data: any; 
           .lt('end_date', currentDate.toISOString())
           .neq('status','deleted'); ; 
 
-         const obj= {completeError,ongoingError,upcomingError};
+         const _obj= {completeError,ongoingError,upcomingError};
         
  }

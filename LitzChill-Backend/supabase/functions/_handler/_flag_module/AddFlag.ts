@@ -3,6 +3,7 @@ import { checkMemeId } from "../../_repository/_comment_repo/CommentRepository.t
 import { addFlagToMeme, checkUserAlreadyFlag, updateFlagCount } from "../../_repository/_flag_repo/FlagRepository.ts";
 import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
+import { Logger } from "../../_shared/_logger/Logger.ts";
 import { COMMENT_MODULE_ERROR_MESSAGES } from "../../_shared/_messages/CommentModuleMessages.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
 import { FLAG_ERROR_MESSAGES, FLAG_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/FLagModuleMessags.ts";
@@ -20,18 +21,22 @@ import { validateFlagDetails } from "../../_shared/_validation/FlagDetailsValida
  */
 
 export async function handleAddFlagRequest(req: Request, params: Record<string, string>): Promise<Response> {
+    
+    const logger=Logger.getloggerInstance();
     try {
 
         // Parsing the request body to get flag details
         const flagData: FlagModel = await req.json();
-
-        console.info("INFO: Request Recieved With Flag details", flagData);
+        logger.info(`Request Recieved With Flag details, ${flagData}`);
 
 
         // Validating the flag details
+        logger.log(`calling validation function to validate flag details`);
         const validationErrors = validateFlagDetails(flagData);
+
+
         if (validationErrors instanceof Response) {
-            console.error("ERROR: Flag Validation Failed: ", validationErrors);
+            logger.error(`Flag Validation Failed: ${validationErrors}`);
             return validationErrors;
         }
 
@@ -39,10 +44,11 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         flagData.user_id = params.user_id;
 
         // Checking if the meme (content) exists
-        console.info("INFO: Getting Meme Details By Meme Id", flagData.contentId);
+        logger.log(`checking Meme Details prsent with Meme Id, ${flagData.contentId}`);
         const { data:memeData, error:memeError } = await checkMemeId(flagData.contentId);
+
         if (memeError) {
-            console.error("ERROR: While Getting Meme Details By Meme Id");
+            logger.error(`While Getting Meme Details By Meme Id ${memeError.message}`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${memeError.message}`
@@ -50,7 +56,7 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         }
 
         if (!memeData || memeData.length == 0) {
-            console.error("ERROR: No Meme Found With Provided Meme Id");
+            logger.error(`No Meme Found With Provided Meme Id`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.NOT_FOUND,
                 COMMENT_MODULE_ERROR_MESSAGES.CONTENT_NOT_FOUND,
@@ -59,40 +65,41 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         }
 
         // Checking if the user has already flagged this meme
-        console.info('INFO: Checking If User Already Added Flag to this meme');
+        logger.log(`Checking If User Already Added Flag to this meme`);
         const { data: userflagData, error:flagerror } = await checkUserAlreadyFlag(flagData.user_id, memeData[0].meme_id);
 
         if (flagerror) {
-            console.error("ERROR: While Chekcing  User Already flag to meme");
+            logger.error(`While Chekcing  User Already flag to meme ${flagerror.message}`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${flagerror.message}`
             )
         }
+
         if (userflagData && userflagData.length > 0) {
-            console.error("ERROR: User has already flagged this meme");
+            logger.error(`User has already flagged this meme`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.CONFLICT,
                 FLAG_ERROR_MESSAGES.USER_ALREADY_ADDED_FLAG,
-
             );
         }
 
+        logger.info(`Initializing created_at date with current date.`);
         flagData.created_at = new Date();
 
         // Adding the flag to the meme
-        console.info('INFO: Adding Alag to meme');
+        logger.info(`calling repository function addFlagTOMeme() to add flag`);
         const { data: addedFlag, error: addFlagError } = await addFlagToMeme(flagData);
 
         if (addFlagError) {
-            console.error("ERROR: Database Error While Adding Flag To Meme");
+            logger.error(`Database Error While Adding Flag To Meme ${addFlagError.message}`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${addFlagError.message}`
             )
         }
         if (!addedFlag) {
-            console.error("ERROR: While Adding Flag To Meme");
+            logger.error(`Flag not added due to some error`);
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 FLAG_ERROR_MESSAGES.FLAG_ERROR_DURING_ADDING,
@@ -101,23 +108,23 @@ export async function handleAddFlagRequest(req: Request, params: Record<string, 
         }
 
         //updating flag count
-        console.info(`INFO: Flag added Now Updating Flag count in meme table`);
+        logger.info(`Flag added Now Updating Flag count in meme table`);
         const { error: countError } = await updateFlagCount(flagData.contentId, memeData[0].flag_count + 1);
 
         if (countError) {
-            console.log('ERROR: During updating Flag count ');
+            logger.error('During updating Flag count ');
             return ErrorResponse(
                 HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 `${COMMON_ERROR_MESSAGES.DATABASE_ERROR},${countError.message}`
             )
         }
 
-        console.info(`INFO: Returning Success Response with flag added message`);
+        logger.info(`Returning Success Response with flag added message`);
         return SuccessResponse(FLAG_MODULE_SUCCESS_MESSAGES.FLAG_ADDED, HTTP_STATUS_CODE.CREATED, addedFlag);
 
     } catch (error) {
 
-        console.error("ERROR: Internal Error while adding comment:", error);
+        logger.error(`Internal Error while adding comment:, ${error}`);
         return ErrorResponse(
             HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
             `${COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR} ${error}`,

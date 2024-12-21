@@ -3,6 +3,7 @@ import { ContestModel } from "../../_model/ContestModel.ts";
 import { createContest } from "../../_repository/_contest_repo/ContestRepository.ts";
 import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
 import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
+import { Logger } from "../../_shared/_logger/Logger.ts";
 import { CONTEST_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/ContestModuleMessages.ts";
 import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";  
 import { validateContestDetails } from "../../_shared/_validation/ContestDetailsValidation.ts";
@@ -16,28 +17,34 @@ import { validateContestDetails } from "../../_shared/_validation/ContestDetails
  * @returns {Promise<Response>} - A response indicating success or failure:
  *
  */
-export async function handleCreateContext(req: Request,params:Record<string,string>): Promise<Response> {
-     try {
+export async function handleCreateContext(req: Request,_params:Record<string,string>): Promise<Response> {
+     const logger=Logger.getloggerInstance();
 
-          console.info(`INFO: Request Recieved in create contest `);
+      try {
+          logger.info(`Request Recieved in create contest`);
+
           const contestData: ContestModel = await req.json();
-          
+          logger.info(`Successfully parsed json body ${contestData}`);
+
+
           // Validating contest all details
+          logger.info(`calling validation function to validate contest details`);
           const validationErrors = validateContestDetails(contestData);
           if (validationErrors instanceof Response) {
-                console.error(`ERROR: Contest Validation Failed: `,validationErrors);
+                logger.error(`contest Validation Failed: ${validationErrors}`);
                 return validationErrors;
           }
 
+          logger.info(`Initializing created_at date with current date.`);
           contestData.created_at = new Date().toISOString();
-          contestData.status = contestData.status?.toLocaleLowerCase();
+
 
           //calling supabase query for creating contest
+          logger.info(`Calling Repository function to create contest with contest data ${contestData}`)
           const { data, error } = await createContest(contestData);
 
-          //if data not inserted then returning error response
-          if (!data || data.length === 0 || error) {
-               console.error(`ERROR: Contest not created.due to some database error or query error, ${error?.message}`);
+          if(error){
+               logger.error(`Contest not created, due to some database error or query error, ${error?.message}`);
                return ErrorResponse(
                      HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                      `${COMMON_ERROR_MESSAGES.DATABASE_ERROR} ${error?.message}`,
@@ -45,8 +52,18 @@ export async function handleCreateContext(req: Request,params:Record<string,stri
 
           }
 
+          //if data not inserted then returning error response
+          if (!data || data.length === 0) {
+               logger.error(`Contest not created, due to some Reason`);
+               return ErrorResponse(
+                     HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
+                     COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR
+               )
+
+          }
+
           // Returning success response with created contest data
-          console.info(`INFO: Returning success response with created contest data ` , data);
+          logger.info(`Returning success response with created contest message.`);
           return SuccessResponse(
                CONTEST_MODULE_SUCCESS_MESSAGES.CONTEST_CREATED, 
                 HTTP_STATUS_CODE.CREATED,
@@ -56,7 +73,7 @@ export async function handleCreateContext(req: Request,params:Record<string,stri
      }
      catch (error) {
           // handling internal errors
-          console.error(`ERROR: Internal Server Error during creating new contest,${error}`);
+          logger.error(`ERROR: Internal Server Error during creating new contest,${error}`);
           return ErrorResponse(
                  HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR,
                 `${COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR}, ${error}`,

@@ -4,6 +4,7 @@ import {ErrorResponse} from "../../_responses/Response.ts";
 import { HTTP_STATUS_CODE } from "../_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
 import { FLAG_VALIDATION_MESSAGES } from "../_messages/FLagModuleMessags.ts";
+import { Logger } from "../_logger/Logger.ts";
 
 
 /**
@@ -15,12 +16,12 @@ import { FLAG_VALIDATION_MESSAGES } from "../_messages/FLagModuleMessags.ts";
 
 
 export function validateFlagDetails(flagDetails: FlagModel):Response|null {
-    
+    const logger=Logger.getloggerInstance();
     //validating flag details.
-    console.log("INFO: Validating comment details...");
+    logger.info(`Validating comment details...`);
 
     if (Object.keys(flagDetails).length === 0) {
-        console.error("ERROR: Empty Body");
+        logger.error("Empty flag Body returning error response");
         return ErrorResponse(
             HTTP_STATUS_CODE.BAD_REQUEST,
             COMMON_ERROR_MESSAGES.EMPTY_REQUEST_BODY,
@@ -31,14 +32,14 @@ export function validateFlagDetails(flagDetails: FlagModel):Response|null {
     // Checking Content Type
     if (flagDetails.contentType) {
         if((flagDetails.contentType!=='Meme')&&(flagDetails.contentType!=='meme')){
-            console.error("ERROR: Invalid Content Type: ",flagDetails.contentType);
+            logger.error(`Invalid Content Type: , ${flagDetails.contentType}`);
             return ErrorResponse(
                  HTTP_STATUS_CODE.BAD_REQUEST,
                  FLAG_VALIDATION_MESSAGES.INVALID_CONTENTTYPE
             )
         }
     }else{
-        console.error("ERROR: Missing Content Type");
+        logger.error(`ERROR: Missing Content Type`);
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
              FLAG_VALIDATION_MESSAGES.MISSING_CONTENT_TYPE
@@ -48,14 +49,14 @@ export function validateFlagDetails(flagDetails: FlagModel):Response|null {
     //checking content Id
     if(flagDetails.contentId){
         if(!V4.isValid(flagDetails.contentId)){
-            console.error('ERROR: Inavlid Content Id: ',flagDetails.contentId);
+            logger.error(`ERROR: Inavlid Content Id: ${flagDetails.contentId}`);
             return ErrorResponse(
                   HTTP_STATUS_CODE.BAD_REQUEST,
                   FLAG_VALIDATION_MESSAGES.INAVLID_CONTENT_ID
             )
         }
     }else{
-        console.error('ERROR: Missing Content Id');
+        logger.error(`Missing Content Id returning error response`);
         return ErrorResponse(
             HTTP_STATUS_CODE.BAD_REQUEST,
             FLAG_VALIDATION_MESSAGES.MISSING_CONTENT_ID
@@ -65,7 +66,7 @@ export function validateFlagDetails(flagDetails: FlagModel):Response|null {
     //validating reason length
     if(flagDetails.reason){
         if (flagDetails.reason.trim().length <= 3) {
-            console.error('ERROR:Inavlid Flag Reason');
+            logger.error(' returning Inavlid Flag Reason error response');
            return ErrorResponse(
               HTTP_STATUS_CODE.BAD_REQUEST,
               FLAG_VALIDATION_MESSAGES.INVALID_REASON
@@ -73,12 +74,13 @@ export function validateFlagDetails(flagDetails: FlagModel):Response|null {
         }
     }
     else{
-        console.error('ERROR:Missing Flag Reason');
+        logger.error('Returning missing flag reason response');
         return ErrorResponse(
             HTTP_STATUS_CODE.BAD_REQUEST,
             FLAG_VALIDATION_MESSAGES.MISSING_FLAG_REASON
           );
     }
 
+    logger.info(`Flag details validated successfully`);
     return null;
 }

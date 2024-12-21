@@ -1,5 +1,6 @@
 import { routeHandler } from "../_routes/Route_Handler.ts"
 import { FlagModuleRoutes } from "../_routes/Flag_Module_Routes.ts"
+import { Logger } from "../_shared/_logger/Logger.ts";
 
 /**
  * Recieving Request 
@@ -10,8 +11,9 @@ import { FlagModuleRoutes } from "../_routes/Flag_Module_Routes.ts"
  */
 Deno.serve(async (req) => {
 
+  const logger = Logger.getloggerInstance();
   //calling route handler to match provided path with our routes
-  console.log('INFO: Request Recieved In Index Calling Route Handler')
-  return await routeHandler(req,FlagModuleRoutes);
+  logger.info('Request Recieved In Index Calling Route Handler')
+  return await routeHandler(req, FlagModuleRoutes);
 })
 

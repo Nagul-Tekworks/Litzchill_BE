@@ -4,6 +4,7 @@ import {  COMMENT_VALIDATION_MESSAGES } from "../_messages/CommentModuleMessages
 import {ErrorResponse} from "../../_responses/Response.ts";
 import { Comment } from "../../_model/CommentModle.ts";
 import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
+import { Logger } from "../_logger/Logger.ts";
 
 /**
  * Validates the provided comment ID is .
@@ -14,21 +15,24 @@ import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
  */
 
 export function validateCommentId(comment_id:string):Response|null{
+    const logger=Logger.getloggerInstance();
     if (comment_id ) {
       if (!V4.isValid(comment_id)) {
-        console.log("Error: Missing commentId in the request.");
+        logger.error("Invalid commentId in the request.");
         return ErrorResponse(
                HTTP_STATUS_CODE.BAD_REQUEST,
               COMMENT_VALIDATION_MESSAGES.INVALID_COMMENT_ID,
         )
      } 
     }else{
+      logger.error("Missing commentId in the request.");
       return ErrorResponse(
          HTTP_STATUS_CODE.BAD_REQUEST,
          COMMENT_VALIDATION_MESSAGES.MISSING_COMMENT_ID
       )
     }
 
+    logger.info(`Comment id validated successfully`);
     return null;
 }
 
@@ -43,12 +47,12 @@ export function validateCommentId(comment_id:string):Response|null{
  * - This function ensures that the content type, content ID, and comment message are all valid.
  */
 export function validateCommentDetails(commetData:Comment):Response|null {
-
-    console.log("INFO: Validating comment details...");
+  const logger=Logger.getloggerInstance();
+  logger.info("Validating comment details...");
 
     // Check if all required fields are provided
     if (Object.keys(commetData).length==0) {
-      console.error("ERROR: Empty Body");
+      logger.error("Empty Body returning empty body response with error message");
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
              COMMON_ERROR_MESSAGES.EMPTY_REQUEST_BODY,
@@ -58,14 +62,14 @@ export function validateCommentDetails(commetData:Comment):Response|null {
     //checking for valid content type
     if(commetData.contentType){
       if(commetData.contentType!=='Meme'&&commetData.contentType!=='Comment'){
-        console.error("ERROR: Invalid Content Type: ",commetData.contentType);
+        logger.error(`ERROR: Invalid Content Type:, ${commetData.contentType}`);
         return ErrorResponse(
              HTTP_STATUS_CODE.BAD_REQUEST,
              COMMENT_VALIDATION_MESSAGES.INVALID_CONTENT_TYPE
         )
       }
     }else{
-      console.error("ERROR: Missing Content Type");
+      logger.error("Missing Content Type sending error response");
       return ErrorResponse(
           HTTP_STATUS_CODE.BAD_REQUEST,
           COMMENT_VALIDATION_MESSAGES.MISSING_CONTENT_TYPE
@@ -75,14 +79,14 @@ export function validateCommentDetails(commetData:Comment):Response|null {
     //checking for valid content id
      if(commetData.contentId){
        if(!V4.isValid(commetData.contentId)){
-        console.error('ERROR: Inavlid Content Id: ',commetData.contentId);
+        logger.error(` Inavlid Content Id:, ${commetData.contentId}`);
              return ErrorResponse(
                   HTTP_STATUS_CODE.BAD_REQUEST,
                   COMMENT_VALIDATION_MESSAGES.INAVLID_CONTENT_ID
              )
        }
     }else{
-      console.error('ERROR: Missing Content Id');
+      logger.error('Missing Content Id sending error response');
        return ErrorResponse(
           HTTP_STATUS_CODE.BAD_REQUEST,
           COMMENT_VALIDATION_MESSAGES.MISSING_CONTENT_ID
@@ -91,12 +95,12 @@ export function validateCommentDetails(commetData:Comment):Response|null {
 
 
     if(!commetData.comment||commetData.comment.trim().length==0){
-      console.error('ERROR: Missing Comment Message');
+      logger.error('Missing Comment Message sending error message');
       return ErrorResponse(
          HTTP_STATUS_CODE.BAD_REQUEST,
          COMMENT_VALIDATION_MESSAGES.MISSING_COMMENT_MESSAGE
       )
     }
-  console.log("INFO: Comment details validated successfully.");
+    logger.info("Comment details validated successfully.");
   return null;
 }
