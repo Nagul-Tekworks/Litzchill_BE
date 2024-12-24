@@ -51,7 +51,7 @@ export default async function likememe(_req: Request, params: Record<string, str
         const likeable_type = "meme";
         const { data: _likeMeme, error: likeError } = await insertLikeQuery(meme_id, user_id, likeable_type);
         if (likeError) {
-            logger.error(`Failed to like meme ${meme_id} by user ${user_id}`+ likeError);
+            logger.error(`Failed to like meme ${meme_id} by user ${user_id}  returned error: ${JSON.stringify(likeError)}`);
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.INSERTION_FAILED);
         }
 

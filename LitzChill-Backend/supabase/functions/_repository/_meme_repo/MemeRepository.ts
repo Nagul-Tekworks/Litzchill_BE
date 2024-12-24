@@ -63,55 +63,56 @@ export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Pr
     logger.log("Uploading media file");
 
     try {
-        // Supported MIME types for images and videos
         const allowedTypes = ["image/jpeg", "image/png", "image/gif", "video/mp4", "video/avi", "video/mpeg"];
-        // Validate the file type
         if (!allowedTypes.includes(mediaFile.type)) {
-            logger.error("Unsupported file type:"+ mediaFile.type);
+            logger.error(`Unsupported file type: ${mediaFile.type}`);
             return null;
         }
+
         // Generate a hash of the file content
         const fileHash = await generateFileHash(mediaFile);
-        logger.log("Generated file hash:"+fileHash);
+        logger.log(`Generated file hash: ${fileHash}`);
 
-        // Check if the file with the same hash already exists
+        // Retrieve files in the "memes" folder
         const { data: existingFiles, error: listError } = await supabase
-        .storage
-        .from(BUCKET_NAME.MEMES)
-        .list("memes");
+            .storage
+            .from(BUCKET_NAME.MEMES)
+            .list("memes");
 
         if (listError) {
-            logger.error("Error fetching files from bucket:"+listError);
+            logger.error(`Error fetching files from bucket: ${listError}`);
             return null;
         }
 
-        const existingFile = existingFiles?.find(file => file.name.includes(fileHash));
+        // Check if a file with the same hash exists
+        const existingFile = existingFiles?.find((file: { name: string; }) => file.name.endsWith(`${fileHash}.${mediaFile.name.split('.').pop()?.toLowerCase()}`));
         if (existingFile) {
             const { data: publicUrlData } = supabase
                 .storage
                 .from(BUCKET_NAME.MEMES)
                 .getPublicUrl(existingFile.name);
 
-                logger.log("Found an existing file with the same content.");
-            return publicUrlData?.publicUrl || null; // Return the existing file's URL
+            logger.log("Found an existing file with the same content.");
+            return publicUrlData?.publicUrl || null;
         }
 
-        // Upload the new file
-        logger.log("File not found in the bucket. Proceeding with upload...");
+        // Prepare new file path
         const extension = mediaFile.name.split('.').pop()?.toLowerCase() || "";
         const sanitizedFileName = `${memeTitle.replace(/\s+/g, "_")}-${fileHash}.${extension}`;
         const filePath = `memes/${sanitizedFileName}`;
 
+        // Upload the new file
+        logger.log("File not found in the bucket. Proceeding with upload...");
         const { data: uploadData, error: uploadError } = await supabase.storage
             .from(BUCKET_NAME.MEMES)
             .upload(filePath, mediaFile, {
                 cacheControl: "3600",
                 upsert: false,
-                contentType: mediaFile.type, // Preserve file's MIME type
+                contentType: mediaFile.type,
             });
 
         if (uploadError || !uploadData) {
-            logger.error("Error uploading file:"+ uploadError);
+            logger.error(`Error uploading file: ${JSON.stringify(uploadError)}`);
             return null;
         }
 
@@ -123,14 +124,15 @@ export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Pr
             .from(BUCKET_NAME.MEMES)
             .getPublicUrl(filePath);
 
-            logger.log("Public URL data:"+ publicUrlData);
+        logger.log(`Public URL data: ${JSON.stringify(publicUrlData)}`);
         return publicUrlData?.publicUrl || null;
 
     } catch (error) {
-        logger.error("Error in uploadFileToBucket:"+ error);
+        logger.error(`Error in uploadFileToBucket: ${error}`);
         return null;
     }
 }
+
 
 // Helper function to generate the SHA-256 hash of a file
 async function generateFileHash(file: File): Promise<string> {

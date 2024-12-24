@@ -26,7 +26,6 @@ export default async function unlikememes(_req: Request, params: Record<string, 
     try {
         const user_id = params.user_id;
         const meme_id = params.id;
-
         logger.info(`Processing unlikeMeme handler for user_id: ${user_id} and meme_id: ${meme_id}`);
 
         // Validate the meme_id parameter
