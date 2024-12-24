@@ -5,7 +5,8 @@ import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
 import { USERMODULE } from "../../_shared/_messages/userModuleMessages.ts";
 import { validatingUserId } from "../../_shared/_validation/UserValidate.ts";
 import { LOGERROR,LOGINFO } from "../../_shared/_messages/userModuleMessages.ts";
-
+import Logger from "../../_shared/_logger/Logger.ts";
+const logger=Logger.getInstance();
 /**
  * This method can fetch user profile by id
  * @param req --It is the request Object
@@ -16,33 +17,33 @@ export default async function FetchUserProfile(_req: Request, params: Record<str
     try {
         const user_Id = params.id;
 
-        console.log(LOGINFO.FETCH_PROFILE_STARTED.replace("{userId}", user_Id)); 
+        logger.log(LOGINFO.FETCH_PROFILE_STARTED.replace("{userId}", user_Id)); 
 
         const idAvailable = await validatingUserId(user_Id);
         if (idAvailable instanceof Response) {
-            console.error(LOGERROR.INVALID_USER_ID.replace("{userId}", user_Id));
+            logger.error(LOGERROR.INVALID_USER_ID.replace("{userId}", user_Id));
             return idAvailable;
         }
 
-        console.log(LOGINFO.FETCH_PROFILE_VALIDATED.replace("{userId}", user_Id)); 
+        logger.log(LOGINFO.FETCH_PROFILE_VALIDATED.replace("{userId}", user_Id)); 
 
         const { data: userData, error: userError } = await getUserProfile(user_Id);
         if (userError) {
-            console.error(LOGERROR.USER_PROFILE_FETCH_ERROR.replace("{userId}", user_Id), userError); 
+            logger.error(LOGERROR.USER_PROFILE_FETCH_ERROR.replace("{userId}", user_Id)+ userError); 
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${USERMODULE.INTERNAL_SERVER_ERROR}, ${userError.message}`);
         }
 
         if (!userData) {
-            console.log(LOGINFO.USER_NOT_FOUND.replace("{userId}", user_Id)); 
+            logger.log(LOGINFO.USER_NOT_FOUND.replace("{userId}", user_Id)); 
             return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, USERMODULE.USER_NOT_FOUND);
         }
 
-        console.log(LOGINFO.USER_PROFILE_FETCHED.replace("{userId}", user_Id)); 
+        logger.log(LOGINFO.USER_PROFILE_FETCHED.replace("{userId}", user_Id)); 
 
         return SuccessResponse(USERMODULE.USER_DETAILS, HTTP_STATUS_CODE.OK, userData);
 
     } catch (error) {
-        console.error(LOGERROR.INTERNAL_SERVER_ERROR, error);  
+        logger.error(LOGERROR.INTERNAL_SERVER_ERROR+error);  
         return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${error}`);
     }
 }

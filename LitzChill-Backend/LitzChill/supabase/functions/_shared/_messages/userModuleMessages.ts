@@ -37,6 +37,11 @@ export const USERMODULE = {
     USER_NOT_FOUND_: "User not found",
     USER_STATUS_SET_TO_BE: "User status set to be",
     USER_NOT_ALLOWED_TO_CHANGE: "User not allowed to change ",
+    USER_fOLLOWED_SUCCESS:"User followed succesess",
+    USER_ALREADY_FOLLOWED:"User already followed",
+    UNABLE_TO_FOLLOW:"User unable to follow",
+    YOUR_NOT_ABLE_TO_FOLLOW_YOURSELF:"Your not able to follow your self",
+    USER_FAILD_TO_UPDATE:"User is faild to update",
 };
 export const CONSTANTS = {
     COUNTRY_CODE: "+91",
@@ -74,9 +79,7 @@ export const LOGERROR = {
 };
 
 export const LOGINFO = {
-    OTP_VERIFICATION_STARTED: "OTP verification process started.",
-   
-   
+    OTP_VERIFICATION_STARTED: "OTP verification process started.",   
     OTP_VALID: "OTP is valid. Verifying user.",
     OTP_INVALID_ATTEMPT: "Invalid OTP attempt.",
     USER_ACCOUNT_CREATED: "New user account created successfully.",
@@ -91,8 +94,7 @@ export const LOGINFO = {
     USER_PROFILE_FETCHED: "Successfully fetched profile for userId: {userId}.",
     USER_NOT_FOUND: "User not found for userId: {userId}.",
     PROFILE_UPDATE_STARTED: "Profile update started for userId: {userId}.",
-    FETCHING_USER_PROFILE: "Fetching profile for userId: {userId}.",
-   
+    FETCHING_USER_PROFILE: "Fetching profile for userId: {userId}.",   
     UPDATING_PROFILE: "Updating profile for userId: {userId}.",
     PROFILE_UPDATED_SUCCESS: "Profile updated successfully for userId: {userId}.",
     LOGOUT_STARTED: "Logout process started for token: {token}.",
@@ -106,12 +108,10 @@ export const LOGMESSAGE = {
     OTP_SENT: "OTP sent successfully.",
     OTP_VERIFIED: "OTP verified successfully.",
     USER_LOCKOUT: "User is locked out. Please try after {lockoutTime}.",
-    USER_CREATED: "New user account created with userId: {userId}.",
-    
+    USER_CREATED: "New user account created with userId: {userId}.",    
     ACCOUNT_DEACTIVATED: "Account is deactivated. Try again after {lockoutTime}.",
     USER_PROFILE_FETCHED: "User profile fetched successfully.",
     PROFILE_UPDATED: "User profile updated successfully.",
     USER_LOGGED_OUT: "User has logged out successfully.",
     USER_STATUS_UPDATED_SUCCESSFULLY: "User account status updated successfully.",
-
 };

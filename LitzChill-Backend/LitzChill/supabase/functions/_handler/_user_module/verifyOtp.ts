@@ -7,7 +7,9 @@ import ErrorResponse, { SuccessResponse } from "../../_responses/Response.ts";
 import { isOtpAvailable, isPhoneAvailable } from "../../_shared/_validation/UserValidate.ts";
 import { LOGERROR } from "../../_shared/_messages/userModuleMessages.ts";
 import { LOGINFO } from "../../_shared/_messages/userModuleMessages.ts";
-
+import Logger from "../../_shared/_logger/Logger.ts";
+ 
+const logger=Logger.getInstance();
 /**
  * This method will perform Otp verification by following below conditions
  * 1.It will get the user by mobile number if user exists
@@ -22,37 +24,42 @@ import { LOGINFO } from "../../_shared/_messages/userModuleMessages.ts";
  */
 export default async function verifyOtp(req: Request): Promise<Response> {
     try {
-        console.log(LOGINFO.OTP_VERIFICATION_STARTED);  
-
+        logger.log(LOGINFO.OTP_VERIFICATION_STARTED);  
+ 
         const body = await req.json();
         const phoneNo: string = body.phoneNo;
         const Otp: string = body.Otp;
-
+ 
         const validPhone = isPhoneAvailable(phoneNo);
         if (validPhone instanceof Response)
             return validPhone;
-
+ 
         const validOtp = isOtpAvailable(Otp);
         if (validOtp instanceof Response)
             return validOtp;
-
+ 
         const { data: user, error: userError } = await getUser(phoneNo);
         if (userError) {
-            console.error(LOGERROR.USER_NOT_FOUND, userError);  
-            return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${userError}`);
+            logger.error(LOGERROR.USER_NOT_FOUND+ userError);  
+            return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${userError.message}`);
         }
-
+ 
         if (user && user.lockout_time && user.lockout_time > new Date().toISOString()) {
-            console.log(LOGINFO.USER_LOCKOUT_UPDATED);  
+            console.log(user)
+            logger.log(LOGINFO.USER_LOCKOUT_UPDATED);  
             return ErrorResponse(HTTP_STATUS_CODE.FORBIDDEN, USERMODULE.USER_LOCKED);
         }
-
+ 
+        console.log("user is, ",user);
         const { data, error } = await otpVerication(phoneNo, Otp);
+        console.log(!data)
+        console.log(error)
         if (error || !data) {
-            console.log(LOGINFO.OTP_INVALID_ATTEMPT);  
+            logger.log(LOGINFO.OTP_INVALID_ATTEMPT);  
             if (user) {
-                console.log("User failed count:", user.failed_login_count);
-                console.log(user.lockout_time);
+                console.log("User failed count: ",user.failed_login_count);
+                logger.log("User failed count:"+ user.failed_login_count);
+                logger.log(user.lockout_time);
                 if (user.failed_login_count < 3) {
                     user.account_status = 'A';
                     user.failed_login_count += 1;
@@ -62,67 +69,69 @@ export default async function verifyOtp(req: Request): Promise<Response> {
                     user.failed_login_count = 0;
                     user.lockout_time = new Date(new Date().setHours(new Date().getHours() + 1)).toISOString();
                 }
-
+ 
                 const { data: _updateUser, error: updateError } = await makeUserLockout(
                     user.user_id,
                     user.lockout_time,
                     user.failed_login_count,
                     user.account_status
                 );
-
+ 
                 if (updateError) {
-                    console.error(LOGERROR.USER_UPDATE_ERROR, updateError);
-                    return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${updateError}`);
+                    logger.error(LOGERROR.USER_UPDATE_ERROR+updateError);
+                    return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${updateError.message}`);
                 }
-
+ 
                 if (user.lockout_time) {
                     return ErrorResponse(HTTP_STATUS_CODE.CONFLICT, `${USERMODULE.LOCK_USER} try after ${user.lockout_time}`);
                 }
                 return ErrorResponse(HTTP_STATUS_CODE.CONFLICT, USERMODULE.INVALID_OTP);
             }
         }
-
+ 
+        console.log("JWT token is ,")
         if (user) {
-            console.log(LOGINFO.OTP_VALID);  
+            logger.log(LOGINFO.OTP_VALID);  
             user.account_status = 'A';
-            const { data: _updateUser, error: updateError } = await 
+            const { data: _updateUser, error: updateError } = await
             makeUserLockout(user.user_id, null, 0,user.account_status);
-
+ 
             if (updateError) {
-                console.error(LOGERROR.USER_UPDATE_ERROR, updateError);
-                return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${updateError}`);
+                logger.error(LOGERROR.USER_UPDATE_ERROR+ updateError);
+                return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${updateError.message}`);
             }
-
+ 
             const userId = data.user?.id;
             const access_token = data.session?.access_token;
             if (userId && access_token) {
-                console.log(LOGINFO.USER_LOGGED_IN);  
+                logger.log(LOGINFO.USER_LOGGED_IN);  
                 return SuccessResponse(USERMODULE.USER_VERIFIED, HTTP_STATUS_CODE.OK, { userId, access_token });
             }
-
+ 
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, USERMODULE.INTERNAL_SERVER_ERROR);
         }
-
+ 
         if (!user) {
-            console.log(LOGINFO.USER_ACCOUNT_CREATED);  // Log if the user is created
+            logger.log(LOGINFO.USER_ACCOUNT_CREATED);  // Log if the user is created
+            console.log("data",data);
             const userId = data.user?.id;
             const access_token = data.session?.access_token;
-
+ 
             if (userId && access_token) {
                 const { data: _register, error: registerError } = await RegisterUser(userId, phoneNo);
                 if (registerError) {
-                    console.error(LOGERROR.USER_REGISTRATION_ERROR, registerError.message);
-                    return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${USERMODULE.INTERNAL_SERVER_ERROR} :${registerError}`);
+                    logger.error(LOGERROR.USER_REGISTRATION_ERROR+registerError.message);
+                    return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${USERMODULE.INTERNAL_SERVER_ERROR} :${registerError.message}`);
                 }
-
+ 
                 return SuccessResponse(USERMODULE.SENT_OTP_SUCCESS, HTTP_STATUS_CODE.CREATED, { userId, access_token });
             }
         }
-
+ 
         return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, USERMODULE.INTERNAL_SERVER_ERROR);
-    } 
+    }
     catch (error) {
-        console.error(LOGERROR.INTERNAL_SERVER_ERROR, error);
+        logger.error(LOGERROR.INTERNAL_SERVER_ERROR+ error);
         return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, `${error}`);
     }
 }

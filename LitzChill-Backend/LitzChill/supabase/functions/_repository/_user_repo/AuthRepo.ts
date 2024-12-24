@@ -28,10 +28,8 @@ export async function logout(token:string,scope:string):Promise<{data:any,error:
     if(scope=='global')
     {
         const {data,error}=await supabase.auth.admin.signOut(token as string,'global')
-        return {data,error}
- 
+        return {data,error} 
     }
-    return {data:null,error:null}
-    
+    return {data:null,error:null}    
 }
 
