@@ -1,8 +1,8 @@
-import { handleAddComment } from "../_handler/_comment_module/AddComment.ts";
-import { handleDeleteComment } from "../_handler/_comment_module/DeleteComment.ts";
-import { checkUserAuthentication } from "../_middleware/middlerWare.ts";
-import { HTTP_METHOD } from "../_shared/_constants/HttpMethods.ts";
-import { USER_ROLES } from "../_shared/_constants/UserRoles.ts";
+import { handleAddComment } from "@handler/_comment_module/AddComment.ts";
+import { handleDeleteComment } from "@handler/_comment_module/DeleteComment.ts";
+import { checkUserAuthentication } from "@middleware/middlerWare.ts";
+import { HTTP_METHOD } from "@shared/_constants/HttpMethods.ts";
+import { USER_ROLES } from "@shared/_constants/UserRoles.ts";
 import { COMMENT_ROUTES } from "./RoutesPaths.ts";
 
 

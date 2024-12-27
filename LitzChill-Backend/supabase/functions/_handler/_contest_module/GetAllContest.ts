@@ -1,11 +1,11 @@
 
-import { getAllContestDetails } from "../../_repository/_contest_repo/ContestRepository.ts";
-import {ErrorResponse} from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { SuccessResponse } from "../../_responses/Response.ts";
-import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/ContestModuleMessages.ts";
-import { Logger } from "../../_shared/_logger/Logger.ts";
+import { getAllContestDetails } from "@repository/_contest_repo/ContestRepository.ts";
+import {ErrorResponse} from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { SuccessResponse } from  "@response/Response.ts";
+import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "@shared/_messages/ContestModuleMessages.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
 
 
 /**

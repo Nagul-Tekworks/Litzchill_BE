@@ -1,11 +1,11 @@
-import { ContestModel } from "../../_model/ContestModel.ts";
-import { getContestDetailsById, updateContestById } from "../../_repository/_contest_repo/ContestRepository.ts";
-import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { Logger } from "../../_shared/_logger/Logger.ts";
-import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/ContestModuleMessages.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { validateContestDetails, validateContestId } from "../../_shared/_validation/ContestDetailsValidation.ts";
+import { ContestModel } from "@model/ContestModel.ts";
+import { getContestDetailsById, updateContestById } from "@repository/_contest_repo/ContestRepository.ts";
+import  {ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
+import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "@shared/_messages/ContestModuleMessages.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { validateContestDetails, validateContestId } from "@shared/_validation/ContestDetailsValidation.ts";
 
 /**
  * Handles the updation of a existing contest by validating the contest id and all provided contest details.

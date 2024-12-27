@@ -1,10 +1,10 @@
-import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
-import { FlagModel } from "../../_model/FlagModel.ts";
-import {ErrorResponse} from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../_constants/HttpStatusCodes.ts";
-import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
-import { FLAG_VALIDATION_MESSAGES } from "../_messages/FLagModuleMessags.ts";
-import { Logger } from "../_logger/Logger.ts";
+import { V4 } from "@V4";
+import { FlagModel } from "@model/FlagModel.ts";
+import {ErrorResponse} from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { FLAG_VALIDATION_MESSAGES } from "@shared/_messages/FLagModuleMessags.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
 
 
 /**

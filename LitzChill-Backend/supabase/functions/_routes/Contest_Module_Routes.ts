@@ -1,11 +1,11 @@
-import { handleCreateContext } from "../_handler/_contest_module/CreateContest.ts";
-import { handleDeleteContest } from "../_handler/_contest_module/DeleteContest.ts";
-import { handlegetAllContest } from "../_handler/_contest_module/GetAllContest.ts";
-import { handlegetContestById } from "../_handler/_contest_module/GetContestById.ts";
-import { handleupdateContest } from "../_handler/_contest_module/UpdateContest.ts";
-import { checkUserAuthentication } from "../_middleware/middlerWare.ts";
-import { HTTP_METHOD } from "../_shared/_constants/HttpMethods.ts";
-import { USER_ROLES } from "../_shared/_constants/UserRoles.ts";
+import { handleCreateContext } from "@handler/_contest_module/CreateContest.ts";
+import { handleDeleteContest } from "@handler/_contest_module/DeleteContest.ts";
+import { handlegetAllContest } from "@handler/_contest_module/GetAllContest.ts";
+import { handlegetContestById } from "@handler/_contest_module/GetContestById.ts";
+import { handleupdateContest } from "@handler/_contest_module/UpdateContest.ts";
+import { checkUserAuthentication } from "@middleware/middlerWare.ts";
+import { HTTP_METHOD } from "@shared/_constants/HttpMethods.ts";
+import { USER_ROLES } from "@shared/_constants/UserRoles.ts";
 import { CONTEST_ROUTES } from "./RoutesPaths.ts";
 
 

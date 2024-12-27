@@ -1,6 +1,6 @@
-import { routeHandler } from "../_routes/Route_Handler.ts"
-import { FlagModuleRoutes } from "../_routes/Flag_Module_Routes.ts"
-import { Logger } from "../_shared/_logger/Logger.ts";
+import { routeHandler } from "@routes/Route_Handler.ts"
+import { FlagModuleRoutes } from "@routes/Flag_Module_Routes.ts"
+import { Logger } from "@shared/_logger/Logger.ts";
 
 /**
  * Recieving Request 

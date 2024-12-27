@@ -1,8 +1,8 @@
 
-import { FlagModel } from "../../_model/FlagModel.ts";
-import supabase from "../../_shared/_config/DbConfig.ts";
-import { FLAG_TABLE } from "../../_shared/_db_table_details/FlagTableFields.ts";
-import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
+import { FlagModel } from "@model/FlagModel.ts";
+import supabase from "@shared/_config/DbConfig.ts";
+import { FLAG_TABLE } from "@shared/_db_table_details/FlagTableFields.ts";
+import { TABLE_NAMES } from "@shared/_db_table_details/TableNames.ts";
 
 /**
  * Checks if a user has already flagged a meme.

@@ -1,7 +1,7 @@
-import { ContestModel } from "../../_model/ContestModel.ts";
-import supabase from "../../_shared/_config/DbConfig.ts";
-import { CONTEST_TABLE } from "../../_shared/_db_table_details/ContestTableFields.ts";
-import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
+import { ContestModel } from "@model/ContestModel.ts";
+import supabase from "@shared/_config/DbConfig.ts";
+import { CONTEST_TABLE } from "@shared/_db_table_details/ContestTableFields.ts";
+import { TABLE_NAMES } from "@shared/_db_table_details/TableNames.ts";
 
 /**
  * Creates a new contest and inserts the contest data into the contest table.

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.10",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "validator": "^13.12.0"
+  }
+}

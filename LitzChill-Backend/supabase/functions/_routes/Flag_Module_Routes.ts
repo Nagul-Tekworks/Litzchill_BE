@@ -1,7 +1,7 @@
-import { handleAddFlagRequest } from "../_handler/_flag_module/AddFlag.ts";
-import { checkUserAuthentication } from "../_middleware/middlerWare.ts";
-import { HTTP_METHOD } from "../_shared/_constants/HttpMethods.ts";
-import { USER_ROLES } from "../_shared/_constants/UserRoles.ts";
+import { handleAddFlagRequest } from "@handler/_flag_module/AddFlag.ts";
+import { checkUserAuthentication } from "@middleware/middlerWare.ts";
+import { HTTP_METHOD } from "@shared/_constants/HttpMethods.ts";
+import { USER_ROLES } from "@shared/_constants/UserRoles.ts";
 import { FLAG_ROUTES } from "./RoutesPaths.ts";
 
 

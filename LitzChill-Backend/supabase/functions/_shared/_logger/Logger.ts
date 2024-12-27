@@ -23,7 +23,7 @@ export class Logger {
      * Retrieves the caller's location from the stack trace.
      * The stack trace provides information such as the file path and line number of the code execution.
      * 
-     * @returns {string} The caller location or "Unknown location" if it cannot be determined.
+     * @returns string The caller location or "Unknown location" if it cannot be determined.
      */
     private getCallerLocation() {
         const stack = new Error().stack;

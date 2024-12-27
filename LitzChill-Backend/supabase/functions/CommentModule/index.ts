@@ -1,6 +1,6 @@
-import { routeHandler } from "../_routes/Route_Handler.ts"
-import { CommentModuleRoutes } from "../_routes/Comment_Module_Routes.ts";
-import { Logger } from "../_shared/_logger/Logger.ts";
+import { routeHandler } from "@routes/Route_Handler.ts"
+import { CommentModuleRoutes } from "@routes/Comment_Module_Routes.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
 
 /**
  * Recieving Request

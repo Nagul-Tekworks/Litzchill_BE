@@ -1,9 +1,9 @@
 
-import { Comment } from "../../_model/CommentModle.ts";
-import supabase from "../../_shared/_config/DbConfig.ts";
-import { COMMENT_TABLE } from "../../_shared/_db_table_details/CommentTableFields.ts";
+import { Comment } from "@model/CommentModle.ts";
+import supabase from "@shared/_config/DbConfig.ts";
+import { COMMENT_TABLE } from "@shared/_db_table_details/CommentTableFields.ts";
 
-import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
+import { TABLE_NAMES } from "@shared/_db_table_details/TableNames.ts";
 
 /**
  * Adds a comment to a meme and stores the comment data in the comment table.

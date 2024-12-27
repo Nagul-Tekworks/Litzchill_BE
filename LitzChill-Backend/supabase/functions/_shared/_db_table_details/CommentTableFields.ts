@@ -1,4 +1,4 @@
-import { Comment } from "../../_model/CommentModle.ts";
+
 
 export const COMMENT_TABLE={
     COMMENT_ID:'comment_id',

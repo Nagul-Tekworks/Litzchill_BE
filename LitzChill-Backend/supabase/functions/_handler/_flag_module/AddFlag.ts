@@ -1,13 +1,13 @@
-import { FlagModel } from "../../_model/FlagModel.ts";
-import { checkMemeId } from "../../_repository/_comment_repo/CommentRepository.ts";
-import { addFlagToMeme, checkUserAlreadyFlag, updateFlagCount } from "../../_repository/_flag_repo/FlagRepository.ts";
-import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { Logger } from "../../_shared/_logger/Logger.ts";
-import { COMMENT_MODULE_ERROR_MESSAGES } from "../../_shared/_messages/CommentModuleMessages.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { FLAG_ERROR_MESSAGES, FLAG_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/FLagModuleMessags.ts";
-import { validateFlagDetails } from "../../_shared/_validation/FlagDetailsValidation.ts";
+import { FlagModel } from "@model/FlagModel.ts";
+import { checkMemeId } from "@repository/_comment_repo/CommentRepository.ts";
+import { addFlagToMeme, checkUserAlreadyFlag, updateFlagCount } from "@repository/_flag_repo/FlagRepository.ts";
+import  {ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
+import { COMMENT_MODULE_ERROR_MESSAGES } from "@shared/_messages/CommentModuleMessages.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { FLAG_ERROR_MESSAGES, FLAG_MODULE_SUCCESS_MESSAGES } from "@shared/_messages/FLagModuleMessags.ts";
+import { validateFlagDetails } from "@shared/_validation/FlagDetailsValidation.ts";
 
 /**
  * Handles the adding flag to existing meme by validating contentType and ContentId

@@ -1,10 +1,10 @@
-import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
-import { HTTP_STATUS_CODE } from "../_constants/HttpStatusCodes.ts";
-import {  COMMENT_VALIDATION_MESSAGES } from "../_messages/CommentModuleMessages.ts";
-import {ErrorResponse} from "../../_responses/Response.ts";
-import { Comment } from "../../_model/CommentModle.ts";
-import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
-import { Logger } from "../_logger/Logger.ts";
+import { V4 } from "@V4";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import {  COMMENT_VALIDATION_MESSAGES } from "@shared/_messages/CommentModuleMessages.ts";
+import {ErrorResponse} from "@response/Response.ts";
+import { Comment } from "@model/CommentModle.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
 
 /**
  * Validates the provided comment ID is .

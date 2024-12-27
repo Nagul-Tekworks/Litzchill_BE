@@ -1,11 +1,11 @@
 
-import { deleteComment, getCommentById, updateCommentsCount } from "../../_repository/_comment_repo/CommentRepository.ts";
-import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { Logger } from "../../_shared/_logger/Logger.ts";
-import { COMMENT_MODULE_ERROR_MESSAGES, COMMENT_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/CommentModuleMessages.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { validateCommentId } from "../../_shared/_validation/CommentDetailsValidation.ts";
+import { deleteComment, getCommentById, updateCommentsCount } from "@repository/_comment_repo/CommentRepository.ts";
+import  {ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
+import { COMMENT_MODULE_ERROR_MESSAGES, COMMENT_MODULE_SUCCESS_MESSAGES } from "@shared/_messages/CommentModuleMessages.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { validateCommentId } from "@shared/_validation/CommentDetailsValidation.ts";
 
 /**
  * Handles the deletion of comment with all  replies on existing meme by comment id.

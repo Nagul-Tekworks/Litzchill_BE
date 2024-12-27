@@ -1,11 +1,11 @@
-import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
-import {ErrorResponse} from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../_constants/HttpStatusCodes.ts";
+import { V4 } from "@V4";
+import {ErrorResponse} from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
 
-import { ContestModel } from "../../_model/ContestModel.ts";
-import { COMMON_ERROR_MESSAGES } from "../_messages/ErrorMessages.ts";
-import { CONTEST_VALIDATION_MESSAGES } from "../_messages/ContestModuleMessages.ts";
-import { Logger } from "../_logger/Logger.ts";
+import { ContestModel } from "@model/ContestModel.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { CONTEST_VALIDATION_MESSAGES } from "@shared/_messages/ContestModuleMessages.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
 
 /**
  * Validates if the provided contest ID is valid.
@@ -67,7 +67,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
     
     // Validating contest title if invalid title returning error message.
     if (contestDetails.contest_title) {
-        contestDetails.contest_title=contestDetails.contest_title.replace(/\s+/g, '').trim();
+        contestDetails.contest_title=contestDetails.contest_title.replace(/\s+/g, ' ').trim();
         if (contestDetails.contest_title.length < 3 || contestDetails.contest_title.length > 100) {
             logger.error("Invalid contest title length: Title must be between 3 and 100 characters.");4
              return ErrorResponse(
@@ -87,7 +87,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
 
     // Validating contest description
     if (contestDetails.description) {
-        contestDetails.description=contestDetails.description.replace(/\s+/g, '').trim();
+        contestDetails.description=contestDetails.description.replace(/\s+/g, ' ').trim();
         if (contestDetails.description.length < 8 || contestDetails.description.length > 500) {
            
             logger.error("Invalid contest description length: Description must be between 8 and 500 characters.");
@@ -224,7 +224,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
 
 
     logger.info(`initializing contest status base on contest start date.`);
-    if(contestDetails.status&&contestDetails.start_date){
+    if(contestDetails.start_date){
         const start_date = new Date(contestDetails.start_date);
         if(start_date>current_date){
             contestDetails.status=CONTEST_STATUS[0].toLowerCase();
@@ -249,3 +249,4 @@ export function isValidISODate(date: string): boolean {
     const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
     return isoDateRegex.test(date);
 }
+

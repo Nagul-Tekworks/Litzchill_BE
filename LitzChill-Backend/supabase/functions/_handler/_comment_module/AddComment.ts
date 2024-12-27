@@ -1,14 +1,14 @@
 
-import { Comment } from "../../_model/CommentModle.ts";
-import { getCommentById, updateCommentsCount } from "../../_repository/_comment_repo/CommentRepository.ts";
-import { addComment, checkMemeId } from "../../_repository/_comment_repo/CommentRepository.ts";
-import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
+import { Comment } from "@model/CommentModle.ts";
+import { getCommentById, updateCommentsCount } from "@repository/_comment_repo/CommentRepository.ts";
+import { addComment, checkMemeId } from "@repository/_comment_repo/CommentRepository.ts";
+import { ErrorResponse, SuccessResponse } from "@response/Response.ts";
 
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { Logger } from "../../_shared/_logger/Logger.ts";
-import { COMMENT_MODULE_ERROR_MESSAGES, COMMENT_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/CommentModuleMessages.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { validateCommentDetails } from "../../_shared/_validation/CommentDetailsValidation.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
+import { COMMENT_MODULE_ERROR_MESSAGES, COMMENT_MODULE_SUCCESS_MESSAGES } from "@shared/_messages/CommentModuleMessages.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { validateCommentDetails } from "@shared/_validation/CommentDetailsValidation.ts";
 
 /**
  * Handles the adding comment or reply on comment to existing meme by validating contentType and ContentId

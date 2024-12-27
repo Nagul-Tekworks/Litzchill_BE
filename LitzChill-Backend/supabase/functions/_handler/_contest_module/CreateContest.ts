@@ -1,12 +1,13 @@
 
-import { ContestModel } from "../../_model/ContestModel.ts";
-import { createContest } from "../../_repository/_contest_repo/ContestRepository.ts";
-import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { Logger } from "../../_shared/_logger/Logger.ts";
-import { CONTEST_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/ContestModuleMessages.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";  
-import { validateContestDetails } from "../../_shared/_validation/ContestDetailsValidation.ts";
+import { ContestModel } from "@model/ContestModel.ts";
+import { createContest } from "@repository/_contest_repo/ContestRepository.ts";
+import  {ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
+import { CONTEST_MODULE_SUCCESS_MESSAGES } from "@shared/_messages/ContestModuleMessages.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";  
+import { validateContestDetails } from "@shared/_validation/ContestDetailsValidation.ts";
+
 
 /**
  * Handles the creation of a new contest by validating the provided contest details 
@@ -27,7 +28,7 @@ export async function handleCreateContext(req: Request,_params:Record<string,str
           logger.info(`Successfully parsed json body ${contestData}`);
 
 
-          // Validating contest all details
+         // Validating contest all details
           logger.info(`calling validation function to validate contest details`);
           const validationErrors = validateContestDetails(contestData);
           if (validationErrors instanceof Response) {

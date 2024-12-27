@@ -1,4 +1,4 @@
-// deno-lint-ignore-file
+
 //contest module model
 export interface ContestModel {
     contest_id?: string;  
@@ -12,3 +12,5 @@ export interface ContestModel {
     created_at?: string;
     updated_at?: string;
 }
+
+

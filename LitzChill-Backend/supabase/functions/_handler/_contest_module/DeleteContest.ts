@@ -1,11 +1,11 @@
 
-import  {ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { validateContestId } from "../../_shared/_validation/ContestDetailsValidation.ts";
-import { deleteContestById } from "../../_repository/_contest_repo/ContestRepository.ts";
-import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "../../_shared/_messages/ContestModuleMessages.ts";
-import { Logger } from "../../_shared/_logger/Logger.ts";
+import  {ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { validateContestId } from "@shared/_validation/ContestDetailsValidation.ts";
+import { deleteContestById } from "@repository/_contest_repo/ContestRepository.ts";
+import { CONTEST_MODULE_ERROR_MESSAGES, CONTEST_MODULE_SUCCESS_MESSAGES } from "@shared/_messages/ContestModuleMessages.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
 
 /**
  * Handles the deletion of a existing contest by validating the contest id.

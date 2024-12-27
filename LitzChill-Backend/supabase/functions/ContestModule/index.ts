@@ -1,8 +1,10 @@
-import { updateContestStatusUsingCron } from "../_repository/_contest_repo/ContestRepository.ts";
-import { Contest_Module_Routes } from "../_routes/Contest_Module_Routes.ts";
-import { routeHandler } from "../_routes/Route_Handler.ts"
-import { cron, every15Minute, everyMinute} from 'https://deno.land/x/deno_cron/cron.ts';
-import { Logger } from "../_shared/_logger/Logger.ts";
+import { updateContestStatusUsingCron } from "@repository/_contest_repo/ContestRepository.ts";
+import { Contest_Module_Routes } from "@routes/Contest_Module_Routes.ts";
+import { routeHandler } from "@routes/Route_Handler.ts"
+import {everyMinute} from "https://deno.land/x/deno_cron@v1.0.0/cron.ts";
+import { Logger } from "@shared/_logger/Logger.ts";
+
+
 /**
  * Recieving Request 
  * @param req ->Http Request.
@@ -17,10 +19,6 @@ Deno.serve(async (req) => {
      logger.info('Request Recieved In Index Calling Route Handler')
      return await routeHandler(req,Contest_Module_Routes);
 })
-
-
-
-
 
 everyMinute(updateContestStatusUsingCron);
 
