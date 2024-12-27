@@ -1,5 +1,5 @@
-import { like_And_NotifyRoutes } from "../_routes/LikeandNotification_Routes.ts";
-import { routeHandler } from "../_routes/Route_Handler.ts";
+import { like_And_NotifyRoutes } from "@routes/LikeandNotification_Routes.ts";
+import { routeHandler } from "@routes/Route_Handler.ts";
 
 
 

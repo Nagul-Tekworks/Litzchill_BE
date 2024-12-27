@@ -1,7 +1,7 @@
 // deno-lint-ignore-file
-import { HTTP_STATUS_CODE } from "../_shared/_constants/HttpStatusCodes.ts";
-import { COMMON_ERROR_MESSAGES } from "../_shared/_messages/ErrorMessages.ts";
-import { ErrorResponse } from "../_responses/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { ErrorResponse } from "@response/Response.ts";
 
  
 //performing static and dynamic routing and if matching than calling handler

@@ -1,13 +1,13 @@
-import createMeme from "../_handler/_meme_module/CreateMeme.ts";
-import { HTTP_METHOD } from "../_shared/_constants/HttpMethods.ts";
+import createMeme from "@handler/_meme_module/CreateMeme.ts";
+import { HTTP_METHOD } from "@shared/_constants/HttpMethods.ts";
 import { MEME_ROUTES } from "./RoutesPaths.ts";
-import { USER_ROLES } from '../_shared/_constants/UserRoles.ts';
-import { checkUserAuthentication } from "../_middleware/middlerWare.ts";
-import updateMeme from "../_handler/_meme_module/UpateMeme.ts";
-import getmemebyID from "../_handler/_meme_module/GetMemeByID.ts";
-import DeletememebyID from "../_handler/_meme_module/DeleteMeme.ts";
-import getAllMemes from "../_handler/_meme_module/GetAllMemes.ts";
-import updateMemeStatus from "../_handler/_meme_module/UpdateMemeStatus.ts";
+import { USER_ROLES } from '@shared/_constants/UserRoles.ts';
+import { checkUserAuthentication } from "@middleware/middlerWare.ts";
+import updateMeme from "@handler/_meme_module/UpateMeme.ts";
+import getmemebyID from "@handler/_meme_module/GetMemeByID.ts";
+import DeletememebyID from "@handler/_meme_module/DeleteMeme.ts";
+import getAllMemes from "@handler/_meme_module/GetAllMemes.ts";
+import updateMemeStatus from "@handler/_meme_module/UpdateMemeStatus.ts";
 
 
 

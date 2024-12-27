@@ -1,10 +1,10 @@
-import supabase from "../../_shared/_config/DbConfig.ts";
-import { BUCKET_NAME, TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
-import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
-import { Meme } from '../../_model/MemeModel.ts';
-import { USER_ROLES } from "../../_shared/_constants/UserRoles.ts";
-import { MEME_STATUS } from '../../_shared/_constants/Types.ts';
-import Logger from "../../_shared/Logger/logger.ts";
+import supabase from "@shared/_config/DbConfig.ts";
+import { BUCKET_NAME, TABLE_NAMES } from "@shared/_db_table_details/TableNames.ts";
+import { MEMEFIELDS } from '@shared/_db_table_details/MemeTableFields.ts';
+import { Meme } from '@model/MemeModel.ts';
+import { USER_ROLES } from "@shared/_constants/UserRoles.ts";
+import { MEME_STATUS } from '@shared/_constants/Types.ts';
+import Logger from "@shared/Logger/logger.ts";
 
 const logger = Logger.getInstance();
 /**

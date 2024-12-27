@@ -1,8 +1,8 @@
-import { ErrorResponse } from "../_responses/Response.ts";
-import supabase from "../_shared/_config/DbConfig.ts";
-import { HTTP_STATUS_CODE } from "../_shared/_constants/HttpStatusCodes.ts";
-import { COMMON_ERROR_MESSAGES } from "../_shared/_messages/ErrorMessages.ts";
-import Logger from "../_shared/Logger/logger.ts";
+import { ErrorResponse } from "@response/Response.ts";
+import supabase from "@shared/_config/DbConfig.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import Logger from "@shared/Logger/logger.ts";
 
 const logger = Logger.getInstance();
 // Check if the user has necessary privileges

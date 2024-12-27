@@ -1,8 +1,8 @@
-import supabase from "../../_shared/_config/DbConfig.ts";
-import { MEME_STATUS } from "../../_shared/_constants/Types.ts";
-import { NOTIFICATIONS_TABLE_FEILDS } from "../../_shared/_db_table_details/NotificationTableConstants.ts";
-import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
-import Logger from "../../_shared/Logger/logger.ts";
+import supabase from "@shared/_config/DbConfig.ts";
+import { MEME_STATUS } from "@shared/_constants/Types.ts";
+import { NOTIFICATIONS_TABLE_FEILDS } from "@shared/_db_table_details/NotificationTableConstants.ts";
+import { TABLE_NAMES } from "@shared/_db_table_details/TableNames.ts";
+import Logger from "@shared/Logger/logger.ts";
 
 const logger = Logger.getInstance();
  

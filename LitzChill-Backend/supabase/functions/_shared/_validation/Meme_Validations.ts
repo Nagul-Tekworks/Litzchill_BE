@@ -1,5 +1,5 @@
-// import { Meme } from "../../_model/MemeModel.ts";
-import { ErrorResponse } from "../../_responses/Response.ts";
+// import { Meme } from "@model/MemeModel.ts";
+import { ErrorResponse } from "@response/Response.ts";
 import { HTTP_STATUS_CODE } from '../_constants/HttpStatusCodes.ts';
 import { MEME_ERROR_MESSAGES } from "../_messages/Meme_Module_Messages.ts";
 

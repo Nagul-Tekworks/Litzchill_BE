@@ -1,14 +1,14 @@
-import { checkLikeExists, unlikememe, updateLikeCount } from "../../_repository/_like_repo/LikeQueries.ts";
-import { meme_exists } from "../../_repository/_meme_repo/MemeRepository.ts";
-import { ErrorResponse } from "../../_responses/Response.ts";
-import { SuccessResponse } from '../../_responses/Response.ts';
-import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { MEME_ERROR_MESSAGES } from '../../_shared/_messages/Meme_Module_Messages.ts';
-import { LIKE_ERROR } from "../../_shared/_messages/LikeMessage.ts";
-import { HTTP_STATUS_CODE } from '../../_shared/_constants/HttpStatusCodes.ts';
-import { LIKE_SUCCESS } from '../../_shared/_messages/LikeMessage.ts';
-import Logger from "../../_shared/Logger/logger.ts";
+import { checkLikeExists, unlikememe } from "@repository/_like_repo/LikeQueries.ts";
+import { meme_exists } from "@repository/_meme_repo/MemeRepository.ts";
+import { ErrorResponse } from "@response/Response.ts";
+import { SuccessResponse } from '@response/Response.ts';
+import { V4 } from "@V4";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { MEME_ERROR_MESSAGES } from '@shared/_messages/Meme_Module_Messages.ts';
+import { LIKE_ERROR } from "@shared/_messages/LikeMessage.ts";
+import { HTTP_STATUS_CODE } from '@shared/_constants/HttpStatusCodes.ts';
+import { LIKE_SUCCESS } from '@shared/_messages/LikeMessage.ts';
+import Logger from "@shared/Logger/logger.ts";
 
 
 

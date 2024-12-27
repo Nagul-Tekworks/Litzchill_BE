@@ -1,8 +1,8 @@
-import supabase from "../../_shared/_config/DbConfig.ts";
-import { LIKE_TABLE_FIELDS } from "../../_shared/_db_table_details/LikeTableFields.ts";
-import { MEMEFIELDS } from "../../_shared/_db_table_details/MemeTableFields.ts";
-import { TABLE_NAMES } from "../../_shared/_db_table_details/TableNames.ts";
-import Logger from "../../_shared/Logger/logger.ts";
+import supabase from "@shared/_config/DbConfig.ts";
+import { LIKE_TABLE_FIELDS } from "@shared/_db_table_details/LikeTableFields.ts";
+import { MEMEFIELDS } from "@shared/_db_table_details/MemeTableFields.ts";
+import { TABLE_NAMES } from "@shared/_db_table_details/TableNames.ts";
+import Logger from "@shared/Logger/logger.ts";
 
  const logger = Logger.getInstance();
 

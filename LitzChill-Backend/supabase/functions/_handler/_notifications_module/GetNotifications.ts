@@ -1,9 +1,9 @@
-import { getNotificationsQuery } from "../../_repository/_notifications_repo/NotificationsQueries.ts";
-import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { NOTIFICATION_ERRORS, NOTIFICATION_SUCCESS } from "../../_shared/_messages/NotificationMessages.ts";
-import Logger from "../../_shared/Logger/logger.ts";
+import { getNotificationsQuery } from "@repository/_notifications_repo/NotificationsQueries.ts";
+import { ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { NOTIFICATION_ERRORS, NOTIFICATION_SUCCESS } from "@shared/_messages/NotificationMessages.ts";
+import Logger from "@shared/Logger/logger.ts";
 /**
  * Fetches notifications for a user.
  * 

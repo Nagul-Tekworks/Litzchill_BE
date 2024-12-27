@@ -1,5 +1,5 @@
-import { MemeRoutes } from "../_routes/Meme_Module_Routes.ts";
-import { routeHandler } from "../_routes/Route_Handler.ts";
+import { MemeRoutes } from "@routes/Meme_Module_Routes.ts";
+import { routeHandler } from "@routes/Route_Handler.ts";
 
 
 

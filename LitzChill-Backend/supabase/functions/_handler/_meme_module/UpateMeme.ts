@@ -1,13 +1,13 @@
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { parseTags, validateMemeData } from "../../_shared/_validation/Meme_Validations.ts";
-import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
-import { updatememeQuery } from "../../_repository/_meme_repo/MemeRepository.ts";
-import { Meme } from '../../_model/MemeModel.ts';
-import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
-import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
-import Logger from "../../_shared/Logger/logger.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { parseTags, validateMemeData } from "@shared/_validation/Meme_Validations.ts";
+import { MEMEFIELDS } from '@shared/_db_table_details/MemeTableFields.ts';
+import { updatememeQuery } from "@repository/_meme_repo/MemeRepository.ts";
+import { Meme } from '@model/MemeModel.ts';
+import { V4 } from "@V4";
+import { ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "@shared/_messages/Meme_Module_Messages.ts";
+import Logger from "@shared/Logger/logger.ts";
 
 /**
  * Handles the update of a meme's details, including validation, data extraction, and database update.

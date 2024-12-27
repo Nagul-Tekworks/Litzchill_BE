@@ -1,13 +1,13 @@
-import { V4 } from "https://deno.land/x/uuid@v0.1.2/mod.ts";
-import { updateMemeStatusQuery } from "../../_repository/_meme_repo/MemeRepository.ts";
-import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
-import { addNotifications } from "../../_repository/_notifications_repo/NotificationsQueries.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { MEMEFIELDS } from "../../_shared/_db_table_details/MemeTableFields.ts";
-import { MEME_STATUS, NOTIFICATION_TYPES } from "../../_shared/_constants/Types.ts";
-import Logger from "../../_shared/Logger/logger.ts";
+import { V4 } from "@V4";
+import { updateMemeStatusQuery } from "@repository/_meme_repo/MemeRepository.ts";
+import { ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "@shared/_messages/Meme_Module_Messages.ts";
+import { addNotifications } from "@repository/_notifications_repo/NotificationsQueries.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { MEMEFIELDS } from "@shared/_db_table_details/MemeTableFields.ts";
+import { MEME_STATUS, NOTIFICATION_TYPES } from "@shared/_constants/Types.ts";
+import Logger from "@shared/Logger/logger.ts";
 
 export default async function updateMemeStatus(req: Request, params: Record<string, string>) {
     const logger = Logger.getInstance();

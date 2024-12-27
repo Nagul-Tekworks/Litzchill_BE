@@ -1,13 +1,13 @@
 
-import { HTTP_STATUS_CODE } from "../../_shared/_constants/HttpStatusCodes.ts";
-import { COMMON_ERROR_MESSAGES } from "../../_shared/_messages/ErrorMessages.ts";
-import { ErrorResponse, SuccessResponse } from "../../_responses/Response.ts";
-import { contentTypeValidations, parseTags, validateMemeData } from '../../_shared/_validation/Meme_Validations.ts';
-import { createMemeQuery, uploadFileToBucket } from "../../_repository/_meme_repo/MemeRepository.ts";
-import { Meme } from "../../_model/MemeModel.ts";
-import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "../../_shared/_messages/Meme_Module_Messages.ts";
-import { MEMEFIELDS } from '../../_shared/_db_table_details/MemeTableFields.ts';
-import Logger from "../../_shared/Logger/logger.ts";
+import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
+import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
+import { ErrorResponse, SuccessResponse } from "@response/Response.ts";
+import { contentTypeValidations, parseTags, validateMemeData } from '@shared/_validation/Meme_Validations.ts';
+import { createMemeQuery, uploadFileToBucket } from "@repository/_meme_repo/MemeRepository.ts";
+import { Meme } from "@model/MemeModel.ts";
+import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "@shared/_messages/Meme_Module_Messages.ts";
+import { MEMEFIELDS } from '@shared/_db_table_details/MemeTableFields.ts';
+import Logger from "@shared/Logger/logger.ts";
 
 /**
  * Handler function to create a new meme.

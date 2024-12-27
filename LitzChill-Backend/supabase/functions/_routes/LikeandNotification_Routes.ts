@@ -1,10 +1,10 @@
-import likememe from "../_handler/_likes_module/LikeMeme.ts";
-import unlikememes from "../_handler/_likes_module/UnlikeMeme.ts";
-import getNotifications from "../_handler/_notifications_module/GetNotifications.ts";
-import markNotification from "../_handler/_notifications_module/markNotifications.ts";
-import { checkUserAuthentication } from "../_middleware/middlerWare.ts";
-import { HTTP_METHOD } from "../_shared/_constants/HttpMethods.ts";
-import { USER_ROLES } from "../_shared/_constants/UserRoles.ts";
+import likememe from "@handler/_likes_module/LikeMeme.ts";
+import unlikememes from "@handler/_likes_module/UnlikeMeme.ts";
+import getNotifications from "@handler/_notifications_module/GetNotifications.ts";
+import markNotification from "@handler/_notifications_module/markNotifications.ts";
+import { checkUserAuthentication } from "@middleware/middlerWare.ts";
+import { HTTP_METHOD } from "@shared/_constants/HttpMethods.ts";
+import { USER_ROLES } from "@shared/_constants/UserRoles.ts";
 import { LIKES_ROUTES, NOTIFICATION_ROUTES } from "./RoutesPaths.ts";
 
 export const like_And_NotifyRoutes = {
