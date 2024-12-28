@@ -47,7 +47,7 @@ export default async function likememe(_req: Request, params: Record<string, str
         logger.info(`Meme with ID ${meme_id} exists.`);
         
 
-        // Step 3: Insert a new like record
+        // Step 2: Insert a new like record
         const likeable_type = "meme";
         const { data: _likeMeme, error: likeError } = await insertLikeQuery(meme_id, user_id, likeable_type);
         if (likeError) {

@@ -301,15 +301,56 @@ export async function fetchMemes(page: number, limit: number, sort: string, tags
  * @param {string} meme_id - The unique identifier of the meme.
  * @returns {{ data: object | null, error: object | null }} - The meme data for given ID or an error object.
  */
-export async function getMemesByIdQuery(meme_id: string){
-    const { data, error } = await supabase
+export async function getMemesByIdQuery(meme_id: string, user_id: string) {
+    // Step 1: Fetch meme details (ensure it returns at most 1 row)
+    const { data: memeData, error: memeError } = await supabase
         .from(TABLE_NAMES.MEME_TABLE)
-        .select("meme_title, image_url, tags, like_count, created_at")
-        .neq(MEMEFIELDS.MEME_STATUS,MEME_STATUS.DELETED)
-        .eq(MEMEFIELDS.MEME_ID, meme_id);
-   
-    return { data, error };
+        .select("meme_title, image_url, tags, like_count, created_at, user_id")
+        .neq(MEMEFIELDS.MEME_STATUS, MEME_STATUS.DELETED)
+        .eq(MEMEFIELDS.MEME_ID, meme_id)
+        .single();  // Ensure single result (this still might fail if more than 1 row is returned)
+
+    if (memeError || !memeData) {
+        logger.error("Error fetching meme by ID: " + (memeError?.message || "Unknown error"));
+        return { data: null, error:"Meme not found" };
+    }
+
+    const memeOwnerId = memeData.user_id;
+
+    // Step 2: Check if the user's account is private
+    const { data: userData, error: userError } = await supabase
+        .from(TABLE_NAMES.USER_TABLE)
+        .select("preferences")
+        .eq("user_id", memeOwnerId)
+        .limit(1)  // Ensure at most 1 row is returned
+        .single();  // Ensure single result (this still might fail if more than 1 row is returned)
+
+    if (userError || !userData) {
+        logger.error("Error fetching user preferences for user ID " + memeOwnerId + ": " + (userError?.message || "Unknown error"));
+        return { data: null, error: userError?.message || "Meme owner not found" };
+    }
+
+    const isPrivate = userData.preferences === "Private";
+
+    // Step 3: If account is private, check if the requester is a follower
+    if (isPrivate) {
+        const { data: followerData, error: followerError } = await supabase
+            .from(TABLE_NAMES.FOLLOWERS_TABLE)
+            .select("follower_id")
+            .eq("follower_id", user_id)
+            .eq("user_id", memeOwnerId)
+            .limit(1);  // Ensure at most 1 row is returned
+
+        if (followerError || !followerData?.length) {
+            logger.error("Access denied: User " + user_id + " is not following private user " + memeOwnerId);
+            return { data: null, error: "Access denied: This account is private." };
+        }
+    }
+
+    // Step 4: Return meme details if access is allowed
+    return { data: memeData, error: null };
 }
+
 
 /**
  * Updates the status of a meme.

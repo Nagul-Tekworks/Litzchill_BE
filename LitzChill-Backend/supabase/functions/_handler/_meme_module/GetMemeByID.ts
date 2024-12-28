@@ -28,28 +28,35 @@ export default async function getmemebyID(_req: Request, params: Record<string, 
     try {  
         logger.info("Processing getMemebyID handler");
         const meme_id = params.id;
+        const user_id = params.user_id;
+        logger.info(`Processing user ID: ${user_id}`);
         logger.info(`Received request to fetch meme with ID: ${meme_id}`);  
-        logger.info("hi"+new Error().stack);
         // Validate the meme_id
         if (!meme_id || !V4.isValid(meme_id)) { 
             logger.info("Validation failed: Missing or invalid meme ID " + meme_id);
             return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, MEME_ERROR_MESSAGES.MISSING_MEMEID);
         }
 
+        // const  meme= await meme_exists(meme_id);
+        // if (!meme) {
+        //     logger.info("Meme does not exist.");
+        //     return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.MEME_NOT_FOUND);
+        // }
+
         // Fetch the meme by ID from the repository
         logger.info("Fetching meme from repository..." );
-        const { data: fetchMeme, error } = await getMemesByIdQuery(meme_id);
+        const { data: fetchMeme, error } = await getMemesByIdQuery(meme_id,user_id);
         
         // Handle errors or empty results
         if (error) {
-            logger.error(`Error in getMemesByIdQuery: ${error.message}`);
-            return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
+            logger.error(`Error in getMemesByIdQuery: ${JSON.stringify(error)}`);
+            return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, error);
         }
         
-        if (!fetchMeme || fetchMeme.length === 0) {
-          logger.info("Failed to fetch Meme not found.");
-            return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
-        }
+        // if (!fetchMeme ) {
+        //   logger.info("Failed to fetch Meme not found.");
+        //     return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
+        // }
 
         // Successfully fetched meme
         logger.log("Meme fetched successfully:"+ JSON.stringify(fetchMeme));

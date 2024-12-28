@@ -3,6 +3,7 @@ export const TABLE_NAMES={
     MEME_TABLE:'memes',
     LIKES_TABLE:'likes',
     NOTIFICATIONS_TABLE:'notifications',
+    FOLLOWERS_TABLE:'followers',
     
 }
 
