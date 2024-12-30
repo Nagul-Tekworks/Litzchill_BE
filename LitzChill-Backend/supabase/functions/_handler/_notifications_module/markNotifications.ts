@@ -29,6 +29,7 @@ export default async function markNotification(_req: Request, params: Record<str
 
         // Mark the notification as read
         const isSuccessful = await markNotificationsAsReadQuery(notification_id,user_id);
+        logger.info(`Marking result: ${JSON.stringify(isSuccessful)}`);
         if (!isSuccessful) {
             logger.info("Marking failed");
             return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, NOTIFICATION_ERRORS.FAILED_TO_UPDATE);

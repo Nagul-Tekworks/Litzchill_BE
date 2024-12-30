@@ -42,7 +42,7 @@ export default async function getAllMemes(req: Request): Promise<Response> {
  
         // Handle errors and return appropriate responses
         if (error || !allmemes || allmemes.length === 0) {
-            logger.warn("No memes found or fetching failed");
+            logger.warn(`No memes found or fetching failed ${error}`);
             return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.NO_MEMES);
         }
 

@@ -59,14 +59,14 @@ export default async function updateMeme(req: Request,params:Record<string,strin
         logger.info("updatememe: "+updatememe+" error: " +error)
         if(error || !updatememe)
         {
-            logger.info("Update failed");
+            logger.info(`Update failed ${JSON.stringify(error)}`);
             return await ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_UPDATE);
         }
         return await SuccessResponse(HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_UPDATED_SUCCESSFULLY,updatememe);
 
 
     } catch (error) {
-        logger.error("Error updating meme:"+ error);
+        logger.error(`Error updating meme:${JSON.stringify(error)}`);
         return await ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, COMMON_ERROR_MESSAGES.INTERNAL_SERVER_ERROR);
     }
 }

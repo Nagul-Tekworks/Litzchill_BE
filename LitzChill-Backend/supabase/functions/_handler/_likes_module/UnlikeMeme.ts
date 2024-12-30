@@ -1,4 +1,4 @@
-import { checkLikeExists, unlikememe } from "@repository/_like_repo/LikeQueries.ts";
+import { unlikememe } from "@repository/_like_repo/LikeQueries.ts";
 import { meme_exists } from "@repository/_meme_repo/MemeRepository.ts";
 import { ErrorResponse } from "@response/Response.ts";
 import { SuccessResponse } from '@response/Response.ts';
@@ -33,33 +33,21 @@ export default async function unlikememes(_req: Request, params: Record<string, 
            logger.error ("Validation failed: Missing parameters.");
             return  ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, MEME_ERROR_MESSAGES.MISSING_MEMEID);
         }
-
+        
+        //Check if the meme exists in the database
         const existingMeme = await meme_exists(meme_id);
         if (!existingMeme) {
             logger.error("meme not found");
             return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.MEME_NOT_FOUND);
         }
-
-        const { data: liked, error } = await checkLikeExists(meme_id, user_id);
-        if (error || !liked) {
-            logger.error(`User ${user_id} has not liked meme ${meme_id}`);
-            return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, LIKE_ERROR.NOTLIKED);
-        } else if(liked){
-            logger.info(`User ${user_id}  liked meme ${meme_id}`);
-        }
-        // Remove the like entry
+        
+        // unlike the meme from the database
         const unlikedmeme = await unlikememe(meme_id, user_id);
         if (!unlikedmeme) {
             logger.error("failed to unlike meme");
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.UNLIKE_FAILED);
         }
 
-        // Update the meme's like count - decrement the like count in the memes table
-        // const likecount = await updateLikeCount(meme_id, existingMeme.like_count - 1);
-        // if (!likecount) {
-        //     logger.error("Failed to update like status");
-        //     return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.UPDATE_FAILED);
-        // }
 
         logger.info(`Unliked meme ${meme_id} for user ${user_id}`);
         return SuccessResponse(HTTP_STATUS_CODE.OK, LIKE_SUCCESS.UNLIKED_SUCCESSFULLY);

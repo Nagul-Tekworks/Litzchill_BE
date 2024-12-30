@@ -9,6 +9,7 @@ import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "@shared/_messages/Me
 import { MEMEFIELDS } from '@shared/_db_table_details/MemeTableFields.ts';
 import Logger from "@shared/Logger/logger.ts";
 
+
 /**
  * Handler function to create a new meme.
  * 
@@ -36,12 +37,12 @@ export default async function createMeme(req: Request, user: Record<string, stri
         const { user_id } = user;
         logger.info(`User_id is: ${user_id}`);
 
-        // Ensure the content type is multipart/form-data
+      //  Ensure the content type is multipart/form-data
         const contentType = req.headers.get("content-type") || "";
         const validateContentType = contentTypeValidations(contentType);
         if (!validateContentType) {
             logger.error("Invalid content type.");
-            return await ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, COMMON_ERROR_MESSAGES.INVALIDCONTENTTYPE);
+            return await ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, MEME_ERROR_MESSAGES.MISSING_REQUIRED_FEILDS);
         }
 
         // Extract the form data from the request body
@@ -50,9 +51,9 @@ export default async function createMeme(req: Request, user: Record<string, stri
         const tagsRaw = formData.get(MEMEFIELDS.TAGS) as string;
         const tags = parseTags(tagsRaw);
         const media_file = formData.get(MEMEFIELDS.MEDIA_FILE) as File;
-
+        
         logger.info(`Extracted values: meme_title=${meme_title}, tags=${tags}, media_file=${media_file}`);
-
+       
         // Validate the meme data before inserting it into the database
         const validationResponse = await validateMemeData(false, meme_title, tags, media_file);
         logger.info(`Validation response: ${validationResponse}`);

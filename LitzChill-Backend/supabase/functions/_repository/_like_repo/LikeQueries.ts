@@ -51,7 +51,6 @@ export async function insertLikeQuery(
     if (error) {
       return { data: null, error };
     }
-  
     return { data, error: null };
   }
   
@@ -64,16 +63,25 @@ export async function insertLikeQuery(
  * @returns {Promise<boolean>} - Returns true if successful, or false if there’s an error.
  */
 export async function unlikememe(meme_id: string, user_id: string): Promise<boolean> {
-    const { error } = await supabase
-        .from(TABLE_NAMES.LIKES_TABLE)
-        .delete()
-        .eq(LIKE_TABLE_FIELDS.USER_ID, user_id)
-        .eq(LIKE_TABLE_FIELDS.MEME_ID, meme_id);
+  const { data, error } = await supabase
+      .from(TABLE_NAMES.LIKES_TABLE)
+      .delete()
+      .eq(LIKE_TABLE_FIELDS.USER_ID, user_id)
+      .eq(LIKE_TABLE_FIELDS.MEME_ID, meme_id);
 
-        logger.info("unlike error"+error);
+    if (error) {
+      logger.error(`Error while unliking meme with ID ${meme_id} by user ${user_id}:`);
+      return false;
+    }
+    else if (!data) {
+      logger.error(`No likes found for meme with ID ${meme_id} by user ${user_id}`);
+      return false;
+    }
 
-    return !error;
+  logger.info(`Meme with ID ${meme_id} successfully unliked by user ${user_id}`);
+  return true;
 }
+
 
 /**
  * Function to update like count in the meme table.

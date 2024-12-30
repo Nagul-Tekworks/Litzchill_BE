@@ -3,10 +3,9 @@ import { updateMemeStatusQuery } from "@repository/_meme_repo/MemeRepository.ts"
 import { ErrorResponse, SuccessResponse } from "@response/Response.ts";
 import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
 import { MEME_ERROR_MESSAGES, MEME_SUCCESS_MESSAGES } from "@shared/_messages/Meme_Module_Messages.ts";
-import { addNotifications } from "@repository/_notifications_repo/NotificationsQueries.ts";
 import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
 import { MEMEFIELDS } from "@shared/_db_table_details/MemeTableFields.ts";
-import { MEME_STATUS, NOTIFICATION_TYPES } from "@shared/_constants/Types.ts";
+import { MEME_STATUS } from "@shared/_constants/Types.ts";
 import Logger from "@shared/Logger/logger.ts";
 
 export default async function updateMemeStatus(req: Request, params: Record<string, string>) {
@@ -47,16 +46,16 @@ export default async function updateMemeStatus(req: Request, params: Record<stri
 
       console.log("Meme status updated successfully:", updatedMemeStatus);
 
-      // Notify user if the meme is rejected
-          logger.info("Preparing notification for meme status...");
-          const type = NOTIFICATION_TYPES.ENGAGEMENT;
+    //   // Notify user if the meme is rejected
+    //       logger.info("Preparing notification for meme status...");
+    //       const type = NOTIFICATION_TYPES.ENGAGEMENT;
 
-          const notify = await addNotifications(user_id,updatedMemeStatus.meme_title,type,updatedMemeStatus.meme_status);
-          if (!notify) {
-              logger.error("Failed to notify meme owner.");
-          } else {
-              logger.info("Notification sent successfully.");
-          }
+    //       const notify = await addNotifications(user_id,updatedMemeStatus.meme_title,type,updatedMemeStatus.meme_status);
+    //       if (!notify) {
+    //           logger.error("Failed to notify meme owner.");
+    //       } else {
+    //           logger.info("Notification sent successfully.");
+    //       }
       // Success response
       return SuccessResponse( HTTP_STATUS_CODE.OK,MEME_SUCCESS_MESSAGES.MEME_STATUS_UPDATED_SUCCESSFULLY);
 

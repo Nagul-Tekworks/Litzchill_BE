@@ -1,4 +1,4 @@
-import { getMemesByIdQuery } from "@repository/_meme_repo/MemeRepository.ts";
+import { getMemeByIdQuery } from "@repository/_meme_repo/MemeRepository.ts";
 import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
 import { COMMON_ERROR_MESSAGES } from "@shared/_messages/ErrorMessages.ts";
 import { V4 } from "@V4";
@@ -37,27 +37,15 @@ export default async function getmemebyID(_req: Request, params: Record<string, 
             return ErrorResponse(HTTP_STATUS_CODE.BAD_REQUEST, MEME_ERROR_MESSAGES.MISSING_MEMEID);
         }
 
-        // const  meme= await meme_exists(meme_id);
-        // if (!meme) {
-        //     logger.info("Meme does not exist.");
-        //     return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.MEME_NOT_FOUND);
-        // }
-
         // Fetch the meme by ID from the repository
         logger.info("Fetching meme from repository..." );
-        const { data: fetchMeme, error } = await getMemesByIdQuery(meme_id,user_id);
+        const { data: fetchMeme, error } = await getMemeByIdQuery(meme_id,user_id);
         
         // Handle errors or empty results
         if (error) {
             logger.error(`Error in getMemesByIdQuery: ${JSON.stringify(error)}`);
             return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, error);
         }
-        
-        // if (!fetchMeme ) {
-        //   logger.info("Failed to fetch Meme not found.");
-        //     return ErrorResponse(HTTP_STATUS_CODE.NOT_FOUND, MEME_ERROR_MESSAGES.FAILED_TO_FETCH);
-        // }
-
         // Successfully fetched meme
         logger.log("Meme fetched successfully:"+ JSON.stringify(fetchMeme));
 

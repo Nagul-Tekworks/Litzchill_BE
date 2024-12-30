@@ -65,7 +65,7 @@ export function validateMemeData(isUpdate: boolean = false,meme_title?:string ,t
 
     // If creating a meme, check for required fields
     if (!isUpdate) {
-        checkRequiredFields(meme_title, tags,media_file, validationErrors);
+        checkRequiredFields(meme_title, tags, media_file, validationErrors);
     }
     // Common validation for both create and update
     validateMemeFields(meme_title,tags, validationErrors);
@@ -98,7 +98,10 @@ function validateMemeFields(meme_title: string | undefined, tags: string[] | und
 // Validate tags (only invalid tags, not missing ones)
      if (tags && tags.length > 0) {
         for (const tag of tags) {
-            if (tag.length < 1 || tag.length > 15 || !/^[A-Za-z0-9\s-]+$/.test(tag)) {
+            if (tag.length < 1 || tag.length > 20 ){
+                validationErrors.push(MEME_ERROR_MESSAGES.INVALID_TAG_LENGTH);
+            }
+            if( !/^[A-Za-z0-9\s-]+$/.test(tag)) {
                 validationErrors.push(MEME_ERROR_MESSAGES.INVALID_TAG);
             }
         }

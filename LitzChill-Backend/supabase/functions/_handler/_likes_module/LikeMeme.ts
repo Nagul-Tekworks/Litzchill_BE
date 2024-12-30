@@ -2,8 +2,6 @@ import {  insertLikeQuery } from "@repository/_like_repo/LikeQueries.ts";
 import { ErrorResponse, SuccessResponse } from "@response/Response.ts";
 import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
 import { LIKE_ERROR } from "@shared/_messages/LikeMessage.ts";
-import { NOTIFICATION_TYPES } from '@shared/_constants/Types.ts';
-import { addNotifications } from "@repository/_notifications_repo/NotificationsQueries.ts";
 import { COMMON_ERROR_MESSAGES } from '@shared/_messages/ErrorMessages.ts';
 import { LIKE_SUCCESS } from '@shared/_messages/LikeMessage.ts';
 import { meme_exists } from "@repository/_meme_repo/MemeRepository.ts";
@@ -54,18 +52,6 @@ export default async function likememe(_req: Request, params: Record<string, str
             logger.error(`Failed to like meme ${meme_id} by user ${user_id}  returned error: ${JSON.stringify(likeError)}`);
             return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, LIKE_ERROR.INSERTION_FAILED);
         }
-
-        // Step 5: Notify the meme owner about the like
-        const type = NOTIFICATION_TYPES.LIKE;
-        const status = LIKE_SUCCESS.LIKE_RECEIVED;
-        const notify = await addNotifications(user_id, existingMeme.meme_title, type, status);
-        if (!notify) {
-            logger.error(`Failed to notify meme owner for meme ${meme_id}`);
-            throw new Error("Notification failed");
-        }
-
-        logger.info(`User ${user_id} liked meme ${meme_id} successfully.`);
-        // Return a success response after successful like operation
         return SuccessResponse(HTTP_STATUS_CODE.OK, LIKE_SUCCESS.LIKED_SUCCESSFULLY);
     } catch (error) {
         logger.error("Error processing like:"+ error);

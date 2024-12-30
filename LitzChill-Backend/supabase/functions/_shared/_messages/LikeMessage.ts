@@ -3,7 +3,7 @@ export const LIKE_ERROR={
     NOTLIKED:"no action is required",
     INSERTION_FAILED:"Failed to insert like",
     UPDATE_FAILED:"Failed to update like count",
-    UNLIKE_FAILED:"Failed to unlike",
+    UNLIKE_FAILED:"No Action Needed",
 }
 
 export const LIKE_SUCCESS={
