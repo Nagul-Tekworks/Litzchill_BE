@@ -145,12 +145,14 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
             if (contestDetails.start_date && isValidISODate(contestDetails.start_date)) {
               
                
-                if (current_date > end_date) {
-                    logger.error("End date must be after the current date.");
-                    return ErrorResponse(
-                         HTTP_STATUS_CODE.BAD_REQUEST,
-                         CONTEST_VALIDATION_MESSAGES.INVALID_END_DATE_VALUE
-                   );
+                if(!isUpdate){
+                    if (current_date > end_date) {
+                        logger.error("End date must be after the current date.");
+                        return ErrorResponse(
+                             HTTP_STATUS_CODE.BAD_REQUEST,
+                             CONTEST_VALIDATION_MESSAGES.INVALID_END_DATE_VALUE
+                       );
+                    }
                 }
                 const start_date = new Date(contestDetails.start_date);
                 if (start_date >= end_date) {
@@ -224,7 +226,7 @@ export function validateContestDetails(contestDetails: Partial<ContestModel>, is
 
 
     logger.info(`initializing contest status base on contest start date.`);
-    if(contestDetails.start_date){
+    if(contestDetails.start_date&&!isUpdate){
         const start_date = new Date(contestDetails.start_date);
         if(start_date>current_date){
             contestDetails.status=CONTEST_STATUS[0].toLowerCase();

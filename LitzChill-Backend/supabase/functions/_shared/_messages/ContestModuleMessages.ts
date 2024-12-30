@@ -28,7 +28,7 @@ export const CONTEST_VALIDATION_MESSAGES={
     MISSING_CONTEST_START_DATE: "Start Date is required.",
     INVALID_CONTEST_END_DATE_FORMAT: "End Date must be in ISO 8601 format.",
     INVALID_END_DATE_VALUE:"END Date Must be After Current Date",
-    INVALID_CONTEST_END_DATE: "End Date must be after Start Date. And Current Date",
+    INVALID_CONTEST_END_DATE: "End Date must be after Start Date. ",
     MISSING_CONTEST_END_DATE: "End Date is required.",
     INVALID_CONTEST_STATUS: "Status must be 'Ongoing', 'Completed', or 'Upcoming' .",
     INVALID_TYPE_FOR_RESULT:"Please Provide Valid Result",

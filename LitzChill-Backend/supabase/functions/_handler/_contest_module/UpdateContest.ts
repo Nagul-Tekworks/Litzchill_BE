@@ -61,17 +61,16 @@ export async function handleupdateContest(req:Request,params:Record<string,strin
         logger.info(`Getting start date and end date from contest object and assinging into user provide object.`);
         const start_date=new Date(data.start_date).toISOString();
         const end_date=new Date(data.end_date).toISOString();
-
+        
         if(!contestDetails.start_date){
             contestDetails.start_date=start_date
         }
-        else if(!contestDetails.end_date){
+        if(!contestDetails.end_date){
             contestDetails.end_date=end_date
         }
-        else{
-            contestDetails.start_date=start_date
-            contestDetails.end_date=end_date
-        }
+        
+       
+       
 
         //validating contest details
         logger.info(`calling validation function to validate contest details`);

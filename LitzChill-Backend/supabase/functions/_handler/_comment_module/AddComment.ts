@@ -1,9 +1,8 @@
 
 import { Comment } from "@model/CommentModle.ts";
 import { getCommentById, updateCommentsCount } from "@repository/_comment_repo/CommentRepository.ts";
-import { addComment, checkMemeId } from "@repository/_comment_repo/CommentRepository.ts";
+import { addComment, checkMemeId } from '@repository/_comment_repo/CommentRepository.ts';
 import { ErrorResponse, SuccessResponse } from "@response/Response.ts";
-
 import { HTTP_STATUS_CODE } from "@shared/_constants/HttpStatusCodes.ts";
 import { Logger } from "@shared/_logger/Logger.ts";
 import { COMMENT_MODULE_ERROR_MESSAGES, COMMENT_MODULE_SUCCESS_MESSAGES } from "@shared/_messages/CommentModuleMessages.ts";
@@ -41,12 +40,12 @@ export async function handleAddComment(req: Request, params: Record<string, stri
          return validationErrors;
       }
 
-      //getting user id from params object and assining into commentdetails object.
+      //getting user id from params object and assigning into comment details object.
        commentDetails.user_id=params.user_id;
        logger.info(`successfully fetched user_id ${commentDetails.user_id}`);
 
 
-       //If user adding a comment to meme checking meme is presnt or not
+       //If user adding a comment to meme checking meme is present or not
       if(commentDetails.contentType==='Meme'){
 
          commentDetails.meme_id=commentDetails.contentId
@@ -69,7 +68,7 @@ export async function handleAddComment(req: Request, params: Record<string, stri
                 COMMENT_MODULE_ERROR_MESSAGES.CONTENT_NOT_FOUND 
             )
          }
-         logger.info("Initialzig Comment count from meme data");
+         logger.info("Initializig Comment count from meme data");
          commentDetails.commentCount=memeData[0].comment_count;
       }
       
