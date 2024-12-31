@@ -38,7 +38,7 @@ export default async function updateMemeStatus(req: Request, params: Record<stri
       }
 
       // Update meme status
-      const { data: updatedMemeStatus, error } = await updateMemeStatusQuery(meme_id, meme_status);
+      const { data: updatedMemeStatus, error } = await updateMemeStatusQuery(meme_id, meme_status,user_id);
       if (error || !updatedMemeStatus) {
           logger.error("Database update failed:"+ error);
           return ErrorResponse(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR, MEME_ERROR_MESSAGES.FAILED_TO_UPDATE);

@@ -29,15 +29,6 @@ export async function meme_exists(meme_id: string) {
     return existingMeme;
 }
 
-
-/**
- * Checks the status of a user in the database.
- * 
- * @param {string} user_id - The unique identifier of the user.
- * @returns {Promise<object | null>} - The user object if found; otherwise, null.
- */
-
-
 /**
  * Uploads a file (image or video) to the specified bucket.
  * 
@@ -45,7 +36,6 @@ export async function meme_exists(meme_id: string) {
  * @param {string} memeTitle - The title of the meme associated with the file.
  * @returns {Promise<string | null>} - The public URL of the uploaded file, if successful; otherwise, null.
  */
-
 export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Promise<string | null> {
     logger.log("Uploading media file");
 
@@ -123,9 +113,6 @@ export async function uploadFileToBucket(mediaFile: File, memeTitle: string): Pr
         return null;
     }
 }
-
-
-
 // Helper function to generate the SHA-256 hash of a file
 async function generateFileHash(file: File): Promise<string> {
     const arrayBuffer = await file.arrayBuffer();
@@ -134,8 +121,6 @@ async function generateFileHash(file: File): Promise<string> {
     const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, "0")).join(""); // Convert byte array to hex string
     return hashHex;
 }
-
-
 /**
  * Inserts a new meme into the database.
  * 
@@ -171,43 +156,20 @@ export async function createMemeQuery(meme: Partial<Meme>): Promise<{ data: obje
  * @param {string} meme_id - The unique identifier of the meme to be updated.
  * @returns {Promise<{ data: object | null, error: object | null }>} - A promise that resolves with the updated meme data or an error.
  */
-export async function updatememeQuery(meme: Partial<Meme>, user_type: string): Promise<{ data: object | null, error: object | null }> {
-    // Check if the user is an admin or the owner of the meme
-    if (user_type === USER_ROLES.ADMIN_ROLE) {
-        logger.info("Admin role: Admin can update any meme");
-
-        // Admin can update any meme
-        const { data, error } = await supabase
-            .from(TABLE_NAMES.MEME_TABLE)
-            .update(meme)
-            .eq(MEMEFIELDS.MEME_ID, meme.meme_id) // Match the meme ID
-            .neq(MEMEFIELDS.MEME_STATUS, MEME_STATUS.DELETED) // Ensure meme isn't already deleted
-            .select("meme_id, meme_title, tags, updated_at")
-            .single();
-        // logger.info(`updating meme: ${JSON.stringify(data)}`);
-        // logger.info(`error: ${JSON.stringify(error)}`);
-        return { data, error };
-    } 
-    else if (user_type === USER_ROLES.MEMER_ROLE) {
-        logger.info("Memer role: Memer can only update their own meme");
-
-        // Memer can only update their own meme
-        const { data, error } = await supabase
-            .from(TABLE_NAMES.MEME_TABLE)
-            .update(meme)
-            .eq(MEMEFIELDS.MEME_ID, meme.meme_id) // Match the meme ID
-            .eq(MEMEFIELDS.USER_ID, meme.user_id) // Match the user ID (owner check)
-            .neq(MEMEFIELDS.MEME_STATUS, MEME_STATUS.DELETED) // Ensure meme isn't deleted
-            .select("meme_id, meme_title, tags, updated_at")
-            .single();
-
-        return { data, error };
-    } 
-
-    // Unauthorized access if user type is invalid
-    return { data: null, error: { message: "Unauthorized access: Invalid user type" } };
+export async function updatememeQuery(meme: Partial<Meme>,user_type: string): Promise<{ data: object | null, error: object | null }> 
+{
+    const isAdmin = user_type === USER_ROLES.ADMIN_ROLE;
+    const conditions = isAdmin ? { [MEMEFIELDS.MEME_ID]: meme.meme_id } : { [MEMEFIELDS.MEME_ID]: meme.meme_id, [MEMEFIELDS.USER_ID]: meme.user_id };
+    const { data, error } = await supabase
+        .from(TABLE_NAMES.MEME_TABLE)
+        .update(meme)
+        .neq(MEMEFIELDS.MEME_STATUS, MEME_STATUS.DELETED) // Ensure meme isn't already deleted
+        .match(conditions)
+        .select("meme_id, meme_title, tags, updated_at")
+        .single();
+    if(error) logger.error(`Failed to update meme: ${JSON.stringify(error.message)}`);
+    return { data, error};
 }
-
 
 /**
  * Soft delete a meme by updating its status to "deleted".
@@ -220,40 +182,21 @@ export async function updatememeQuery(meme: Partial<Meme>, user_type: string): P
  * @returns {Promise<{ data: object | null, error: object | null }>} - The result of the query.
  */
 export async function deleteMemeQuery(meme_id: string, user_id: string, user_type: string) {
-    if (user_type === USER_ROLES.ADMIN_ROLE) {
-        logger.log("Admin role")
+    const isAdmin = user_type === USER_ROLES.ADMIN_ROLE;
+    const conditions = isAdmin ? { [MEMEFIELDS.MEME_ID]: meme_id }: { [MEMEFIELDS.MEME_ID]: meme_id, [MEMEFIELDS.USER_ID]: user_id };
 
-        // Admin can delete any meme
-        const { data, error } = await supabase
-            .from(TABLE_NAMES.MEME_TABLE)
-            .update({ meme_status: MEME_STATUS.DELETED }) // Update meme_status to "deleted"
-            .neq(MEMEFIELDS.MEME_STATUS,MEME_STATUS.DELETED)
-            .eq(MEMEFIELDS.MEME_ID, meme_id) // Match the meme ID
-            .select("meme_id, meme_status")
-            .single();
+    const { data, error } = await supabase
+        .from(TABLE_NAMES.MEME_TABLE)
+        .update({ meme_status: MEME_STATUS.DELETED })
+        .neq(MEMEFIELDS.MEME_STATUS, MEME_STATUS.DELETED)
+        .match(conditions)
+        .select("meme_id, meme_status")
+        .single();
 
-        return { data, error };
-    } 
-    else if (user_type === USER_ROLES.MEMER_ROLE) {
-        logger.log("memer")
-
-        // Memer can only delete their own meme
-        const { data, error } = await supabase
-            .from(TABLE_NAMES.MEME_TABLE)
-            .update({ meme_status: MEME_STATUS.DELETED }) // Update meme_status to "deleted"
-            .eq(MEMEFIELDS.MEME_ID, meme_id) // Match the meme ID
-            .eq(MEMEFIELDS.USER_ID, user_id) // Match the user ID
-            .neq(MEMEFIELDS.MEME_STATUS,MEME_STATUS.DELETED)
-            .select("meme_id, meme_status")
-            .single();
-            
-        return { data, error };
-    }
-    return { data: null, error: { message: "Unauthorized" } }; // In case of an invalid role
- }
- 
-
- /**
+    if (error) logger.error(`Failed to delete meme: ${error.message}`);
+    return { data, error};
+}
+/**
   * Fetches memes that are not deleted and optionally filters them by tags.
   * The memes are ordered by creation date or popularity (based on the `sort` parameter).
   * 
@@ -263,12 +206,8 @@ export async function deleteMemeQuery(meme_id: string, user_id: string, user_typ
   * @param {string | null} tags - A comma-separated string of tags to filter memes by, or null for no tag filter.
   * @returns {Promise<{ data: object[] | null, error: object | null }>} - A promise that resolves with an array of memes or an error.
   */
-export async function fetchMemes(
-    page: number,
-    limit: number,
-    sort: string,
-    tags: string | null
-): Promise<{ data: object[] | null, error: object | null }> {
+export async function fetchMemes(page: number,limit: number,sort: string,tags: string | null): 
+                                Promise<{ data: object[] | null, error: object | null }> {
     // Subquery to fetch public users
     const { data: publicUsers, error: publicUsersError } = await supabase
         .from("users")
@@ -373,12 +312,15 @@ export async function getMemeByIdQuery(meme_id: string, user_id: string) {
  */
 export async function updateMemeStatusQuery(
     meme_id: string, 
-    meme_status: string
-) {
+    meme_status: string,
+    user_id: string,
+ ): Promise<{ data: object | null, error: object | null }>
+ {
     const { data, error } = await supabase
         .from(TABLE_NAMES.MEME_TABLE)
         .update({ meme_status: meme_status})
         .eq(MEMEFIELDS.MEME_ID, meme_id)
+        .eq(MEMEFIELDS.USER_ID,user_id)
         .neq(MEMEFIELDS.MEME_STATUS,MEME_STATUS.DELETED)
         .select("meme_id, meme_status, meme_title")
         .single();
