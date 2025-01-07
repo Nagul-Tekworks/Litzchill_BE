@@ -15,7 +15,7 @@ import { validateContestDetails } from "@shared/_validation/ContestDetailsValida
  *
  * @param {Request} req - The HTTP request object containing the contest details in the body.
  * @param {Record<string, string>} params - Additional URL parameters (User details).
- * @returns {Promise<Response>} - A response indicating success or failure:
+ * @returns {Promise<Response>} - A response indicating success or failure: success code-201, failure code like 400,404,500
  *
  */
 export async function handleCreateContext(req: Request,_params:Record<string,string>): Promise<Response> {
