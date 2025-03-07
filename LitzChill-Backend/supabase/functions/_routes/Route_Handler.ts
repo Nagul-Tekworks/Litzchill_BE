@@ -75,19 +75,6 @@ export async function routeHandler(req:Request,routes:Record<string,any>):Promis
                  return await allMatchedMethodRoutes[routePattern](req, param);
             } 
          }
-
-        //  //again checking after dynamic route if route is present but method not supported
-        //  const trimmedPath = path.split('/').slice(0, -1).join('/')+'/:id';
-        //  logger.info(`trimmed path ${trimmedPath}`);
-
-        //   if(allRoutes.includes(trimmedPath)){
-        //     logger.error(`Method '${method}' not allowed for route '${path}'`);
-        //     return ErrorResponse(
-        //          HTTP_STATUS_CODE.METHOD_NOT_ALLOWED,
-        //          COMMON_ERROR_MESSAGES.METHOD_NOT_ALLOWED,
-        //        )
-        //   }  
-        
          
         //returning route not found response
         logger.error(`ERROR: Route not found for path ${path}`);
