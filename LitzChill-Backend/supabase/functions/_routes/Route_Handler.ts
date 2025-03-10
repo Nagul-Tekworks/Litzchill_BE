@@ -65,8 +65,6 @@ export async function routeHandler(req:Request,routes:Record<string,any>):Promis
         //checking for dyanamic route matching 
         logger.info(`Checking for dynamic route`)
         for (const routePattern in allMatchedMethodRoutes) {
-          //"/ContestModule/getContestById/:id"
-          //"/ContestModule/getContestById/:4556555"
             const param = extractParameter(routePattern, path);
             if (param) {
                  //calling handler if path is correct 
@@ -108,7 +106,7 @@ export function extractParameter(routePattern: string, path: string):Record<stri
           logger.info(`Paths length not matched returning null`);
              return null;
         }
-                          //id         //12345
+                       
         const params: Record<string, string> = {};
 
         for (let i = 0; i < routePath.length; i++) {
@@ -122,7 +120,7 @@ export function extractParameter(routePattern: string, path: string):Record<stri
                   return null;
             }
         }
-        //example :{id:12220}
+      
         return params;
 
 }
